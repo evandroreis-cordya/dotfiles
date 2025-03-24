@@ -1,13 +1,13 @@
-# Evandro Reis Dotfiles (macOS Sequoia Edition, 2025) - Complete Revamp using Vibe Coding [![Build Status](https://travis-ci.org/evandropaes/dotfiles.svg?branch=master)](https://travis-ci.org/evandropaes/dotfiles)
+# Evandro Reis Jarvistoolset (macOS Sequoia Edition, 2025) - Complete Revamp using Vibe Coding [![Build Status](https://travis-ci.org/arvosai/jarvistoolset.svg?branch=main)](https://travis-ci.org/arvosai/jarvistoolset)
 
 ## Introduction
 
-First and foremost, I want to express my gratitude to [Victor Cavalcante](https://github.com/vcavalcante/) (a great friend from Lambda3) who introduced me to the concept of Dotfiles and guided me through his tutorial. Thank you, brother. Special thanks also to [Cătălin Mariș](https://github.com/alrra) for the scripts and enhancements. The configurations that follow are based on their initial work.
+First and foremost, I want to express my gratitude to [Victor Cavalcante](https://github.com/vcavalcante/) (a great friend from Lambda3) who introduced me to the concept of dotfiles and guided me through his tutorial. Thank you, brother. Special thanks also to [Cătălin Mariș](https://github.com/alrra) for the scripts and enhancements. The configurations that follow are based on their initial work.
 
-**WARNING:** If you want to use these dotfiles and configuration scripts, first fork this repository. **DO NOT** use them without understanding what they do.
+**WARNING:** If you want to use this jarvistoolset and configuration scripts, first fork this repository. **DO NOT** use them without understanding what they do.
 
-```bash
-git clone https://github.com/YOUR_USERNAME/dotfiles.git ~/.dotfiles
+```zsh
+git clone https://github.com/YOUR_USERNAME/jarvistoolset.git ~/.jarvistoolset
 ```
 
 ## Quick Start
@@ -15,13 +15,13 @@ git clone https://github.com/YOUR_USERNAME/dotfiles.git ~/.dotfiles
 1. Fork this repository
 2. Review and modify the configuration files
 3. Run the setup script:
-```bash
+```zsh
 cd ~/.jarvistoolset
 ./start_jarvis.zsh
 ```
 
 Alternatively, you can run the setup script directly:
-```bash
+```zsh
 ~/.jarvistoolset/start_jarvis.zsh
 ```
 
@@ -73,44 +73,44 @@ The setup process will:
 
 ### 2. Backup
 
-Before proceeding, back up your existing dotfiles:
+Before proceeding, back up your existing configuration files:
 
-```bash
-mkdir -p ~/.backup/dotfiles
-cp -r ~/.* ~/.backup/dotfiles/
+```zsh
+mkdir -p ~/.backup/jarvistoolset
+cp -r ~/.* ~/.backup/jarvistoolset/ 2>/dev/null || true
 ```
 
 ### 3. Install Command Line Tools
 
-```bash
+```zsh
 xcode-select --install
 ```
 
 ### 4. Clone the Git Repository
 
-Fork [my dotfiles repository](https://github.com/evandropaes/dotfiles) to your GitHub account. This is important as you'll be making your own modifications to these files and storing them in your GitHub for future reference.
+Fork [my jarvistoolset repository](https://github.com/arvosai/jarvistoolset) to your GitHub account. This is important as you'll be making your own modifications to these files and storing them in your GitHub for future reference.
 
-Clone your forked repository to the ~/.dotfiles directory:
+Clone your forked repository to the ~/.jarvistoolset directory:
 
-```sh
-git clone https://github.com/YOUR_USERNAME/dotfiles.git ~/.dotfiles
+```zsh
+git clone https://github.com/YOUR_USERNAME/jarvistoolset.git ~/.jarvistoolset
 ```
 
 ### 5. Running start_jarvis.zsh
 
-To set up the dotfiles, execute the appropriate snippet in your terminal:
+To set up the jarvistoolset, execute the appropriate snippet in your terminal:
 
 (:warning: **DO NOT** execute "start_jarvis.zsh" if you don't fully understand what it does. Seriously, **DO NOT RUN IT** unless you've reviewed the code!)
 
 | OS | Snippet |
 |:---|:--------|
-| `macOS` | `zsh -c "$(curl -LsS https://raw.github.com/YOUR_USERNAME/jarvistoolset/master/start_jarvis.zsh)"` |
+| `macOS` | `zsh -c "$(curl -fsSL https://raw.github.com/arvosai/jarvistoolset/main/start_jarvis.zsh)"` |
 
 That's it! :sparkles:
 
 The start_jarvis.zsh script will call setup.zsh which will:
 
-* Download the dotfiles to your computer (default location: `~/.jarvistoolset`)
+* Download the jarvistoolset to your computer (default location: `~/.jarvistoolset`)
 * Create necessary directories following the [XDG Base Directory Specification](scripts/os/create_directories.zsh)
 * Create [local configuration files](scripts/os/create_local_config_files.zsh) for git and shell
 * Install applications and command-line tools for [`macOS`](scripts/os/install/macos)
@@ -122,13 +122,13 @@ The start_jarvis.zsh script will call setup.zsh which will:
 |:---------|:-------|:------------|
 | **Core** | |
 | | `start_jarvis.zsh` | Main entry script that calls setup.zsh with default arguments |
-| | `setup.zsh` | Main setup script to initialize the dotfiles |
+| | `setup.zsh` | Main setup script to initialize the jarvistoolset |
 | | `utils.zsh` | Core utility functions used by other scripts |
 | | `create_directories.zsh` | Creates XDG-compliant directory structure |
 | | `create_local_config_files.zsh` | Creates local configuration files |
 | | `create_symbolic_links.zsh` | Creates symbolic links for configuration files |
-| | `initialize_git_repository.zsh` | Initializes Git repository for the dotfiles |
-| | `update_content.zsh` | Updates dotfiles from repository |
+| | `initialize_git_repository.zsh` | Initializes Git repository for the jarvistoolset |
+| | `update_content.zsh` | Updates jarvistoolset from repository |
 | | `restart.zsh` | Safely restarts the system |
 | | `set_github_ssh_key.zsh` | Sets up SSH key for GitHub |
 | **Installation** | |
@@ -266,11 +266,11 @@ All scripts are designed to be modular and easily customizable. Here's how you c
 
 ## Maintenance
 
-Keep your dotfiles up to date with these commands:
+Keep your jarvistoolset up to date with these commands:
 
-```sh
-# Update dotfiles repository
-~/.dotfiles/scripts/os/update_content.zsh
+```zsh
+# Update jarvistoolset repository
+~/.jarvistoolset/scripts/os/update_content.zsh
 
 # Update installed packages
 brew update && brew upgrade
@@ -278,7 +278,7 @@ brew update && brew upgrade
 
 ## Directory Structure
 
-The dotfiles follow the XDG Base Directory Specification:
+The jarvistoolset follows the XDG Base Directory Specification:
 
 ```
 ~/.config/          # User configuration files
@@ -313,8 +313,44 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgments
 
-* [Victor Cavalcante](https://github.com/vcavalcante/) for introducing me to dotfiles
+* [Victor Cavalcante](https://github.com/vcavalcante/) for introducing me to jarvistoolset
 * [Cătălin Mariș](https://github.com/alrra) for the initial scripts
 * The open-source community for all the amazing tools
+
+## Zsh Configuration
+
+The jarvistoolset is optimized for Zsh, the default shell in macOS since Catalina. Here are some key Zsh features and configurations included:
+
+1. **Zsh Completion**: Enhanced tab completion for commands and arguments
+   ```zsh
+   # Example of using Zsh completion
+   git <TAB>  # Shows all available git commands
+   ```
+
+2. **Zsh Plugins**: Useful plugins are automatically installed
+   - Syntax highlighting
+   - Auto-suggestions
+   - History substring search
+
+3. **Zsh Theme**: A customized prompt with git status information
+
+4. **Zsh Aliases**: Helpful shortcuts for common commands
+   ```zsh
+   # Example aliases
+   alias g='git'
+   alias ls='ls -G'  # Colorized output
+   ```
+
+5. **Custom Functions**: Productivity-enhancing functions
+   ```zsh
+   # Example of a custom function
+   mkcd() {
+     mkdir -p "$1" && cd "$1"
+   }
+   ```
+
+To customize your Zsh configuration, edit the following files:
+- `~/.zshrc.local`: Personal Zsh configuration
+- `~/.zsh_aliases.local`: Personal aliases
 
 ## Happy Vibe Coding! :)

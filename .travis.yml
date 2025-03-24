@@ -3,29 +3,36 @@
 #
 # https://docs.travis-ci.com
 
+os:
+  - osx
+
+language: shell
+
+jobs:
+  include:
+    - os: osx
+      osx_image: xcode14.3  # macOS 13 (Ventura)
+
 before_install:
   - zsh ./travis/customize_environment.zsh
 
 install:
   - zsh ./scripts/os/setup.zsh -y
 
-language: generic
-
-matrix:
-  include:
-
-    - os: linux
-      dist: trusty
-
-    - os: osx
-      osx_image: xcode8.1
+script:
+  - zsh ./travis/main.zsh
 
 notifications:
   email:
     on_failure: always
     on_success: never
 
-script:
-  - zsh ./travis/main.zsh
+cache:
+  directories:
+    - $HOME/.cache/pip
+    - $HOME/.npm
+    - $HOME/Library/Caches/Homebrew  # macOS only
+
+arch: amd64  # Explicitly set architecture
 
 sudo: required
