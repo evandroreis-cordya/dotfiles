@@ -45,7 +45,7 @@ create_directories() {
 
     # Create directories with proper permissions
     for dir in $DIRECTORIES; do
-        if mkd "$dir"; then
+        if mkdir -p "$dir"; then
             # Set restrictive permissions for sensitive directories
             case "$dir" in
                 */.ssh|*/.gnupg)
