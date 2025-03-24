@@ -1,0 +1,52 @@
+#!/bin/zsh
+
+# Zsh options and settings
+
+# Automatically prepend `cd` to directory names
+setopt AUTO_CD
+
+# Autocorrect typos in path names when using the `cd` command
+setopt CORRECT
+
+# Check the window size after each command
+setopt CHECK_JOBS
+
+# Save all lines of a multiple-line command in the same history entry
+setopt MULTIOS
+
+# Include filenames beginning with a "." in the filename expansion
+setopt GLOB_DOTS
+
+# Use extended pattern matching features
+setopt EXTENDED_GLOB
+
+# Do not attempt to search the PATH for possible completions when
+# completion is attempted on an empty line
+setopt NO_EMPTY_CMD_COMPLETION
+
+# Match filenames in a case-insensitive fashion
+setopt NO_CASE_GLOB
+
+# Additional Zsh-specific options
+setopt AUTO_LIST
+setopt AUTO_MENU
+setopt AUTO_PARAM_SLASH
+setopt AUTO_REMOVE_SLASH
+setopt COMPLETE_IN_WORD
+setopt LIST_PACKED
+setopt LIST_ROWS_FIRST
+setopt MENU_COMPLETE
+setopt NO_BEEP
+setopt NO_LIST_BEEP
+setopt NO_MENU_COMPLETE
+setopt NO_NOMATCH
+setopt NO_RM_STAR_SILENT
+setopt NO_UNSET
+setopt PRINT_EIGHT_BIT
+setopt PUSHD_IGNORE_DUPS
+setopt PUSHD_SILENT
+setopt PUSHD_TO_HOME
+setopt RM_STAR_WAIT
+setopt SHORT_LOOPS
+setopt SUN_KEYBOARD_HACK
+setopt ZLE 
