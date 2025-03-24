@@ -1,4 +1,4 @@
-# Evandro Reis Jarvistoolset (macOS Sequoia Edition, 2025) - Complete Revamp using Vibe Coding [![Build Status](https://travis-ci.org/arvosai/jarvistoolset.svg?branch=main)](https://travis-ci.org/arvosai/jarvistoolset)
+# ARVOS.AI Jarvis Toolset (macOS Sequoia Edition, 2025) - Complete Revamp using Vibe Coding, by Evandro Reis. 
 
 ## Introduction
 
@@ -33,7 +33,6 @@ Review the code and remove anything you find unnecessary. The main files you sho
 |------|---------|
 | `start_jarvis.zsh` | Main entry script that calls setup.zsh with default arguments |
 | `setup.zsh` | Main setup script and hub for calling other scripts |
-| `.travis.yml` | CI environment configuration |
 | `create_local_config_files.zsh` | Creation of local configurations (.local) |
 
 ## System Preferences
