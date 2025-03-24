@@ -23,6 +23,8 @@ brew_install "claude" "Installing Claude Desktop" true
 
 brew_install "cursor" "Installing Cursor AI Code Editor" true
 
+brew_install "windsurf" "Installing Windsurf AI Code Editor" true
+
 brew_install "bito" "Installing Bito AI Assistant" true
 
 brew_install "codeium" "Installing Codeium" true
