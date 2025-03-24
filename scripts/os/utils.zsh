@@ -99,9 +99,9 @@ get_os() {
 
     kernelName="$(uname -s)"
 
-    if [ "$kernelName" == "Darwin" ]; then
+    if [ "$kernelName" = "Darwin" ]; then
         os="macos"
-    elif [ "$kernelName" == "Linux" ] && [ -e "/etc/lsb-release" ]; then
+    elif [ "$kernelName" = "Linux" ] && [ -e "/etc/lsb-release" ]; then
         os="ubuntu"
     else
         os="$kernelName"
@@ -116,9 +116,9 @@ get_os_version() {
 
     os="$(get_os)"
 
-    if [ "$os" == "macos" ]; then
+    if [ "$os" = "macos" ]; then
         version="$(sw_vers -productVersion)"
-    elif [ "$os" == "ubuntu" ]; then
+    elif [ "$os" = "ubuntu" ]; then
         version="$(lsb_release -d | cut -f2 | cut -d' ' -f2)"
     fi
 
@@ -129,7 +129,7 @@ is_supported_version() {
     declare -r MINIMUM_VERSION="$2"
     declare -r SUBJECT_VERSION="$1"
 
-    if [ "${SUBJECT_VERSION}" == "${MINIMUM_VERSION}" ]; then
+    if [ "${SUBJECT_VERSION}" = "${MINIMUM_VERSION}" ]; then
         return 0
     fi
 
@@ -165,7 +165,7 @@ brew_install() {
         return 1
     fi
 
-    if [ "$CMD" == "--cask" ]; then
+    if [ "$CMD" = "--cask" ]; then
         if brew list --cask "$FORMULA" &> /dev/null; then
             print_success "$FORMULA_READABLE_NAME"
         else
