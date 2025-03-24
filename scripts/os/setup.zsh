@@ -9,8 +9,8 @@ source "${SCRIPT_DIR}/utils.zsh"
 # Repository configuration
 typeset -r GITHUB_REPOSITORY="evandropaes/jarvistoolset"
 typeset -r JARVIS_ORIGIN="git@github.com:$GITHUB_REPOSITORY.git"
-typeset -r JARVIS_TARBALL_URL="https://github.com/$GITHUB_REPOSITORY/tarball/master"
-typeset -r JARVIS_UTILS_URL="https://raw.githubusercontent.com/$GITHUB_REPOSITORY/master/scripts/os/utils.zsh"
+typeset -r JARVIS_TARBALL_URL="https://github.com/$GITHUB_REPOSITORY/tarball/main"
+typeset -r JARVIS_UTILS_URL="https://raw.githubusercontent.com/$GITHUB_REPOSITORY/main/scripts/os/utils.zsh"
 
 # Default configuration
 typeset jarvisDirectory="."
@@ -84,7 +84,7 @@ download_utils() {
 
     tmpFile="$(mktemp /tmp/XXXXX)"
     download "$JARVIS_UTILS_URL" "$tmpFile" \
-        && . "$tmpFile" \
+        && source "$tmpFile" \
         && rm -rf "$tmpFile" \
         && return 0
 
@@ -103,11 +103,60 @@ verify_os() {
     fi
 }
 
+install_homebrew() {
+    if ! (( $+commands[brew] )); then
+        print_in_purple "\n • Installing Homebrew\n\n"
+        
+        # Install Homebrew using the official script
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        
+        # Add Homebrew to PATH for Apple Silicon Macs
+        if [[ "$(uname -m)" == "arm64" ]]; then
+            echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> "$HOME/.zprofile"
+            eval "$(/opt/homebrew/bin/brew shellenv)"
+        fi
+        
+        print_result $? "Homebrew"
+    fi
+    
+    return 0
+}
+
+install_figlet() {
+    if ! (( $+commands[figlet] )); then
+        print_in_purple "\n • Installing figlet for banner display\n\n"
+        
+        # Install Homebrew if not already installed
+        install_homebrew
+        
+        # Install figlet using Homebrew
+        brew install figlet
+        print_result $? "figlet"
+    fi
+    
+    return 0
+}
+
+display_banner() {
+    if (( $+commands[figlet] )); then
+        print_in_purple "$(figlet -f standard 'Jarvis Toolset')\n"
+        print_in_purple "Welcome to Jarvis Toolset, the complete Mac OS tools and apps installer for AI and Vibe Coders!\n\n"
+    else
+        print_in_purple "\n • Welcome to Jarvis Toolset, the complete Mac OS tools and apps installer for AI and Vibe Coders!\n\n"
+    fi
+}
+
 # ----------------------------------------------------------------------
 # | Main                                                                |
 # ----------------------------------------------------------------------
 
 main() {
+    # Install figlet for banner display
+    install_figlet
+    
+    # Display welcome banner
+    display_banner
+    
     # Ensure the script is run on macOS
     verify_os || exit 1
 

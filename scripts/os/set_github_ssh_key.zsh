@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env zsh
 
-cd "$(dirname "${BASH_SOURCE[0]}")" \
+cd "$(dirname "${(%):-%x}")" \
     && . "utils.sh"
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -9,53 +9,53 @@ add_ssh_configs() {
 
     printf "%s\n" \
         "Host github.com" \
-        "  IdentityFile $1" \
+        "  IdentityFile ${1}" \
         "  LogLevel ERROR" >> ~/.ssh/config
 
-    print_result $? "Adicionando configuração SSH"
+    print_result $? "Adding SSH configuration"
 
 }
 
 copy_public_ssh_key_to_clipboard () {
 
-    if cmd_exists "pbcopy"; then
+    if (( $+commands[pbcopy] )); then
 
         pbcopy < "$1"
-        print_result $? "Copiando a chave pública SSH para o clipboard"
+        print_result $? "Copying SSH public key to clipboard"
 
-    elif cmd_exists "xclip"; then
+    elif (( $+commands[xclip] )); then
 
         xclip -selection clip < "$1"
-        print_result $? "Copiando a chave pública SSH para o clipboard"
+        print_result $? "Copying SSH public key to clipboard"
 
     else
-        print_warning "Por favor, copie a chave pública SSH ($1) para o clipboard"
+        print_warning "Please, copy the SSH public key ($1) to the clipboard"
     fi
 
 }
 
 generate_ssh_keys() {
 
-    ask "Entre com seu e-mail: " && printf "\n"
+    ask "Enter your email: " && printf "\n"
     ssh-keygen -t rsa -b 4096 -C "$(get_answer)" -f "$1"
 
-    print_result $? "Gerando as chaves SSH..."
+    print_result $? "Generating SSH keys..."
 
 }
 
 open_github_ssh_page() {
 
-    declare -r GITHUB_SSH_URL="https://github.com/settings/ssh"
+    typeset -r GITHUB_SSH_URL="https://github.com/settings/ssh"
 
     # The order of the following checks matters
     # as on Ubuntu there is also a utility called `open`.
 
-    if cmd_exists "xdg-open"; then
+    if (( $+commands[xdg-open] )); then
         xdg-open "$GITHUB_SSH_URL"
-    elif cmd_exists "open"; then
+    elif (( $+commands[open] )); then
         open "$GITHUB_SSH_URL"
     else
-        print_warning "Por favor, adicione a chave SSH ao GitHub ($GITHUB_SSH_URL)"
+        print_warning "Please, add the SSH key to GitHub ($GITHUB_SSH_URL)"
     fi
 
 }
@@ -89,7 +89,7 @@ test_ssh_connection() {
     while true; do
 
         ssh -T git@github.com &> /dev/null
-        [ $? -eq 1 ] && break
+        (( $? -eq 1 )) && break
 
         sleep 5
 
@@ -101,12 +101,12 @@ test_ssh_connection() {
 
 main() {
 
-    print_in_purple "\n • Configurando as chaves SSH no GitHub\n\n"
+    print_in_purple "\n • Configuring SSH keys on GitHub\n\n"
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     if ! is_git_repository; then
-        print_error "Não há um repositório Git"
+        print_error "Not a Git repository"
         exit 1
     fi
 
@@ -114,13 +114,13 @@ main() {
 
     ssh -T git@github.com &> /dev/null
 
-    if [ $? -ne 1 ]; then
+    if (( $? -ne 1 )); then
         set_github_ssh_key
     fi
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    print_result $? "Configurando as chaves SSH no GitHub"
+    print_result $? "Configuring SSH keys on GitHub"
 
 }
 
