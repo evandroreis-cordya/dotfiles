@@ -72,16 +72,16 @@ gem_install "Sinatra" "sinatra"
 gem_install "Rack" "rack"
 gem_install "Puma" "puma"
 
-# Fix Thin gem installation with better error handling
-print_in_yellow "  [ ] Thin"
-# Install eventmachine first as it's a dependency for Thin
-gem install eventmachine --no-document &> /dev/null
-# Try different installation approaches for Thin
-gem install thin --no-document &> /dev/null || \
-gem install thin --no-document --conservative &> /dev/null || \
-gem install thin --no-document --platform=ruby &> /dev/null || \
-print_error "Failed to install Thin gem. You may need to install system dependencies."
-print_success "Thin"
+# # Fix Thin gem installation with better error handling
+# print_in_yellow "  [ ] Thin"
+# # Install eventmachine first as it's a dependency for Thin
+# gem install eventmachine --no-document &> /dev/null
+# # Try different installation approaches for Thin
+# gem install thin --no-document &> /dev/null || \
+# gem install thin --no-document --conservative &> /dev/null || \
+# gem install thin --no-document --platform=ruby &> /dev/null || \
+# print_error "Failed to install Thin gem. You may need to install system dependencies."
+# print_success "Thin"
 
 # Database Tools
 gem_install "ActiveRecord" "activerecord"
