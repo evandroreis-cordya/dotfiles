@@ -43,10 +43,9 @@ configure_homebrew() {
     brew analytics off
 
     # Add additional taps
-    brew tap homebrew/cask
+    # Note: homebrew/cask and homebrew/core are now included by default
     brew tap homebrew/cask-fonts
     brew tap homebrew/cask-versions
-    brew tap homebrew/core
     brew tap homebrew/services
 
     # Update Homebrew recipes
