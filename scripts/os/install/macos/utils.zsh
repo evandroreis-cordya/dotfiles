@@ -101,6 +101,27 @@ brew_outdated() {
 }
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# | Command Execution Functions                                        |
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+run_command() {
+    local -r CMD="$1"
+    local -r MSG="${2:-$1}"
+    
+    # Display progress indicator
+    print_in_yellow "  [ ] $MSG"
+    
+    # Execute the command
+    eval "$CMD" &> /dev/null
+    local exitCode=$?
+    
+    # Show result
+    print_result $exitCode "$MSG"
+    
+    return $exitCode
+}
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # | Python Package Functions                                           |
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -142,11 +163,14 @@ pipx_install() {
     if pipx list | grep -q "$PACKAGE"; then
         print_success "$PACKAGE_READABLE_NAME (already installed)"
     else
+        # Use direct command execution instead of the execute function
+        print_in_yellow "  [ ] $PACKAGE_READABLE_NAME"
         if [[ -n "$INSTALL_FLAGS" ]]; then
-            execute "pipx install $PACKAGE $INSTALL_FLAGS" "$PACKAGE_READABLE_NAME"
+            pipx install "$PACKAGE" $INSTALL_FLAGS &> /dev/null
         else
-            execute "pipx install $PACKAGE" "$PACKAGE_READABLE_NAME"
+            pipx install "$PACKAGE" &> /dev/null
         fi
+        print_result $? "$PACKAGE_READABLE_NAME"
     fi
 }
 
@@ -169,11 +193,14 @@ npm_install() {
     if npm list -g --depth=0 | grep -q "$PACKAGE@"; then
         print_success "$PACKAGE_READABLE_NAME (already installed)"
     else
+        # Use direct command execution instead of the execute function
+        print_in_yellow "  [ ] $PACKAGE_READABLE_NAME"
         if [[ -n "$INSTALL_FLAGS" ]]; then
-            execute "npm install -g $PACKAGE $INSTALL_FLAGS" "$PACKAGE_READABLE_NAME"
+            npm install "$PACKAGE" $INSTALL_FLAGS &> /dev/null
         else
-            execute "npm install -g $PACKAGE" "$PACKAGE_READABLE_NAME"
+            npm install -g "$PACKAGE" &> /dev/null
         fi
+        print_result $? "$PACKAGE_READABLE_NAME"
     fi
 }
 
@@ -450,7 +477,11 @@ nvm_install() {
     fi
     
     print_in_purple "\n   Installing NVM\n\n"
-    execute "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/$NVM_VERSION/install.sh | bash" "NVM"
+    
+    # Use direct command execution instead of the execute function
+    print_in_yellow "  [ ] NVM"
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/$NVM_VERSION/install.sh | bash &> /dev/null
+    print_result $? "NVM"
     
     # Add NVM to shell configuration if not already there
     if ! grep -q "NVM_DIR" "$HOME/.zshrc"; then
@@ -486,12 +517,18 @@ node_install() {
     if nvm ls | grep -q "$NODE_VERSION"; then
         print_success "Node.js $NODE_VERSION (already installed)"
     else
-        execute "nvm install $NODE_VERSION" "Node.js $NODE_VERSION"
+        # Use direct command execution instead of the execute function
+        print_in_yellow "  [ ] Node.js $NODE_VERSION"
+        nvm install "$NODE_VERSION" &> /dev/null
+        print_result $? "Node.js $NODE_VERSION"
     fi
     
     # Set as default if requested
     if [[ "$2" == "default" ]]; then
-        execute "nvm alias default $NODE_VERSION" "Setting Node.js $NODE_VERSION as default"
+        # Use direct command execution instead of the execute function
+        print_in_yellow "  [ ] Setting Node.js $NODE_VERSION as default"
+        nvm alias default "$NODE_VERSION" &> /dev/null
+        print_result $? "Setting Node.js $NODE_VERSION as default"
     fi
 }
 
@@ -522,12 +559,18 @@ pyenv_install() {
     if pyenv versions | grep -q "$PYTHON_VERSION"; then
         print_success "Python $PYTHON_VERSION (already installed)"
     else
-        execute "pyenv install $PYTHON_VERSION" "Python $PYTHON_VERSION"
+        # Use direct command execution instead of the execute function
+        print_in_yellow "  [ ] Python $PYTHON_VERSION"
+        pyenv install "$PYTHON_VERSION" &> /dev/null
+        print_result $? "Python $PYTHON_VERSION"
     fi
     
     # Set as global if requested
     if [[ "$SET_GLOBAL" == "true" ]]; then
-        execute "pyenv global $PYTHON_VERSION" "Setting Python $PYTHON_VERSION as global"
+        # Use direct command execution instead of the execute function
+        print_in_yellow "  [ ] Setting Python $PYTHON_VERSION as global"
+        pyenv global "$PYTHON_VERSION" &> /dev/null
+        print_result $? "Setting Python $PYTHON_VERSION as global"
     fi
 }
 

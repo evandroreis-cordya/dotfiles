@@ -42,11 +42,9 @@ configure_homebrew() {
     # Opt-out of Homebrew's analytics
     brew analytics off
 
-    # Add additional taps
-    # Note: homebrew/cask and homebrew/core are now included by default
-    brew tap homebrew/cask-fonts
-    brew tap homebrew/cask-versions
-    brew tap homebrew/services
+    # Note: The following taps have been deprecated as their contents
+    # have been migrated to the main Homebrew repositories
+    # No need to tap them explicitly anymore
 
     # Update Homebrew recipes
     brew update

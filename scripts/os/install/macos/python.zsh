@@ -9,7 +9,7 @@ source "${SCRIPT_DIR}/utils.zsh"
 
 print_in_purple "\n   Python Development Tools\n\n"
 
-# Install Python
+# Install Python via Homebrew
 brew_install "Python" "python"
 brew_install "Python@3.11" "python@3.11"
 
@@ -17,44 +17,34 @@ brew_install "Python@3.11" "python@3.11"
 brew_install "pyenv" "pyenv"
 brew_install "pyenv-virtualenv" "pyenv-virtualenv"
 
-# Add pyenv to shell configuration
-if ! grep -q 'eval "$(pyenv init --path)"' "$HOME/.zshrc"; then
-    cat >> "$HOME/.zshrc" << 'EOL'
-
-# pyenv configuration
-export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init --path)"
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
-EOL
+# Add pyenv to shell configuration if not already added
+if ! grep -q "pyenv init" ~/.zshrc; then
+    execute "echo 'export PYENV_ROOT=\"\$HOME/.pyenv\"' >> ~/.zshrc" "Add PYENV_ROOT to .zshrc"
+    execute "echo 'export PATH=\"\$PYENV_ROOT/bin:\$PATH\"' >> ~/.zshrc" "Add pyenv to PATH in .zshrc"
+    execute "echo 'eval \"\$(pyenv init --path)\"' >> ~/.zshrc" "Add pyenv init to .zshrc"
+    execute "echo 'eval \"\$(pyenv virtualenv-init -)\"' >> ~/.zshrc" "Add pyenv virtualenv-init to .zshrc"
 fi
 
-# Set up pyenv in the current shell session
-export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PATH"
-
-# Install Python versions using pyenv
+# Install Python versions
 print_in_purple "\n   Installing Python Versions\n\n"
-if command -v pyenv &> /dev/null; then
-    eval "$(pyenv init --path)"
-    eval "$(pyenv init -)"
-    eval "$(pyenv virtualenv-init -)"
-    
-    # Install Python versions
-    pyenv_install "3.11"
-    pyenv_install "3.12" "true"  # Set as global
-else
-    print_error "pyenv command not found. Please restart your terminal and run the script again."
-    print_in_purple "\n   Continuing with other installations...\n\n"
-fi
+
+# Install Python 3.11
+pyenv_install "Python 3.11" "3.11"
+
+# Install Python 3.12
+pyenv_install "Python 3.12" "3.12"
+
+# Set Python 3.12 as global
+print_in_yellow "  [ ] Setting Python 3.12 as global"
+pyenv global 3.12
+print_result $? "Setting Python 3.12 as global"
 
 # Install Poetry for dependency management
 poetry_install
 
 # Install pipx for isolated application installation
 brew_install "pipx" "pipx"
-execute "pipx ensurepath" "pipx path setup"
+run_command "pipx ensurepath" "pipx path setup"
 
 # Install global development tools
 print_in_purple "\n   Installing Development Tools\n\n"
@@ -90,44 +80,80 @@ pipx_install "FastAPI" "fastapi"
 pipx_install "Streamlit" "streamlit"
 pipx_install "Dash" "dash"
 
-# Data Science
-pipx_install "Jupyter" "jupyter"
-pipx_install "Pandas" "pandas"
-pipx_install "NumPy" "numpy"
-pipx_install "Matplotlib" "matplotlib"
-pipx_install "Seaborn" "seaborn"
-pipx_install "SciPy" "scipy"
-pipx_install "Scikit-learn" "scikit-learn"
+# Create a data science virtual environment
+print_in_purple "\n   Setting up Data Science Environment\n\n"
 
-# Machine Learning
-pipx_install "TensorFlow" "tensorflow"
-pipx_install "PyTorch" "torch"
-pipx_install "Keras" "keras"
-pipx_install "XGBoost" "xgboost"
-pipx_install "LightGBM" "lightgbm"
+# Create a dedicated virtual environment for data science packages
+DATASCIENCE_ENV="datascience"
+print_in_yellow "  [ ] Creating Data Science virtual environment"
+pyenv virtualenv 3.12 $DATASCIENCE_ENV 2>/dev/null || true
+print_result $? "Creating Data Science virtual environment"
+
+# Function to install packages in the data science environment
+pip_install_in_env() {
+    local -r PACKAGE_READABLE_NAME="$1"
+    local -r PACKAGE="$2"
+    
+    print_in_yellow "  [ ] $PACKAGE_READABLE_NAME"
+    PYENV_VERSION=$DATASCIENCE_ENV pip install $PACKAGE -U &>/dev/null
+    print_result $? "$PACKAGE_READABLE_NAME"
+}
+
+# Data Science packages
+pip_install_in_env "Jupyter" "jupyter"
+pip_install_in_env "Pandas" "pandas"
+pip_install_in_env "NumPy" "numpy"
+pip_install_in_env "Matplotlib" "matplotlib"
+pip_install_in_env "Seaborn" "seaborn"
+pip_install_in_env "SciPy" "scipy"
+pip_install_in_env "Scikit-learn" "scikit-learn"
+
+# Machine Learning packages
+pip_install_in_env "TensorFlow" "tensorflow"
+pip_install_in_env "PyTorch" "torch torchvision torchaudio"
+pip_install_in_env "Keras" "keras"
+pip_install_in_env "XGBoost" "xgboost"
+pip_install_in_env "LightGBM" "lightgbm"
 
 # DevOps Tools
 pipx_install "Ansible" "ansible"
 pipx_install "Fabric" "fabric"
-pipx_install "Docker Compose" "docker-compose"
+pip_install_in_env "Docker Compose" "docker-compose"
 pipx_install "AWS CLI" "awscli"
-pipx_install "Azure CLI" "azure-cli"
-pipx_install "Google Cloud SDK" "google-cloud-sdk"
+pipx_install "Azure CLI" "azure-cli" "--include-deps"
+pip_install_in_env "Google Cloud SDK" "google-cloud-sdk"
 
 # Database Tools
-pipx_install "SQLAlchemy" "sqlalchemy"
+pip_install_in_env "SQLAlchemy" "sqlalchemy"
 pipx_install "Alembic" "alembic"
-pipx_install "PyMongo" "pymongo"
-pipx_install "Redis" "redis"
+pip_install_in_env "PyMongo" "pymongo"
+pip_install_in_env "Redis" "redis"
 
 # Utility Tools
-pipx_install "Rich" "rich"
-pipx_install "Click" "click"
+pip_install_in_env "Rich" "rich"
+pip_install_in_env "Click" "click"
 pipx_install "Typer" "typer"
-pipx_install "Requests" "requests"
-pipx_install "BeautifulSoup" "beautifulsoup4"
+pip_install_in_env "Requests" "requests"
+pip_install_in_env "BeautifulSoup" "beautifulsoup4"
 pipx_install "Scrapy" "scrapy"
-pipx_install "PyYAML" "pyyaml"
-pipx_install "Pillow" "pillow"
+pip_install_in_env "PyYAML" "pyyaml"
+pip_install_in_env "Pillow" "pillow"
+
+# Create activation script for data science environment
+ACTIVATE_SCRIPT="$HOME/.jarvistoolset/scripts/activate_datascience.sh"
+print_in_yellow "  [ ] Creating activation script for Data Science environment"
+mkdir -p "$(dirname "$ACTIVATE_SCRIPT")" 2>/dev/null || true
+cat > "$ACTIVATE_SCRIPT" << EOL
+#!/bin/bash
+# Activate the Data Science Python environment
+echo "Activating Data Science Python environment..."
+eval "\$(pyenv init -)"
+eval "\$(pyenv virtualenv-init -)"
+pyenv activate $DATASCIENCE_ENV
+echo "Data Science environment activated. Run 'pyenv deactivate' to exit."
+EOL
+chmod +x "$ACTIVATE_SCRIPT"
+print_success "Created activation script: $ACTIVATE_SCRIPT"
 
 print_in_green "\n  Python development environment setup complete!\n"
+print_in_green "  To activate the Data Science environment, run: source $ACTIVATE_SCRIPT\n"

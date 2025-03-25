@@ -9,13 +9,67 @@ source "${SCRIPT_DIR}/utils.zsh"
 
 print_in_purple "\n   Node.js Development Tools\n\n"
 
-# Install Node Version Manager (nvm)
-nvm_install "v0.39.5"
+# First check if Node.js is already installed via Homebrew
+if brew list node &> /dev/null; then
+    print_success "Node.js (already installed via Homebrew)"
+    print_success "npm (already installed via Homebrew)"
+else
+    # Install Node Version Manager (nvm)
+    nvm_install "v0.39.5"
+    
+    # Ensure NVM is fully loaded in the current shell
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+    
+    # Install Node.js versions
+    node_install "lts/*" "default"  # Install latest LTS version and set as default
+    
+    # Ensure the default Node.js version is being used
+    print_in_yellow "  [ ] Activating Node.js environment"
+    nvm use default &> /dev/null
+    print_result $? "Node.js environment activation"
+    
+    # If npm is not available, try a more direct approach
+    if ! command -v npm &> /dev/null; then
+        print_in_yellow "  [ ] Setting up npm"
+        
+        # Get the path to the installed Node.js version
+        NODE_PATH=$(nvm which default 2>/dev/null)
+        if [[ -n "$NODE_PATH" ]]; then
+            # Extract the directory containing node
+            NODE_DIR=$(dirname "$NODE_PATH")
+            # Add it to the PATH
+            export PATH="$NODE_DIR:$PATH"
+            print_success "Node.js environment activated"
+        else
+            print_error "Could not find Node.js installation directory"
+        fi
+    fi
+    
+    # If npm is still not available, fall back to Homebrew
+    if ! command -v npm &> /dev/null; then
+        print_error "npm is not available via NVM. Installing Node.js directly with Homebrew as a fallback"
+        
+        # Fallback to Homebrew installation
+        brew_install "Node.js" "node"
+        
+        if ! command -v npm &> /dev/null; then
+            print_error "Failed to make npm available. Please restart your terminal and run the script again."
+            exit 1
+        else
+            print_success "npm is now available (via Homebrew)"
+        fi
+    else
+        print_success "npm is available (via NVM)"
+    fi
+fi
 
-# Install Node.js versions
-node_install "lts/*" "default"  # Install latest LTS version and set as default
-node_install "18"               # Install Node.js 18
-node_install "20"               # Install Node.js 20
+# Install Node.js 18 and 20 via NVM if it's available
+if command -v nvm &> /dev/null; then
+    node_install "18"  # Install Node.js 18
+    node_install "20"  # Install Node.js 20
+fi
 
 # Install global npm packages
 print_in_purple "\n   Installing Node.js Packages\n\n"
@@ -82,18 +136,16 @@ npm_install "Sequelize CLI" "sequelize-cli" "-g"
 npm_install "Apollo CLI" "apollo" "-g"
 npm_install "GraphQL CLI" "graphql-cli" "-g"
 
-# Linting and formatting
+# Code quality tools
 npm_install "Stylelint" "stylelint" "-g"
 npm_install "Standard JS" "standard" "-g"
 npm_install "XO" "xo" "-g"
-
-# Performance tools
 npm_install "Lighthouse" "lighthouse" "-g"
 npm_install "Pagespeed Insights" "psi" "-g"
 
 # Security tools
 npm_install "Snyk" "snyk" "-g"
-npm_install "npm audit" "npm-audit" "-g"
+npm_install "npm audit" "npm-audit-html" "-g"
 
 # Monorepo tools
 npm_install "Lerna" "lerna" "-g"

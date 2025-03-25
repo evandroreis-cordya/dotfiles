@@ -12,7 +12,7 @@ agree_with_xcode_licence() {
 
 
     sudo xcodebuild -license accept &> /dev/null
-    print_result $? "De acordo com os termos da licença do Xcode"
+    print_result $? "Agreeing to the terms of the Xcode license"
 
 }
 
@@ -32,11 +32,11 @@ install_xcode() {
 
     # Wait until `Xcode` is installed.
 
-    execute \
-        "until is_xcode_installed; do \
-            sleep 5; \
-         done" \
-        "Xcode"
+    print_in_yellow "  [ ] Xcode"
+    while ! is_xcode_installed; do
+        sleep 5
+    done
+    print_result 0 "Xcode"
 
 }
 
@@ -51,11 +51,11 @@ install_xcode_command_line_tools() {
 
     # Wait until the `Xcode Command Line Tools` are installed.
 
-    execute \
-        "until are_xcode_command_line_tools_installed; do \
-            sleep 5; \
-         done" \
-        "Xcode Command Line Tools"
+    print_in_yellow "  [ ] Xcode Command Line Tools"
+    while ! are_xcode_command_line_tools_installed; do
+        sleep 5
+    done
+    print_result 0 "Xcode Command Line Tools"
 
 }
 
@@ -70,7 +70,7 @@ set_xcode_developer_directory() {
 
 
     sudo xcode-select -switch "/Applications/Xcode.app/Contents/Developer" &> /dev/null
-    print_result $? "Apontando 'xcode-select' para o diretório de desenvolvimento correto, dentro do Xcode.app"
+    print_result $? "Pointing 'xcode-select' to the correct development directory within Xcode.app"
 
 }
 

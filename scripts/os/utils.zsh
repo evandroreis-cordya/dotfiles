@@ -55,7 +55,8 @@ execute() {
     set_trap "EXIT" "kill_all_subprocesses"
 
     # Execute commands in background
-    eval "$CMDS" \
+    # Ensure we're only executing the command, not the message
+    ( eval "$CMDS" ) \
         &> /dev/null \
         2> "$TMP_FILE" &
 
@@ -297,10 +298,14 @@ show_spinner() {
 
     # Display spinner while the commands are being executed.
     while kill -0 "$PID" &>/dev/null; do
-        frameText="  [${FRAMES:i++%NUMBER_OR_FRAMES:1}] $MSG"
+        # Fix for zsh substring syntax
+        local idx=$((i % NUMBER_OR_FRAMES))
+        local frame=${FRAMES:$idx:1}
+        frameText="  [$frame] $MSG"
 
         printf "%s" "$frameText"
         sleep 0.2
         printf "\r"
+        ((i++))
     done
 }
