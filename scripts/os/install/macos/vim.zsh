@@ -1,7 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env zsh
 
-cd "$(dirname "${BASH_SOURCE[0]}")" \
-    && . "./utils.sh"
+# Get the directory of the current script
+SCRIPT_DIR=${0:a:h} \
+    source "./utils.zsh"
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

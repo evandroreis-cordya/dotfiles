@@ -28,65 +28,80 @@ eval "$(rbenv init -)"
 
 # Install latest Ruby versions
 print_in_purple "\n   Installing Ruby Versions\n\n"
-rbenv install 3.3.0
-rbenv global 3.3.0
+rbenv_install "3.3.0" "true"
 
 # Update RubyGems and install Bundler
 print_in_purple "\n   Updating RubyGems and Installing Bundler\n\n"
-gem update --system
-gem install bundler
+execute "gem update --system" "RubyGems"
+gem_install "Bundler" "bundler"
 
 # Install global development tools
 print_in_purple "\n   Installing Development Tools\n\n"
 
 # Package Management
-gem install bundler
-gem install rake
+gem_install "Bundler" "bundler"
+gem_install "Rake" "rake"
 
 # Development Tools
-gem install solargraph          # Language server
-gem install rubocop            # Linter
-gem install ruby-debug-ide    # Debugger
-gem install debase           # Debugger
-gem install fasterer        # Performance suggestions
-gem install reek          # Code smell detector
-gem install rails        # Web framework
+gem_install "Solargraph" "solargraph"          # Language server
+gem_install "RuboCop" "rubocop"                # Linter
+gem_install "Ruby Debug IDE" "ruby-debug-ide"  # Debugger
+gem_install "Debase" "debase"                  # Debugger
+gem_install "Fasterer" "fasterer"              # Performance suggestions
+gem_install "Reek" "reek"                      # Code smell detector
+gem_install "Rails" "rails"                    # Web framework
 
 # Testing Tools
-gem install rspec
-gem install minitest
-gem install cucumber
-gem install capybara
-gem install selenium-webdriver
+gem_install "RSpec" "rspec"
+gem_install "Minitest" "minitest"
+gem_install "Cucumber" "cucumber"
+gem_install "Capybara" "capybara"
+gem_install "Selenium WebDriver" "selenium-webdriver"
 
 # Documentation Tools
-gem install yard
-gem install rdoc
+gem_install "YARD" "yard"
+gem_install "SDoc" "sdoc"
 
 # Web Development
-gem install sinatra
-gem install hanami
-gem install rack
+gem_install "Sinatra" "sinatra"
+gem_install "Rack" "rack"
+gem_install "Puma" "puma"
+gem_install "Thin" "thin"
 
 # Database Tools
-gem install pg
-gem install sqlite3
-gem install redis
+gem_install "ActiveRecord" "activerecord"
+gem_install "Sequel" "sequel"
+gem_install "PG" "pg"
+gem_install "MySQL2" "mysql2"
+gem_install "SQLite3" "sqlite3"
 
-# CLI Tools
-gem install thor
-gem install commander
-gem install tty
+# API Development
+gem_install "Grape" "grape"
+gem_install "Jbuilder" "jbuilder"
+gem_install "GraphQL" "graphql"
 
-# Optional Development Tools
-# Uncomment if needed
-# gem install pry
-# gem install byebug
-# gem install factory_bot
-# gem install faker
-# gem install vcr
-# gem install webmock
-# gem install sidekiq
+# Background Processing
+gem_install "Sidekiq" "sidekiq"
+gem_install "Resque" "resque"
+gem_install "Delayed Job" "delayed_job"
+
+# Utility Tools
+gem_install "Nokogiri" "nokogiri"
+gem_install "HTTParty" "httparty"
+gem_install "Faraday" "faraday"
+gem_install "JSON" "json"
+gem_install "YAML" "yaml"
+gem_install "Thor" "thor"
+
+# DevOps Tools
+gem_install "Capistrano" "capistrano"
+gem_install "Mina" "mina"
+gem_install "Puppet" "puppet"
+gem_install "Chef" "chef"
+
+# Security Tools
+gem_install "Brakeman" "brakeman"
+gem_install "Bundler Audit" "bundler-audit"
 
 # Configure Bundler
 bundle config --global jobs 4

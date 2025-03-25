@@ -31,44 +31,72 @@ mkdir -p "$HOME/go"/{bin,pkg,src}
 print_in_purple "\n   Installing Go Tools\n\n"
 
 # Development Tools
-go install golang.org/x/tools/gopls@latest                     # Language server
-go install golang.org/x/tools/cmd/goimports@latest            # Import manager
-go install golang.org/x/tools/cmd/godoc@latest               # Documentation
-go install golang.org/x/tools/cmd/guru@latest               # Source code navigator
-go install golang.org/x/tools/cmd/gorename@latest          # Rename symbols
-go install golang.org/x/lint/golint@latest                # Linter
-go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest  # Meta linter
+go_install "Go Language Server" "golang.org/x/tools/gopls"
+go_install "Go Imports" "golang.org/x/tools/cmd/goimports"
+go_install "Go Doc" "golang.org/x/tools/cmd/godoc"
+go_install "Go Guru" "golang.org/x/tools/cmd/guru"
+go_install "Go Rename" "golang.org/x/tools/cmd/gorename"
+go_install "Go Lint" "golang.org/x/lint/golint"
+go_install "GolangCI Lint" "github.com/golangci/golangci-lint/cmd/golangci-lint"
+
+# Testing and Debugging
+go_install "Delve Debugger" "github.com/go-delve/delve/cmd/dlv"
+go_install "Go Mock" "github.com/golang/mock/mockgen"
+go_install "Go Test" "github.com/rakyll/gotest"
+go_install "Go Test Deep" "github.com/vdemeester/k8s-pkg-credentialprovider/pkg/go-testdeep"
+go_install "Go Benchstat" "golang.org/x/perf/cmd/benchstat"
 
 # Code Generation
-go install golang.org/x/tools/cmd/stringer@latest        # String generators
-go install github.com/cweill/gotests/gotests@latest     # Test generator
-go install github.com/fatih/gomodifytags@latest        # Struct tag modifier
-
-# Debugging
-go install github.com/go-delve/delve/cmd/dlv@latest   # Debugger
-
-# Testing
-go install github.com/rakyll/gotest@latest           # Colorized test output
-go install github.com/jstemmer/go-junit-report@latest # JUnit reports
-
-# Documentation
-go install github.com/princjef/gomarkdoc/cmd/gomarkdoc@latest # Markdown docs
-
-# Database
-go install github.com/pressly/goose/v3/cmd/goose@latest      # DB migrations
+go_install "Go Generate" "golang.org/x/tools/cmd/stringer"
+go_install "Go Swagger" "github.com/go-swagger/go-swagger/cmd/swagger"
+go_install "Go Wire" "github.com/google/wire/cmd/wire"
+go_install "Go Protobuf" "github.com/golang/protobuf/protoc-gen-go"
+go_install "Go GRPC" "google.golang.org/grpc/cmd/protoc-gen-go-grpc"
 
 # Web Development
-go install github.com/cosmtrek/air@latest                    # Live reload
+go_install "Air Live Reload" "github.com/cosmtrek/air"
+go_install "Go Fiber CLI" "github.com/gofiber/cli/fiber"
+go_install "Go Buffalo" "github.com/gobuffalo/buffalo/cmd/buffalo"
 
-# Performance
-go install github.com/google/pprof@latest                   # Profiling
+# Database Tools
+go_install "Go Migrate" "github.com/golang-migrate/migrate/cmd/migrate"
+go_install "SQL Boiler" "github.com/volatiletech/sqlboiler/v4"
+go_install "SQL Boiler MySQL" "github.com/volatiletech/sqlboiler/v4/drivers/sqlboiler-mysql"
+go_install "SQL Boiler PostgreSQL" "github.com/volatiletech/sqlboiler/v4/drivers/sqlboiler-psql"
 
-# Optional Development Tools
-# Uncomment if needed
-# go install github.com/spf13/cobra-cli@latest             # CLI framework
-# go install github.com/fullstorydev/grpcurl/cmd/grpcurl@latest  # gRPC client
-# go install google.golang.org/protobuf/cmd/protoc-gen-go@latest # Protocol buffers
-# go install github.com/golang/mock/mockgen@latest        # Mock generator
+# Utility Tools
+go_install "Go Critic" "github.com/go-critic/go-critic/cmd/gocritic"
+go_install "Go Callvis" "github.com/ofabry/go-callvis"
+go_install "Go Releaser" "github.com/goreleaser/goreleaser"
+go_install "Go Licenses" "github.com/google/go-licenses"
+
+# Performance Tools
+go_install "Go Benchcmp" "golang.org/x/tools/cmd/benchcmp"
+go_install "Go Torch" "github.com/uber/go-torch"
+go_install "Go Pprof" "github.com/google/pprof"
+
+# Security Tools
+go_install "Go Sec" "github.com/securego/gosec/v2/cmd/gosec"
+go_install "Nancy" "github.com/sonatype-nexus-community/nancy"
+
+# Documentation Tools
+go_install "Go Doc Site" "github.com/shurcooL/goexec"
+go_install "Go Readme" "github.com/posener/goreadme/cmd/goreadme"
+
+# Kubernetes Development
+go_install "Kubectl" "k8s.io/kubectl"
+go_install "Kustomize" "sigs.k8s.io/kustomize/kustomize/v4"
+go_install "Helm" "helm.sh/helm/v3/cmd/helm"
+
+# Cloud Development
+go_install "Terraform" "github.com/hashicorp/terraform"
+go_install "AWS CLI" "github.com/aws/aws-cli/v2"
+go_install "GCP CLI" "cloud.google.com/go/cmd/gcp"
+
+# Containerization
+go_install "Docker Compose" "github.com/docker/compose/v2"
+go_install "Buildah" "github.com/containers/buildah/cmd/buildah"
+go_install "Podman" "github.com/containers/podman/v4/cmd/podman"
 
 # Configure Go environment
 cat > "$HOME/.golangci.yml" << 'EOL'

@@ -1,7 +1,8 @@
 #!/bin/zsh
 
-cd "$(dirname "${BASH_SOURCE[0]}")" \
-    && . "../../utils.zsh"
+# Get the directory of the current script
+SCRIPT_DIR=${0:a:h} \
+    source "../../utils.zsh"
 
 print_in_purple "\n   Generative AI Tools\n\n"
 

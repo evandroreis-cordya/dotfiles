@@ -10,77 +10,64 @@ source "${SCRIPT_DIR}/utils.zsh"
 print_in_purple "\n   Rust Development Tools\n\n"
 
 # Install Rust using rustup
-if ! command -v rustup &> /dev/null; then
-    print_in_purple "\n   Installing Rust\n\n"
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-fi
-
-# Add Rust to PATH
-if ! grep -q '$HOME/.cargo/bin' "$HOME/.zshrc"; then
-    cat >> "$HOME/.zshrc" << 'EOL'
-
-# Rust configuration
-export PATH="$HOME/.cargo/bin:$PATH"
-EOL
-fi
+rustup_install
 
 # Source cargo environment
 source "$HOME/.cargo/env"
 
 # Update Rust
-print_in_purple "\n   Updating Rust\n\n"
-rustup update
+rustup_update
 
 # Install additional toolchains
 print_in_purple "\n   Installing Rust Toolchains\n\n"
-rustup toolchain install nightly
-rustup component add rust-src
-rustup component add rust-analyzer
-rustup component add clippy
-rustup component add rustfmt
+rustup_toolchain_install "Nightly Toolchain" "nightly"
+rustup_component_add "Rust Source" "rust-src"
+rustup_component_add "Rust Analyzer" "rust-analyzer"
+rustup_component_add "Clippy" "clippy"
+rustup_component_add "Rustfmt" "rustfmt"
 
 # Install cargo extensions
 print_in_purple "\n   Installing Cargo Extensions\n\n"
 
 # Build Tools
-cargo install cargo-edit     # Add/remove dependencies
-cargo install cargo-watch   # Watch for changes
-cargo install cargo-update # Update dependencies
-cargo install cargo-audit # Security audit
+cargo_install "Cargo Edit" "cargo-edit"
+cargo_install "Cargo Watch" "cargo-watch"
+cargo_install "Cargo Expand" "cargo-expand"
+cargo_install "Cargo Update" "cargo-update"
+cargo_install "Cargo Audit" "cargo-audit"
+cargo_install "Cargo Outdated" "cargo-outdated"
+cargo_install "Cargo Bloat" "cargo-bloat"
+cargo_install "Cargo Flamegraph" "flamegraph"
 
 # Development Tools
-cargo install cargo-expand    # Show expanded macros
-cargo install cargo-modules  # Show module structure
-cargo install cargo-tree    # Dependency tree
-cargo install cargo-outdated # Find outdated dependencies
+cargo_install "Cargo Modules" "cargo-modules"
+cargo_install "Cargo Tree" "cargo-tree"
 
 # Testing Tools
-cargo install cargo-tarpaulin  # Code coverage
-cargo install cargo-nextest   # Fast test runner
-cargo install cargo-criterion # Benchmarking
+cargo_install "Cargo Tarpaulin" "cargo-tarpaulin"
+cargo_install "Cargo Nextest" "cargo-nextest"
+cargo_install "Cargo Criterion" "cargo-criterion"
 
 # Documentation
-cargo install cargo-doc
-cargo install mdbook      # Documentation generator
+cargo_install "Cargo Doc" "cargo-doc"
+cargo_install "Mdbook" "mdbook"
 
 # Debugging and Profiling
-cargo install cargo-flamegraph # Performance profiling
-cargo install cargo-profiler  # CPU profiling
+cargo_install "Cargo Profiler" "cargo-profiler"
 
 # Web Development
-cargo install trunk       # WASM bundler
-cargo install wasm-pack  # WebAssembly
+cargo_install "Trunk" "trunk"
+cargo_install "Wasm Pack" "wasm-pack"
 
 # CLI Development
-cargo install cargo-generate # Project templates
-cargo install cargo-make    # Task runner
+cargo_install "Cargo Generate" "cargo-generate"
+cargo_install "Cargo Make" "cargo-make"
 
 # Optional Development Tools
 # Uncomment if needed
-# cargo install cargo-bloat    # Binary size analysis
-# cargo install cargo-deny    # License checking
-# cargo install cargo-udeps  # Find unused dependencies
-# cargo install cargo-limit # Limit build resources
+# cargo_install "Cargo Deny" "cargo-deny"
+# cargo_install "Cargo Udeps" "cargo-udeps"
+# cargo_install "Cargo Limit" "cargo-limit"
 
 # Configure Rust
 mkdir -p "$HOME/.cargo"

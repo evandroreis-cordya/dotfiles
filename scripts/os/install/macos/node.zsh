@@ -10,95 +10,94 @@ source "${SCRIPT_DIR}/utils.zsh"
 print_in_purple "\n   Node.js Development Tools\n\n"
 
 # Install Node Version Manager (nvm)
-if [[ ! -d "$HOME/.nvm" ]]; then
-    print_in_purple "\n   Installing NVM\n\n"
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+nvm_install "v0.39.5"
 
-    # Add NVM to shell configuration
-    cat >> "$HOME/.zshrc" << 'EOL'
+# Install Node.js versions
+node_install "lts/*" "default"  # Install latest LTS version and set as default
+node_install "18"               # Install Node.js 18
+node_install "20"               # Install Node.js 20
 
-# NVM Configuration
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-EOL
-fi
+# Install global npm packages
+print_in_purple "\n   Installing Node.js Packages\n\n"
 
-# Load NVM
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+# Development tools
+npm_install "TypeScript" "typescript" "-g"
+npm_install "ts-node" "ts-node" "-g"
+npm_install "ESLint" "eslint" "-g"
+npm_install "Prettier" "prettier" "-g"
+npm_install "Nodemon" "nodemon" "-g"
 
-# Check if nvm is available
-if ! command -v nvm &> /dev/null; then
-    print_error "nvm command not found. Please restart your terminal and run the script again."
-    print_in_purple "\n   Continuing with other installations...\n\n"
-else
-    # Install latest LTS version of Node.js
-    print_in_purple "\n   Installing Node.js LTS\n\n"
-    nvm install --lts
-    nvm use --lts
+# Build tools
+npm_install "Webpack" "webpack" "-g"
+npm_install "Webpack CLI" "webpack-cli" "-g"
+npm_install "Vite" "vite" "-g"
+npm_install "Parcel" "parcel" "-g"
+npm_install "Rollup" "rollup" "-g"
 
-    # Set default Node.js version
-    nvm alias default 'lts/*'
+# Framework CLIs
+npm_install "Angular CLI" "@angular/cli" "-g"
+npm_install "Vue CLI" "@vue/cli" "-g"
+npm_install "Create React App" "create-react-app" "-g"
+npm_install "Next.js" "next" "-g"
+npm_install "Nuxt.js" "nuxt" "-g"
+npm_install "Svelte" "svelte" "-g"
+npm_install "SvelteKit" "@sveltejs/kit" "-g"
 
-    # Install global npm packages
-    print_in_purple "\n   Installing Global npm Packages\n\n"
+# Testing tools
+npm_install "Jest" "jest" "-g"
+npm_install "Mocha" "mocha" "-g"
+npm_install "Cypress" "cypress" "-g"
 
-    # Development Tools
-    npm install -g npm@latest
-    npm install -g yarn
-    npm install -g pnpm
-    npm install -g typescript
-    npm install -g ts-node
-    npm install -g nodemon
-    npm install -g pm2
+# Documentation tools
+npm_install "JSDoc" "jsdoc" "-g"
+npm_install "TypeDoc" "typedoc" "-g"
 
-    # CLI Tools
-    npm install -g npx
-    npm install -g nx
-    npm install -g @angular/cli
-    npm install -g create-react-app
-    npm install -g create-next-app
-    npm install -g @vue/cli
-    npm install -g gatsby-cli
-    npm install -g serve
+# Utility tools
+npm_install "npm-check-updates" "npm-check-updates" "-g"
+npm_install "npm-check" "npm-check" "-g"
+npm_install "npkill" "npkill" "-g"
+npm_install "serve" "serve" "-g"
+npm_install "http-server" "http-server" "-g"
+npm_install "json-server" "json-server" "-g"
+npm_install "concurrently" "concurrently" "-g"
+npm_install "PM2" "pm2" "-g"
 
-    # Testing and Linting
-    npm install -g jest
-    npm install -g eslint
-    npm install -g prettier
-    npm install -g typescript-eslint
-    npm install -g stylelint
+# Mobile development
+npm_install "React Native CLI" "react-native-cli" "-g"
+npm_install "Expo CLI" "expo-cli" "-g"
+npm_install "Capacitor" "@capacitor/cli" "-g"
+npm_install "Ionic CLI" "@ionic/cli" "-g"
 
-    # Build Tools
-    npm install -g webpack
-    npm install -g rollup
-    npm install -g vite
-    npm install -g esbuild
+# Static site generators
+npm_install "Gatsby" "gatsby-cli" "-g"
+npm_install "Hexo" "hexo-cli" "-g"
+npm_install "Gridsome" "@gridsome/cli" "-g"
 
-    # Documentation
-    npm install -g documentation
-    npm install -g typedoc
+# Database tools
+npm_install "Prisma" "prisma" "-g"
+npm_install "TypeORM" "typeorm" "-g"
+npm_install "Sequelize CLI" "sequelize-cli" "-g"
 
-    # Optional Development Tools
-    # Uncomment if needed
-    # npm install -g @nestjs/cli
-    # npm install -g firebase-tools
-    # npm install -g vercel
-    # npm install -g netlify-cli
-    # npm install -g serverless
-    # npm install -g @aws-amplify/cli
+# GraphQL tools
+npm_install "Apollo CLI" "apollo" "-g"
+npm_install "GraphQL CLI" "graphql-cli" "-g"
 
-    # Configure npm
-    npm config set init.author.name "Evandro Paes"
-    npm config set init.author.email "evandro.reis@avos.ai"
-    npm config set init.license "MIT"
+# Linting and formatting
+npm_install "Stylelint" "stylelint" "-g"
+npm_install "Standard JS" "standard" "-g"
+npm_install "XO" "xo" "-g"
 
-    # Configure yarn
-    yarn config set init-author-name "Evandro Paes"
-    yarn config set init-author-email "evandro.reis@avos.ai"
-    yarn config set init-license "MIT"
+# Performance tools
+npm_install "Lighthouse" "lighthouse" "-g"
+npm_install "Pagespeed Insights" "psi" "-g"
 
-    print_result $? "Node.js development environment"
-fi
+# Security tools
+npm_install "Snyk" "snyk" "-g"
+npm_install "npm audit" "npm-audit" "-g"
+
+# Monorepo tools
+npm_install "Lerna" "lerna" "-g"
+npm_install "Nx" "nx" "-g"
+npm_install "Turborepo" "turbo" "-g"
+
+print_in_green "\n  Node.js development environment setup complete!\n"

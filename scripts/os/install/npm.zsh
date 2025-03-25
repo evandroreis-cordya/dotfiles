@@ -1,16 +1,17 @@
-#!/bin/bash
+#!/usr/bin/env zsh
 
-cd "$(dirname "${BASH_SOURCE[0]}")" \
-    && . "../utils.sh"
+# Get the directory of the current script
+SCRIPT_DIR=${0:a:h}
+source "${SCRIPT_DIR}/../utils.zsh"
 
 USERNAME="$1"
 
 install_npm_package() {
 
     execute \
-        ". $HOME/.bash.local \
-            && npm install --global --silent $2" \
-        "$1"
+        ". $HOME/.zshrc \
+            && npm install --global $1" \
+        "$2"
 
 }
 
@@ -22,24 +23,59 @@ main() {
 
     print_in_purple "\n   npm\n\n"
 
+    # Check if Node.js is installed
+    if ! cmd_exists "node"; then
+        print_error "Node.js is required, please install it first."
+        return 1
+    fi
+
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    install_npm_package "npm (update)" "npm"
-
+    # Install packages
+    
+    install_npm_package "npm" "npm (update)"
+    install_npm_package "typescript" "TypeScript"
+    install_npm_package "eslint" "ESLint"
+    install_npm_package "prettier" "Prettier"
+    install_npm_package "serve" "Serve"
+    install_npm_package "http-server" "HTTP Server"
+    install_npm_package "nodemon" "Nodemon"
+    install_npm_package "npm-check-updates" "npm-check-updates"
+    install_npm_package "ts-node" "ts-node"
+    install_npm_package "jest" "Jest"
+    install_npm_package "create-react-app" "Create React App"
+    install_npm_package "create-next-app" "Create Next App"
+    install_npm_package "vercel" "Vercel CLI"
+    install_npm_package "netlify-cli" "Netlify CLI"
+    install_npm_package "firebase-tools" "Firebase Tools"
+    install_npm_package "aws-cdk" "AWS CDK"
+    install_npm_package "serverless" "Serverless Framework"
+    install_npm_package "@angular/cli" "Angular CLI"
+    install_npm_package "@vue/cli" "Vue CLI"
+    install_npm_package "gatsby-cli" "Gatsby CLI"
+    install_npm_package "svelte" "Svelte"
+    install_npm_package "parcel-bundler" "Parcel Bundler"
+    install_npm_package "webpack" "Webpack"
+    install_npm_package "rollup" "Rollup"
+    install_npm_package "esbuild" "esbuild"
+    install_npm_package "vite" "Vite"
+    install_npm_package "pm2" "PM2"
+    install_npm_package "forever" "Forever"
+    install_npm_package "concurrently" "Concurrently"
+    install_npm_package "lerna" "Lerna"
+    install_npm_package "nx" "Nx"
+    install_npm_package "turbo" "Turborepo"
+    install_npm_package "pnpm" "pnpm"
+    install_npm_package "yarn" "Yarn"
+    
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    printf "\n"
-
-    install_npm_package "!nstant-markdown-d" "instant-markdown-d"
-    install_npm_package "Babel" "babel-cli"
-    install_npm_package "JSHint" "jshint"
-    install_npm_package "Trash-cli" "trash-cli"
-    install_npm_package "Angular CLI" "@angular/cli"
-
-    # print_in_purple "\n   Configurando o npm\n\n"
-
-    # execute "npm add user '$USERNAME'" "Adicionando '$USERNAME'"
-
-
+    # Use npm_install function for future installations
+    
+    # Example:
+    # npm_install "TypeScript" "typescript"
+    # npm_install "ESLint" "eslint"
 
 }
+
+main "$USERNAME"
