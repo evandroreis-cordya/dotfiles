@@ -193,4 +193,10 @@ print_result $? "Go development environment"
 
 # Install additional dependencies
 brew_install "protobuf" "protobuf"  # Protocol Buffers
-brew_install "graphviz" "graphviz"  # Dependency graphs
+
+# Fix graphviz installation
+print_in_yellow "  [ ] graphviz"
+brew install graphviz &> /dev/null
+print_result $? "graphviz"
+
+print_in_green "\n  Go development environment setup complete!\n"

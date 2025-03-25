@@ -10,60 +10,103 @@ source "${SCRIPT_DIR}/utils.zsh"
 print_in_purple "\n   Kotlin Development Tools\n\n"
 
 # Install SDKMAN if not already installed
-if [[ ! -d "$HOME/.sdkman" ]]; then
-    curl -s "https://get.sdkman.io" | bash
+if [[ ! -s "$HOME/.sdkman/bin/sdkman-init.sh" ]]; then
+    print_in_purple "\n   Installing SDKMAN\n\n"
+    print_in_yellow "  [ ] SDKMAN"
+    
+    # Install SDKMAN with error handling
+    curl -s "https://get.sdkman.io" | bash &> /dev/null
+    if [[ $? -eq 0 && -s "$HOME/.sdkman/bin/sdkman-init.sh" ]]; then
+        print_success "SDKMAN"
+        # Source SDKMAN to make it available in this script
+        source "$HOME/.sdkman/bin/sdkman-init.sh"
+    else
+        print_error "SDKMAN installation failed"
+        exit 1
+    fi
+else
+    print_success "SDKMAN (already installed)"
+    # Source SDKMAN to make it available in this script
     source "$HOME/.sdkman/bin/sdkman-init.sh"
+fi
+
+# Verify sdk command is available
+if ! command -v sdk &> /dev/null; then
+    print_error "SDKMAN 'sdk' command not found. Please check your SDKMAN installation."
+    exit 1
 fi
 
 # Install Kotlin
 print_in_purple "\n   Installing Kotlin\n\n"
-sdk install kotlin
+print_in_yellow "  [ ] Kotlin"
+yes | sdk install kotlin &> /dev/null
+print_result $? "Kotlin"
 
 # Install build tools
 print_in_purple "\n   Installing Build Tools\n\n"
-sdk install gradle
-sdk install maven
+
+# Install Gradle
+print_in_yellow "  [ ] Gradle"
+yes | sdk install gradle &> /dev/null
+print_result $? "Gradle"
+
+# Install Maven
+print_in_yellow "  [ ] Maven"
+yes | sdk install maven &> /dev/null
+print_result $? "Maven"
 
 # Install IntelliJ IDEA if not already installed
-if ! command -v idea &> /dev/null; then
-    brew_install "IntelliJ IDEA" "intellij-idea" "--cask"
+print_in_purple "\n   Installing IntelliJ IDEA\n\n"
+if brew list --cask | grep -q "intellij-idea"; then
+    print_success "IntelliJ IDEA (already installed)"
+else
+    print_in_yellow "  [ ] IntelliJ IDEA"
+    brew install --cask intellij-idea &> /dev/null
+    print_result $? "IntelliJ IDEA"
 fi
 
 # Install development tools
 print_in_purple "\n   Installing Development Tools\n\n"
 
 # Install Kotlin Language Server
-brew_install "Kotlin Language Server" "kotlin-language-server"
-
-# Install additional tools via npm
-npm install -g kotlin-language-server
-
-# Configure Kotlin environment
-if ! grep -q 'KOTLIN_HOME' "$HOME/.zshrc"; then
-    cat >> "$HOME/.zshrc" << 'EOL'
-
-# Kotlin configuration
-export KOTLIN_HOME="$HOME/.sdkman/candidates/kotlin/current"
-export PATH="$KOTLIN_HOME/bin:$PATH"
-EOL
+if brew list | grep -q "kotlin-language-server"; then
+    print_success "Kotlin Language Server (already installed)"
+else
+    print_in_yellow "  [ ] Kotlin Language Server"
+    brew install kotlin-language-server &> /dev/null
+    print_result $? "Kotlin Language Server"
 fi
 
-# Add Kotlin helper functions to shell
-cat >> "$HOME/.zshrc" << 'EOL'
+# Install ktlint
+print_in_purple "\n   Installing Kotlin Linter\n\n"
 
-# Kotlin development functions
-new-kotlin() {
-    if [[ -n "$1" ]]; then
-        mkdir -p "$1"
-        cd "$1"
-        
-        # Initialize Gradle project
-        gradle init --type kotlin-application --dsl kotlin --project-name "$1" --package "com.example.$1"
-        
-        # Update build.gradle.kts with common dependencies
-        cat > build.gradle.kts << 'EOF'
+# Check if ktlint is already installed
+if command -v ktlint &> /dev/null; then
+    print_success "ktlint (already installed)"
+else
+    print_in_yellow "  [ ] ktlint"
+    brew install ktlint &> /dev/null
+    print_result $? "ktlint"
+fi
+
+# Create a Kotlin project template
+print_in_purple "\n   Creating Kotlin Project Template\n\n"
+mkdir -p "$HOME/.kotlin_project_template/src/main/kotlin/com/example/app"
+mkdir -p "$HOME/.kotlin_project_template/src/test/kotlin/com/example/app"
+
+# Create a sample Main.kt file
+cat > "$HOME/.kotlin_project_template/src/main/kotlin/com/example/app/Main.kt" << 'EOL'
+package com.example.app
+
+fun main() {
+    println("Hello, Kotlin World!")
+}
+EOL
+
+# Create a sample build.gradle.kts file
+cat > "$HOME/.kotlin_project_template/build.gradle.kts" << 'EOL'
 plugins {
-    kotlin("jvm") version "1.9.22"
+    kotlin("jvm") version "1.9.0"
     application
 }
 
@@ -75,13 +118,7 @@ repositories {
 }
 
 dependencies {
-    implementation(kotlin("stdlib"))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-    
     testImplementation(kotlin("test"))
-    testImplementation("io.kotest:kotest-runner-junit5:5.8.0")
-    testImplementation("io.kotest:kotest-assertions-core:5.8.0")
-    testImplementation("io.mockk:mockk:1.13.9")
 }
 
 tasks.test {
@@ -89,67 +126,65 @@ tasks.test {
 }
 
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(17)
 }
 
 application {
-    mainClass.set("com.example.${1}.MainKt")
+    mainClass.set("com.example.app.MainKt")
 }
-EOF
+EOL
 
-        # Create .gitignore
-        cat > .gitignore << 'EOF'
-.gradle
-build/
-!gradle/wrapper/gradle-wrapper.jar
-!**/src/main/**/build/
-!**/src/test/**/build/
+# Create a sample settings.gradle.kts file
+cat > "$HOME/.kotlin_project_template/settings.gradle.kts" << 'EOL'
+rootProject.name = "kotlin-app"
+EOL
 
-### IntelliJ IDEA ###
-.idea/
-*.iws
-*.iml
-*.ipr
-out/
-!**/src/main/**/out/
-!**/src/test/**/out/
+print_success "Kotlin project template"
 
-### VS Code ###
-.vscode/
+# Add Kotlin helper functions to shell
+if ! grep -q 'new-kotlin' "$HOME/.zshrc"; then
+    print_in_purple "\n   Adding Kotlin Helper Functions\n\n"
+    cat >> "$HOME/.zshrc" << 'EOL'
 
-### Mac OS ###
-.DS_Store
-EOF
-
-        # Initialize git repository
+# Kotlin development functions
+new-kotlin() {
+    if [[ -n "$1" ]]; then
+        mkdir -p "$1"
+        cp -r "$HOME/.kotlin_project_template/"* "$1/"
+        cd "$1"
+        # Replace placeholder with actual project name
+        sed -i '' "s/com.example/$1/g" build.gradle.kts
+        sed -i '' "s/kotlin-app/$1/g" settings.gradle.kts
+        mkdir -p "src/main/kotlin/${1//.//}"
+        mkdir -p "src/test/kotlin/${1//.//}"
+        mv src/main/kotlin/com/example/app/Main.kt "src/main/kotlin/${1//.//}/"
+        sed -i '' "s/package com.example.app/package $1/g" "src/main/kotlin/${1//.//}/Main.kt"
+        sed -i '' "s/com.example.app.MainKt/$1.MainKt/g" build.gradle.kts
+        rm -rf src/main/kotlin/com
+        rm -rf src/test/kotlin/com
         git init
+        echo "build/" > .gitignore
+        echo ".gradle/" >> .gitignore
+        echo ".idea/" >> .gitignore
+        echo "*.iml" >> .gitignore
         git add .
         git commit -m "Initial commit"
-        
-        print_in_green "\nKotlin project '$1' created successfully!\n"
+        echo "Kotlin project $1 created successfully!"
     else
-        echo "Please provide a project name"
+        echo "Please provide a project name (e.g., com.example.myapp)"
     fi
 }
 
 # Kotlin aliases
-alias kt="kotlin"
-alias kc="kotlinc"
-alias kj="kotlinc-jvm"
-alias kr="kotlin -classpath"
-
-# Gradle aliases for Kotlin
+alias ktc="kotlinc"
+alias ktrun="kotlin"
+alias ktcj="kotlinc-jvm"
 alias gw="./gradlew"
 alias gwb="./gradlew build"
-alias gwc="./gradlew clean"
 alias gwt="./gradlew test"
-alias gwi="./gradlew install"
-alias gwci="./gradlew clean install"
-alias gwcb="./gradlew clean build"
-alias gwrun="./gradlew run"
+alias gwr="./gradlew run"
 EOL
+    print_success "Kotlin helper functions"
+fi
 
-print_result $? "Kotlin development environment"
-
-# Install additional tools
-brew_install "ktlint" "ktlint"  # Kotlin linter
+print_in_green "\n  Kotlin development environment setup complete!\n"

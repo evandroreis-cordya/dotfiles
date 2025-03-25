@@ -9,62 +9,123 @@ source "${SCRIPT_DIR}/utils.zsh"
 
 print_in_purple "\n   Java Development Tools\n\n"
 
-# Install Java Version Manager
-brew_install "SDKMAN" "sdkman-cli"
+# Install SDKMAN if not already installed
+if [[ ! -s "$HOME/.sdkman/bin/sdkman-init.sh" ]]; then
+    print_in_purple "\n   Installing SDKMAN\n\n"
+    print_in_yellow "  [ ] SDKMAN"
+    
+    # Install SDKMAN with error handling
+    curl -s "https://get.sdkman.io" | bash &> /dev/null
+    if [[ $? -eq 0 && -s "$HOME/.sdkman/bin/sdkman-init.sh" ]]; then
+        print_success "SDKMAN"
+        # Source SDKMAN to make it available in this script
+        source "$HOME/.sdkman/bin/sdkman-init.sh"
+    else
+        print_error "SDKMAN installation failed"
+        exit 1
+    fi
+else
+    print_success "SDKMAN (already installed)"
+    # Source SDKMAN to make it available in this script
+    source "$HOME/.sdkman/bin/sdkman-init.sh"
+fi
 
-# Source SDKMAN
-[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+# Verify sdk command is available
+if ! command -v sdk &> /dev/null; then
+    print_error "SDKMAN 'sdk' command not found. Please check your SDKMAN installation."
+    exit 1
+fi
 
 # Install Java versions
 print_in_purple "\n   Installing Java Versions\n\n"
-sdk install java 21.0.2-tem      # Latest LTS Temurin
-sdk install java 17.0.10-tem     # Previous LTS
-sdk default java 21.0.2-tem     # Set default version
+
+# Install Java 21 (latest LTS)
+print_in_yellow "  [ ] Java 21 (Temurin)"
+yes | sdk install java 21.0.2-tem &> /dev/null
+if [[ $? -eq 0 ]]; then
+    print_success "Java 21 (Temurin)"
+    
+    # Set as default
+    print_in_yellow "  [ ] Setting Java 21 as default"
+    sdk default java 21.0.2-tem &> /dev/null
+    print_result $? "Setting Java 21 as default"
+else
+    print_error "Java 21 installation failed"
+fi
+
+# Install Java 17 (previous LTS)
+print_in_yellow "  [ ] Java 17 (Temurin)"
+yes | sdk install java 17.0.10-tem &> /dev/null
+print_result $? "Java 17 (Temurin)"
 
 # Install build tools
 print_in_purple "\n   Installing Build Tools\n\n"
-sdk install maven
-sdk install gradle
-sdk install ant
+
+# Install Maven
+print_in_yellow "  [ ] Maven"
+yes | sdk install maven &> /dev/null
+print_result $? "Maven"
+
+# Install Gradle
+print_in_yellow "  [ ] Gradle"
+yes | sdk install gradle &> /dev/null
+print_result $? "Gradle"
+
+# Install Ant
+print_in_yellow "  [ ] Ant"
+yes | sdk install ant &> /dev/null
+print_result $? "Ant"
 
 # Install Spring Boot CLI
-sdk install springboot
+print_in_purple "\n   Installing Spring Boot CLI\n\n"
+print_in_yellow "  [ ] Spring Boot CLI"
+yes | sdk install springboot &> /dev/null
+print_result $? "Spring Boot CLI"
 
 # Install additional JVM languages
 print_in_purple "\n   Installing JVM Languages\n\n"
-sdk install kotlin
-sdk install groovy
-sdk install scala
 
-# Install development tools
-brew_install "jEnv" "jenv"       # Java version manager
-brew_install "Maven" "maven"     # Build tool
-brew_install "Gradle" "gradle"  # Build tool
+# Install Kotlin
+print_in_yellow "  [ ] Kotlin"
+yes | sdk install kotlin &> /dev/null
+print_result $? "Kotlin"
 
-# Optional Development Tools
-# Uncomment if needed
-# brew_install "Ant" "ant"      # Build tool
-# brew_install "Tomcat" "tomcat" # Application server
+# Install Groovy
+print_in_yellow "  [ ] Groovy"
+yes | sdk install groovy &> /dev/null
+print_result $? "Groovy"
+
+# Install Scala
+print_in_yellow "  [ ] Scala"
+yes | sdk install scala &> /dev/null
+print_result $? "Scala"
+
+# Install additional development tools via Homebrew
+print_in_purple "\n   Installing Additional Development Tools\n\n"
+brew_install "jEnv" "jenv"                     # Java version manager
 
 # Add Java environment configuration
 if ! grep -q 'JAVA_HOME' "$HOME/.zshrc"; then
+    print_in_purple "\n   Configuring Java Environment\n\n"
     cat >> "$HOME/.zshrc" << 'EOL'
 
 # Java configuration
 export JAVA_HOME=$(/usr/libexec/java_home)
 export PATH="$JAVA_HOME/bin:$PATH"
 
-# Maven configuration
-export MAVEN_HOME="/usr/local/opt/maven"
-export PATH="$MAVEN_HOME/bin:$PATH"
+# Maven configuration (from SDKMAN)
+export M2_HOME="$HOME/.sdkman/candidates/maven/current"
+export PATH="$M2_HOME/bin:$PATH"
 
-# Gradle configuration
-export GRADLE_HOME="/usr/local/opt/gradle"
+# Gradle configuration (from SDKMAN)
+export GRADLE_HOME="$HOME/.sdkman/candidates/gradle/current"
 export PATH="$GRADLE_HOME/bin:$PATH"
 EOL
+    print_success "Java environment configuration"
 fi
 
 # Configure Maven settings
+print_in_purple "\n   Configuring Maven Settings\n\n"
 mkdir -p "$HOME/.m2"
 cat > "$HOME/.m2/settings.xml" << 'EOL'
 <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
@@ -99,56 +160,98 @@ cat > "$HOME/.m2/settings.xml" << 'EOL'
     </profiles>
 </settings>
 EOL
+print_success "Maven settings configuration"
 
-# Configure Gradle
-mkdir -p "$HOME/.gradle"
-cat > "$HOME/.gradle/gradle.properties" << 'EOL'
-org.gradle.daemon=true
-org.gradle.parallel=true
-org.gradle.configureondemand=true
-org.gradle.jvmargs=-Xmx2048m -XX:MaxPermSize=512m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8
+# Create a sample Java project template
+print_in_purple "\n   Creating Java Project Template\n\n"
+mkdir -p "$HOME/.java_project_template/src/main/java/com/example/app"
+mkdir -p "$HOME/.java_project_template/src/test/java/com/example/app"
+
+# Create a sample Main.java file
+cat > "$HOME/.java_project_template/src/main/java/com/example/app/Main.java" << 'EOL'
+package com.example.app;
+
+public class Main {
+    public static void main(String[] args) {
+        System.out.println("Hello, Java World!");
+    }
+}
 EOL
 
+# Create a sample pom.xml file
+cat > "$HOME/.java_project_template/pom.xml" << 'EOL'
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.example</groupId>
+    <artifactId>app</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.10.0</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.1.2</version>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+EOL
+print_success "Java project template"
+
 # Add Java helper functions to shell
-cat >> "$HOME/.zshrc" << 'EOL'
+if ! grep -q 'new-java' "$HOME/.zshrc"; then
+    print_in_purple "\n   Adding Java Helper Functions\n\n"
+    cat >> "$HOME/.zshrc" << 'EOL'
 
 # Java development functions
-new-spring() {
+new-java() {
     if [[ -n "$1" ]]; then
-        spring init \
-            --build=gradle \
-            --java-version=21 \
-            --dependencies=web,actuator,devtools \
-            --groupId=com.example \
-            --artifactId="$1" \
-            --name="$1" \
-            --description="Spring Boot application" \
-            --package-name="com.example.$1" \
-            --packaging=jar \
-            "$1"
+        mkdir -p "$1"
+        cp -r "$HOME/.java_project_template/"* "$1/"
         cd "$1"
+        # Replace placeholder with actual project name
+        sed -i '' "s/com.example/$1/g" pom.xml
+        sed -i '' "s/artifactId>app</artifactId>$1</g" pom.xml
+        mkdir -p "src/main/java/${1//.//}"
+        mkdir -p "src/test/java/${1//.//}"
+        mv src/main/java/com/example/app/Main.java "src/main/java/${1//.//}/"
+        sed -i '' "s/package com.example.app;/package $1;/g" "src/main/java/${1//.//}/Main.java"
+        rm -rf src/main/java/com
+        rm -rf src/test/java/com
         git init
+        echo "target/" > .gitignore
+        echo ".idea/" >> .gitignore
+        echo "*.iml" >> .gitignore
         git add .
         git commit -m "Initial commit"
+        echo "Java project $1 created successfully!"
     else
-        echo "Please provide a project name"
-    fi
-}
-
-new-maven() {
-    if [[ -n "$1" ]]; then
-        mvn archetype:generate \
-            -DgroupId=com.example \
-            -DartifactId="$1" \
-            -DarchetypeArtifactId=maven-archetype-quickstart \
-            -DarchetypeVersion=1.4 \
-            -DinteractiveMode=false
-        cd "$1"
-        git init
-        git add .
-        git commit -m "Initial commit"
-    else
-        echo "Please provide a project name"
+        echo "Please provide a project name (e.g., com.example.myapp)"
     fi
 }
 
@@ -157,24 +260,11 @@ alias mvnc="mvn clean"
 alias mvnp="mvn package"
 alias mvni="mvn install"
 alias mvnt="mvn test"
-alias mvnd="mvn deploy"
 alias mvnci="mvn clean install"
-alias mvncp="mvn clean package"
 alias mvnct="mvn clean test"
-
-# Gradle aliases
-alias gw="./gradlew"
-alias gwb="./gradlew build"
-alias gwc="./gradlew clean"
-alias gwt="./gradlew test"
-alias gwi="./gradlew install"
-alias gwci="./gradlew clean install"
-alias gwcb="./gradlew clean build"
+alias mvncp="mvn clean package"
 EOL
+    print_success "Java helper functions"
+fi
 
-print_result $? "Java development environment"
-
-# Install additional tools
-brew_install "jmeter" "jmeter"            # Performance testing
-brew_install "visualvm" "visualvm"        # Profiling
-brew_install "jd-gui" "jd-gui" "--cask"  # Java decompiler
+print_in_green "\n  Java development environment setup complete!\n"

@@ -7,188 +7,233 @@ source "${SCRIPT_DIR}/utils.zsh"
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+# Add warning function if not already defined
+print_warning() {
+    print_in_yellow "  [!] $1\n"
+}
+
 print_in_purple "\n   Swift Development Tools\n\n"
 
 # Install Xcode Command Line Tools if not already installed
 if ! xcode-select -p &> /dev/null; then
     print_in_purple "\n   Installing Xcode Command Line Tools\n\n"
+    print_in_yellow "  [ ] Xcode Command Line Tools"
     xcode-select --install
+    print_result $? "Xcode Command Line Tools"
+else
+    print_success "Xcode Command Line Tools (already installed)"
 fi
 
 # Install Swift development tools
 print_in_purple "\n   Installing Swift Tools\n\n"
 
 # Install SwiftLint
-brew_install "SwiftLint" "swiftlint"
+if brew list | grep -q "swiftlint"; then
+    print_success "SwiftLint (already installed)"
+else
+    print_in_yellow "  [ ] SwiftLint"
+    brew install swiftlint &> /dev/null
+    print_result $? "SwiftLint"
+fi
 
 # Install SwiftFormat
-brew_install "SwiftFormat" "swiftformat"
+if brew list | grep -q "swiftformat"; then
+    print_success "SwiftFormat (already installed)"
+else
+    print_in_yellow "  [ ] SwiftFormat"
+    brew install swiftformat &> /dev/null
+    print_result $? "SwiftFormat"
+fi
 
 # Install Sourcery
-brew_install "Sourcery" "sourcery"
+if brew list | grep -q "sourcery"; then
+    print_success "Sourcery (already installed)"
+else
+    print_in_yellow "  [ ] Sourcery"
+    brew install sourcery &> /dev/null
+    print_result $? "Sourcery"
+fi
 
 # Install Jazzy for documentation
-gem install jazzy
+if gem list | grep -q "^jazzy "; then
+    print_success "Jazzy (already installed)"
+else
+    print_in_yellow "  [ ] Jazzy (optional)"
+    # Try to install with gem without sudo first
+    if gem install jazzy &> /dev/null; then
+        print_success "Jazzy"
+    else
+        # Try with Homebrew
+        if brew install jazzy &> /dev/null; then
+            print_success "Jazzy"
+        else
+            print_warning "Jazzy (optional - skipped)"
+        fi
+    fi
+fi
 
 # Install development tools
 print_in_purple "\n   Installing Development Tools\n\n"
 
 # Install Carthage
-brew_install "Carthage" "carthage"
-
-# Install CocoaPods
-gem install cocoapods
-
-# Install Mint (Swift package manager)
-brew_install "Mint" "mint"
-
-# Install Fastlane
-brew_install "Fastlane" "fastlane"
-
-# Configure Swift environment
-if ! grep -q 'SWIFT_HOME' "$HOME/.zshrc"; then
-    cat >> "$HOME/.zshrc" << 'EOL'
-
-# Swift configuration
-export SWIFT_HOME="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain"
-export PATH="$SWIFT_HOME/usr/bin:$PATH"
-
-# iOS development paths
-export DEVELOPER_DIR="/Applications/Xcode.app/Contents/Developer"
-export PATH="$DEVELOPER_DIR/usr/bin:$PATH"
-EOL
+if brew list | grep -q "carthage"; then
+    print_success "Carthage (already installed)"
+else
+    print_in_yellow "  [ ] Carthage"
+    brew install carthage &> /dev/null
+    print_result $? "Carthage"
 fi
 
-# Add Swift helper functions to shell
-cat >> "$HOME/.zshrc" << 'EOL'
+# Install CocoaPods
+if gem list | grep -q "^cocoapods "; then
+    print_success "CocoaPods (already installed)"
+else
+    print_in_yellow "  [ ] CocoaPods (optional)"
+    # Try to install with gem without sudo first
+    if gem install cocoapods &> /dev/null; then
+        print_success "CocoaPods"
+    else
+        # Try with Homebrew
+        if brew install cocoapods &> /dev/null; then
+            print_success "CocoaPods"
+        else
+            print_warning "CocoaPods (optional - skipped)"
+        fi
+    fi
+fi
 
-# Swift development functions
-new-swift() {
-    if [[ -n "$1" ]]; then
-        # Create Swift package
-        swift package init --type executable --name "$1"
-        cd "$1"
-        
-        # Update Package.swift with common dependencies
-        cat > Package.swift << 'EOF'
-// swift-tools-version:5.9
+# Install Mint
+if brew list | grep -q "mint"; then
+    print_success "Mint (already installed)"
+else
+    print_in_yellow "  [ ] Mint"
+    brew install mint &> /dev/null
+    print_result $? "Mint"
+fi
+
+# Install Fastlane
+if gem list | grep -q "^fastlane "; then
+    print_success "Fastlane (already installed)"
+else
+    print_in_yellow "  [ ] Fastlane (optional)"
+    # Try to install with gem without sudo first
+    if gem install fastlane &> /dev/null; then
+        print_success "Fastlane"
+    else
+        # Try with Homebrew
+        if brew install fastlane &> /dev/null; then
+            print_success "Fastlane"
+        else
+            print_warning "Fastlane (optional - skipped)"
+        fi
+    fi
+fi
+
+# Install xcbeautify
+if brew list | grep -q "xcbeautify"; then
+    print_success "xcbeautify (already installed)"
+else
+    print_in_yellow "  [ ] xcbeautify"
+    brew install xcbeautify &> /dev/null
+    print_result $? "xcbeautify"
+fi
+
+# Install xcodegen
+if brew list | grep -q "xcodegen"; then
+    print_success "xcodegen (already installed)"
+else
+    print_in_yellow "  [ ] xcodegen"
+    brew install xcodegen &> /dev/null
+    print_result $? "xcodegen"
+fi
+
+# Configure Swift environment
+print_in_purple "\n   Configuring Swift Environment\n\n"
+
+# Create a Swift project template
+print_in_yellow "  [ ] Swift project template"
+mkdir -p "$HOME/.swift_project_template/Sources"
+mkdir -p "$HOME/.swift_project_template/Tests"
+
+# Create a sample main.swift file
+cat > "$HOME/.swift_project_template/Sources/main.swift" << 'EOL'
+import Foundation
+
+print("Hello, Swift World!")
+EOL
+
+# Create a sample Package.swift file
+cat > "$HOME/.swift_project_template/Package.swift" << 'EOL'
+// swift-tools-version:5.5
 import PackageDescription
 
 let package = Package(
-    name: "$1",
+    name: "SwiftApp",
     platforms: [
-        .macOS(.v13),
-        .iOS(.v16)
+        .macOS(.v12)
     ],
     dependencies: [
-        // Dependencies here
-        .package(url: "https://github.com/apple/swift-argument-parser", from: "1.3.0"),
-        .package(url: "https://github.com/apple/swift-log.git", from: "1.5.0"),
+        // Dependencies go here
     ],
     targets: [
         .executableTarget(
-            name: "$1",
-            dependencies: [
-                .product(name: "ArgumentParser", package: "swift-argument-parser"),
-                .product(name: "Logging", package: "swift-log"),
-            ]
-        ),
+            name: "SwiftApp",
+            dependencies: [],
+            path: "Sources"),
         .testTarget(
-            name: "${1}Tests",
-            dependencies: ["$1"]
-        ),
+            name: "SwiftAppTests",
+            dependencies: ["SwiftApp"],
+            path: "Tests"),
     ]
 )
-EOF
+EOL
 
-        # Create .gitignore
-        cat > .gitignore << 'EOF'
+# Create a .gitignore file
+cat > "$HOME/.swift_project_template/.gitignore" << 'EOL'
 .DS_Store
 /.build
 /Packages
 /*.xcodeproj
 xcuserdata/
 DerivedData/
-.swiftpm/config/registries.json
-.swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
-.netrc
-.swiftpm
-EOF
+.swiftpm/
+.package.resolved
+EOL
 
-        # Create SwiftLint configuration
-        cat > .swiftlint.yml << 'EOF'
-disabled_rules:
-  - trailing_whitespace
-  - vertical_whitespace
+print_result $? "Swift project template"
 
-opt_in_rules:
-  - empty_count
-  - missing_docs
+# Add Swift helper functions to shell
+if ! grep -q 'new-swift' "$HOME/.zshrc"; then
+    print_in_yellow "  [ ] Swift helper functions"
+    cat >> "$HOME/.zshrc" << 'EOL'
 
-included:
-  - Sources
-  - Tests
-
-excluded:
-  - Carthage
-  - Pods
-  - .build
-
-line_length:
-  warning: 120
-  error: 200
-
-function_body_length:
-  warning: 50
-  error: 100
-EOF
-
-        # Initialize git repository
+# Swift development functions
+new-swift() {
+    if [[ -n "$1" ]]; then
+        mkdir -p "$1"
+        cp -r "$HOME/.swift_project_template/"* "$1/"
+        cd "$1"
+        # Replace placeholder with actual project name
+        sed -i '' "s/SwiftApp/$1/g" Package.swift
         git init
         git add .
         git commit -m "Initial commit"
-        
-        print_in_green "\nSwift project '$1' created successfully!\n"
+        echo "Swift project $1 created successfully!"
     else
         echo "Please provide a project name"
     fi
 }
 
 # Swift aliases
-alias swb="swift build"
-alias swt="swift test"
-alias swr="swift run"
-alias swc="swift clean"
-alias swx="swift package"
-alias swi="swift package init"
-alias swu="swift package update"
-
-# Xcode aliases
-alias xcb="xcodebuild"
-alias xco="xcode-select"
-alias xcp="xcodebuild -project"
-alias xcw="xcodebuild -workspace"
-
-# CocoaPods aliases
-alias pi="pod install"
-alias pu="pod update"
-alias pc="pod clean"
-alias pout="pod outdated"
-
-# Carthage aliases
-alias cbu="carthage update"
-alias cbb="carthage build"
-alias cbx="carthage bootstrap"
-
-# Fastlane aliases
-alias fl="fastlane"
-alias flb="fastlane beta"
-alias flt="fastlane test"
-alias fld="fastlane deploy"
+alias sb="swift build"
+alias sr="swift run"
+alias st="swift test"
+alias sp="swift package"
+alias spi="swift package init"
+alias spu="swift package update"
+alias swiftc="swiftc -O"
 EOL
+    print_result $? "Swift helper functions"
+fi
 
-print_result $? "Swift development environment"
-
-# Install additional tools
-brew_install "xcbeautify" "xcbeautify"  # xcodebuild formatter
-brew_install "xcodegen" "xcodegen"      # Generate Xcode projects
+print_in_green "\n  Swift development environment setup complete!\n"

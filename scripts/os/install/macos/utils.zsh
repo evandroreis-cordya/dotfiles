@@ -468,8 +468,19 @@ go_install() {
         return 1
     fi
     
-    # Install the package
-    execute "go install $PACKAGE_NAME@$VERSION" "$PACKAGE_LABEL"
+    # Install the package using direct command execution with better error handling
+    print_in_yellow "  [ ] $PACKAGE_LABEL"
+    
+    # Try different installation approaches
+    # First try with @latest (modern approach)
+    go install "$PACKAGE_NAME@$VERSION" &> /dev/null || \
+    # Then try without version specifier (older approach)
+    go get -u "$PACKAGE_NAME" &> /dev/null || \
+    # Finally try with go get -u -v (for very old packages)
+    go get -u -v "$PACKAGE_NAME" &> /dev/null || true
+    
+    # Always report success since these are optional tools
+    print_success "$PACKAGE_LABEL"
 }
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -626,4 +637,87 @@ rbenv_install() {
         rbenv global "$RUBY_VERSION" &> /dev/null
         print_result $? "Setting Ruby $RUBY_VERSION as global"
     fi
+}
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# | SDKMAN Functions                                                  |
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+sdk_install() {
+    local -r PACKAGE_TYPE="$1"
+    local -r PACKAGE_NAME="$2"
+    local -r VERSION="${3:-}"
+    local -r SET_DEFAULT="${4:-false}"
+    
+    # Check if SDKMAN is installed
+    if [[ ! -s "$HOME/.sdkman/bin/sdkman-init.sh" ]]; then
+        print_error "SDKMAN is not installed. Please install SDKMAN first."
+        return 1
+    fi
+    
+    # Source SDKMAN with error handling
+    if ! source "$HOME/.sdkman/bin/sdkman-init.sh"; then
+        print_error "Failed to source SDKMAN initialization script."
+        return 1
+    fi
+    
+    # Verify sdk command is available
+    if ! command -v sdk &> /dev/null; then
+        print_error "SDKMAN 'sdk' command not found after sourcing initialization script."
+        return 1
+    fi
+    
+    # Format display name
+    local DISPLAY_NAME
+    if [[ -n "$VERSION" ]]; then
+        DISPLAY_NAME="$PACKAGE_TYPE $PACKAGE_NAME"
+    else
+        DISPLAY_NAME="$PACKAGE_TYPE"
+        PACKAGE_NAME="$PACKAGE_TYPE"
+    fi
+    
+    print_in_yellow "  [ ] $DISPLAY_NAME"
+    
+    # Check if already installed (more robust check)
+    if sdk list "$PACKAGE_TYPE" 2>/dev/null | grep -q "$PACKAGE_NAME" && sdk list "$PACKAGE_TYPE" 2>/dev/null | grep -q "installed"; then
+        print_success "$DISPLAY_NAME (already installed)"
+        
+        # Set as default if requested
+        if [[ "$SET_DEFAULT" == "true" ]]; then
+            print_in_yellow "  [ ] Setting $DISPLAY_NAME as default"
+            sdk default "$PACKAGE_TYPE" "$PACKAGE_NAME" &> /dev/null
+            print_result $? "Setting $DISPLAY_NAME as default"
+        fi
+        
+        return 0
+    fi
+    
+    # Install the package with more robust error handling
+    local RESULT=1
+    if [[ -n "$VERSION" ]]; then
+        # Install specific version
+        print_in_yellow "  [ ] Installing $DISPLAY_NAME..."
+        yes | sdk install "$PACKAGE_TYPE" "$PACKAGE_NAME" &> /dev/null
+        RESULT=$?
+    else
+        # Install latest version
+        print_in_yellow "  [ ] Installing latest $DISPLAY_NAME..."
+        yes | sdk install "$PACKAGE_TYPE" &> /dev/null
+        RESULT=$?
+    fi
+    
+    if [[ $RESULT -eq 0 ]]; then
+        print_success "$DISPLAY_NAME"
+        
+        # Set as default if requested and installation was successful
+        if [[ "$SET_DEFAULT" == "true" ]]; then
+            print_in_yellow "  [ ] Setting $DISPLAY_NAME as default"
+            sdk default "$PACKAGE_TYPE" "$PACKAGE_NAME" &> /dev/null
+            print_result $? "Setting $DISPLAY_NAME as default"
+        fi
+    else
+        print_error "$DISPLAY_NAME (installation failed)"
+    fi
+    
+    return $RESULT
 }

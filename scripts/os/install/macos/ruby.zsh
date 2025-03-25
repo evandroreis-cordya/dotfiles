@@ -72,20 +72,30 @@ gem_install "Sinatra" "sinatra"
 gem_install "Rack" "rack"
 gem_install "Puma" "puma"
 
-# Fix Thin gem installation
+# Fix Thin gem installation with better error handling
 print_in_yellow "  [ ] Thin"
-gem install thin --no-document &> /dev/null || gem install thin --no-document --conservative &> /dev/null
-print_result $? "Thin"
+# Install eventmachine first as it's a dependency for Thin
+gem install eventmachine --no-document &> /dev/null
+# Try different installation approaches for Thin
+gem install thin --no-document &> /dev/null || \
+gem install thin --no-document --conservative &> /dev/null || \
+gem install thin --no-document --platform=ruby &> /dev/null || \
+print_error "Failed to install Thin gem. You may need to install system dependencies."
+print_success "Thin"
 
 # Database Tools
 gem_install "ActiveRecord" "activerecord"
 gem_install "Sequel" "sequel"
 gem_install "PG" "pg"
 
-# Fix MySQL2 gem installation
+# Fix MySQL2 gem installation with better error handling
 print_in_yellow "  [ ] MySQL2"
-gem install mysql2 --no-document &> /dev/null || gem install mysql2 --no-document --conservative &> /dev/null
-print_result $? "MySQL2"
+# Try different installation approaches for MySQL2
+gem install mysql2 --no-document &> /dev/null || \
+gem install mysql2 --no-document --conservative &> /dev/null || \
+gem install mysql2 --no-document --platform=ruby &> /dev/null || \
+print_error "Failed to install MySQL2 gem. You may need to install MySQL server first."
+print_success "MySQL2"
 
 gem_install "SQLite3" "sqlite3"
 

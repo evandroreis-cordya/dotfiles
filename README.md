@@ -130,6 +130,7 @@ The start_jarvis.zsh script will call setup.zsh which will:
 | | `update_content.zsh` | Updates jarvistoolset from repository |
 | | `restart.zsh` | Safely restarts the system |
 | | `set_github_ssh_key.zsh` | Sets up SSH key for GitHub |
+| | `activate_datascience.sh` | Activates the Python data science environment with all installed packages |
 | **Installation** | |
 | | `install/main.zsh` | Main installation orchestration script |
 | | `install/macos/main.zsh` | Main macOS installation script |
@@ -159,7 +160,7 @@ The start_jarvis.zsh script will call setup.zsh which will:
 | **Development** | |
 | | `install/macos/node.zsh` | Sets up Node.js development environment |
 | | `install/macos/php.zsh` | Configures PHP development environment |
-| | `install/macos/python.zsh` | Sets up Python development environment |
+| | `install/macos/python.zsh` | Sets up Python development environment with data science packages |
 | | `install/macos/ruby.zsh` | Configures Ruby development environment |
 | | `install/macos/go.zsh` | Sets up Go development environment |
 | | `install/macos/java.zsh` | Configures Java development environment |
@@ -351,5 +352,35 @@ The jarvistoolset is optimized for Zsh, the default shell in macOS since Catalin
 To customize your Zsh configuration, edit the following files:
 - `~/.zshrc.local`: Personal Zsh configuration
 - `~/.zsh_aliases.local`: Personal aliases
+
+## Features
+
+### 1. Development Environment
+
+The jarvistoolset sets up a complete development environment with:
+
+1. **Multiple Programming Languages**:
+   - Python (with data science packages in a dedicated virtual environment)
+   - Node.js (with NVM for version management)
+   - Ruby (with RVM for version management)
+   - Go
+   - Java
+   - Kotlin
+   - Rust
+   - Swift
+
+2. **Data Science Environment**:
+   - A dedicated Python virtual environment with:
+     - Jupyter, Pandas, NumPy, Matplotlib, Seaborn
+     - SciPy, Scikit-learn, TensorFlow, PyTorch
+     - And other essential data science libraries
+   - Activation script: `source ~/.jarvistoolset/scripts/activate_datascience.sh`
+
+3. **Development Tools**:
+   - Git with enhanced configuration
+   - Docker and Docker Compose
+   - Database tools (PostgreSQL, MongoDB, Redis)
+   - Visual Studio Code with extensions
+   - JetBrains IDEs
 
 ## Happy Vibe Coding! :)
