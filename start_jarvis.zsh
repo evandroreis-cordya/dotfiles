@@ -18,13 +18,5 @@ if [[ ! -f "$SETUP_SCRIPT" ]]; then
     exit 1
 fi
 
-# Display information about what's happening
-echo "Starting Jarvis Toolset with the following configuration:"
-echo "Hostname: $HOSTNAME"
-echo "Username: $USERNAME"
-echo "Email: $EMAIL"
-echo "Directory: $DIRECTORY"
-echo ""
-
 # Call the setup script with the arguments
 "$SETUP_SCRIPT" "$HOSTNAME" "$USERNAME" "$EMAIL" "$DIRECTORY"

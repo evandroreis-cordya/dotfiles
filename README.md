@@ -1,4 +1,12 @@
-# ARVOS.AI Jarvis Toolset (macOS Sequoia Edition, 2025) - Complete Revamp using Vibe Coding, by Evandro Reis. 
+
+          __                   _       _____            _          _
+          \ \  __ _ _ ____   _(_)___  /__   \___   ___ | |___  ___| |_
+           \ \/ _` | '__\ \ / / / __|   / /\/ _ \ / _ \| / __|/ _ \ __|
+        /\_/ / (_| | |   \ V /| \__ \  / / | (_) | (_) | \__ \  __/ |_
+        \___/ \__,_|_|    \_/ |_|___/  \/   \___/ \___/|_|___/\___|\__|
+
+Welcome to ARVOS.AI Jarvis Toolset 25H1 Edition, the complete Mac OS tools and apps installer for AI and Vibe Coders!
+Copyright (c) 2025 ARVOS.AI. All rights reserved.
 
 ## Introduction
 

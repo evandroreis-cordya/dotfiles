@@ -101,9 +101,39 @@ install_figlet() {
     return 0
 }
 
+install_git() {
+    if ! (( $+commands[git] )); then
+        print_in_purple "\n • Installing Git\n\n"
+        
+        # Install Homebrew if not already installed
+        install_homebrew
+        
+        # Install Git using Homebrew
+        brew install git
+        print_result $? "Git"
+        
+        # Make Git available in the current shell session
+        if [[ "$(uname -m)" = "arm64" ]]; then
+            export PATH="/opt/homebrew/bin:$PATH"
+        else
+            export PATH="/usr/local/bin:$PATH"
+        fi
+        
+        # Verify Git is now available
+        if (( $+commands[git] )); then
+            print_success "Git is now available"
+        else
+            print_error "Git installation failed or Git is not in PATH"
+            exit 1
+        fi
+    fi
+    
+    return 0
+}
+
 display_banner() {
     if (( $+commands[figlet] )); then
-        print_in_yellow "$(figlet -f roman 'Jarvis Toolset')\n"
+        print_in_yellow "$(figlet -f ogre -c 'Jarvis Toolset')\n"
         print_in_yellow "Welcome to ARVOS.AI Jarvis Toolset 25H1 Edition, the complete Mac OS tools and apps installer for AI and Vibe Coders!\n"
         print_in_yellow "Copyright (c) 2025 ARVOS.AI. All rights reserved.\n"
     else
@@ -122,15 +152,21 @@ main() {
     
     # Display welcome banner
     display_banner
+
+    # Display information about what's happening
+    print_in_green "\n • Starting Jarvis Toolset with the following configuration:\n"
+    print_in_green "---------------------------------------------------------------\n"
+    print_in_green "Hostname: $HOSTNAME\n"
+    print_in_green "Username : $USERNAME\n"
+    print_in_green "Email    : $EMAIL\n"
+    print_in_green "Directory: $DIRECTORY\n"
+    print_in_green "---------------------------------------------------------------\n"
     
     # Ensure the script is run on macOS
     verify_os || exit 1
 
-    # Ensure we have necessary commands
-    if ! (( $+commands[git] )); then
-        printf "Git is not installed. Please install it first.\n"
-        exit 1
-    fi
+    # Install Git if not already installed
+    install_git
 
     # Create directories
     source "${SCRIPT_DIR}/create_directories.zsh"

@@ -41,11 +41,12 @@ create_directories() {
         "$HOME/.config/zsh"    # Zsh configuration
     )
 
-    print_in_purple "\n   Creating directories\n\n"
+    print_in_purple "\n • Creating directories\n\n"
 
     # Create directories with proper permissions
     for dir in $DIRECTORIES; do
         if mkdir -p "$dir"; then
+            print_success "Created directory: $dir\"
             # Set restrictive permissions for sensitive directories
             case "$dir" in
                 */.ssh|*/.gnupg)
@@ -62,7 +63,7 @@ create_directories() {
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 main() {
-    print_in_purple "\n • Creating directories\n\n"
+
     create_directories
 }
 
