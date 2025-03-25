@@ -4,9 +4,10 @@ cd "$(dirname "${BASH_SOURCE[0]}")" \
     && . "../utils.sh"
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-declare -r HOSTNAME="$1"
-declare -r USERNAME="$2"
-declare -r EMAIL="$3"
+# Default values
+HOSTNAME="$1"
+USERNAME="$2"
+EMAIL="$3"
 
 print_in_purple "\n >> Preferências...\n"
 

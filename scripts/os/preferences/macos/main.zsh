@@ -4,9 +4,10 @@
 SCRIPT_DIR=${0:a:h}
 source "${SCRIPT_DIR}/../../utils.zsh"
 
-declare -r HOSTNAME="$1"
-declare -r USERNAME="$2"
-declare -r EMAIL="$3"
+# Default values
+HOSTNAME="$1"
+USERNAME="$2"
+EMAIL="$3"
 
 print_in_yellow "\n\n"
 print_in_yellow "   ------------------------------------------------------\n"

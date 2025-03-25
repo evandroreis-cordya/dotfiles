@@ -4,7 +4,7 @@
 SCRIPT_DIR=${0:a:h}
 source "${SCRIPT_DIR}/utils.zsh"
 
-typeset -r DIRECTORY="$4"
+DIRECTORY="$4"
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

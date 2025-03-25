@@ -3,7 +3,7 @@
 cd "$(dirname "${BASH_SOURCE[0]}")" \
     && . "../utils.sh"
 
-declare -r USERNAME="$1"
+USERNAME="$1"
 
 install_npm_package() {
 
@@ -43,4 +43,3 @@ main() {
 
 
 }
-

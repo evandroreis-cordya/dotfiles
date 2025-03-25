@@ -9,18 +9,15 @@ source "${SCRIPT_DIR}/utils.zsh"
 # Repository configuration
 typeset -r GITHUB_REPOSITORY="evandropaes/jarvistoolset"
 typeset -r JARVIS_ORIGIN="git@github.com:$GITHUB_REPOSITORY.git"
-typeset -r JARVIS_TARBALL_URL="https://github.com/$GITHUB_REPOSITORY/tarball/main"
-typeset -r JARVIS_UTILS_URL="https://raw.githubusercontent.com/$GITHUB_REPOSITORY/main/scripts/os/utils.zsh"
 
 # Default configuration
-typeset jarvisDirectory="."
 typeset skipQuestions=false
 
 # Default values for user information
-typeset -r HOSTNAME=${1:-$(hostname)}
-typeset -r USERNAME=${2:-$(whoami)}
-typeset -r EMAIL=${3:-"evandro.reis@arvos.ai"}
-typeset -r DIRECTORY=${4:-"$HOME"}
+HOSTNAME=${1:-$(hostname)}
+USERNAME=${2:-$(whoami)}
+EMAIL=${3:-"evandro.reis@arvos.ai"}
+DIRECTORY=${4:-"$HOME"}
 
 # ----------------------------------------------------------------------
 # | Helper Functions                                                     |
@@ -46,39 +43,6 @@ download() {
     return 1
 }
 
-download_jarvis() {
-    local tmpFile=""
-
-    print_in_purple "\n • Downloading jarvistoolset\n\n"
-
-    tmpFile="$(mktemp /tmp/XXXXX)"
-    download "$JARVIS_TARBALL_URL" "$tmpFile"
-    print_result $? "Download jarvistoolset archive" "true"
-    
-    if ! $skipQuestions; then
-        ask_for_confirmation "Do you want to store the jarvistoolset in '$jarvisDirectory'?"
-        if ! answer_is_yes; then
-            jarvisDirectory=""
-            while [[ ! -n "$jarvisDirectory" ]]; do
-                ask "Please specify another location for the jarvistoolset (path): "
-                jarvisDirectory="$(eval echo $REPLY)"
-            done
-        fi
-    fi
-
-    # Create directory if it doesn't exist
-    mkdir -p "$jarvisDirectory"
-    print_result $? "Create directory" "true"
-
-    # Extract archive to the jarvistoolset directory
-    extract "$tmpFile" "$jarvisDirectory"
-    print_result $? "Extract archive" "true"
-
-    # Remove temporary file
-    rm -rf "$tmpFile"
-    print_result $? "Remove temporary file" "true"
-}
-
 download_utils() {
     local tmpFile=""
 
@@ -95,7 +59,7 @@ verify_os() {
     local os_name=""
     os_name="$(get_os)"
 
-    if [[ "$os_name" == "macos" ]]; then
+    if [[ "$os_name" = "macos" ]]; then
         return 0
     else
         printf "Sorry, this script is intended only for macOS.\n"
@@ -111,7 +75,7 @@ install_homebrew() {
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
         
         # Add Homebrew to PATH for Apple Silicon Macs
-        if [[ "$(uname -m)" == "arm64" ]]; then
+        if [[ "$(uname -m)" = "arm64" ]]; then
             echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> "$HOME/.zprofile"
             eval "$(/opt/homebrew/bin/brew shellenv)"
         fi
@@ -139,10 +103,10 @@ install_figlet() {
 
 display_banner() {
     if (( $+commands[figlet] )); then
-        print_in_purple "$(figlet -f standard 'Jarvis Toolset')\n"
-        print_in_purple "Welcome to Jarvis Toolset, the complete Mac OS tools and apps installer for AI and Vibe Coders!\n\n"
+        print_in_purple "$(figlet -f standard 'ARVOS.AI Jarvis Toolset')\n"
+        print_in_purple "Welcome to ARVOS.AI Jarvis Toolset, the complete Mac OS tools and apps installer for AI and Vibe Coders!\n\n"
     else
-        print_in_purple "\n • Welcome to Jarvis Toolset, the complete Mac OS tools and apps installer for AI and Vibe Coders!\n\n"
+        print_in_purple "\n • Welcome to ARVOS.AI Jarvis Toolset, the complete Mac OS tools and apps installer for AI and Vibe Coders!\n\n"
     fi
 }
 
@@ -165,8 +129,6 @@ main() {
         printf "Git is not installed. Please install it first.\n"
         exit 1
     fi
-
-    download_jarvis
 
     # Create directories
     source "${SCRIPT_DIR}/create_directories.zsh"

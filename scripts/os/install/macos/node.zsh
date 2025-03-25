@@ -22,76 +22,83 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 EOL
-
-    # Load NVM
-    export NVM_DIR="$HOME/.nvm"
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 fi
 
-# Install latest LTS version of Node.js
-print_in_purple "\n   Installing Node.js LTS\n\n"
-nvm install --lts
-nvm use --lts
+# Load NVM
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-# Set default Node.js version
-nvm alias default 'lts/*'
+# Check if nvm is available
+if ! command -v nvm &> /dev/null; then
+    print_error "nvm command not found. Please restart your terminal and run the script again."
+    print_in_purple "\n   Continuing with other installations...\n\n"
+else
+    # Install latest LTS version of Node.js
+    print_in_purple "\n   Installing Node.js LTS\n\n"
+    nvm install --lts
+    nvm use --lts
 
-# Install global npm packages
-print_in_purple "\n   Installing Global npm Packages\n\n"
+    # Set default Node.js version
+    nvm alias default 'lts/*'
 
-# Development Tools
-npm install -g npm@latest
-npm install -g yarn
-npm install -g pnpm
-npm install -g typescript
-npm install -g ts-node
-npm install -g nodemon
-npm install -g pm2
+    # Install global npm packages
+    print_in_purple "\n   Installing Global npm Packages\n\n"
 
-# CLI Tools
-npm install -g npx
-npm install -g nx
-npm install -g @angular/cli
-npm install -g create-react-app
-npm install -g create-next-app
-npm install -g @vue/cli
-npm install -g gatsby-cli
-npm install -g serve
+    # Development Tools
+    npm install -g npm@latest
+    npm install -g yarn
+    npm install -g pnpm
+    npm install -g typescript
+    npm install -g ts-node
+    npm install -g nodemon
+    npm install -g pm2
 
-# Testing and Linting
-npm install -g jest
-npm install -g eslint
-npm install -g prettier
-npm install -g typescript-eslint
-npm install -g stylelint
+    # CLI Tools
+    npm install -g npx
+    npm install -g nx
+    npm install -g @angular/cli
+    npm install -g create-react-app
+    npm install -g create-next-app
+    npm install -g @vue/cli
+    npm install -g gatsby-cli
+    npm install -g serve
 
-# Build Tools
-npm install -g webpack
-npm install -g rollup
-npm install -g vite
-npm install -g esbuild
+    # Testing and Linting
+    npm install -g jest
+    npm install -g eslint
+    npm install -g prettier
+    npm install -g typescript-eslint
+    npm install -g stylelint
 
-# Documentation
-npm install -g documentation
-npm install -g typedoc
+    # Build Tools
+    npm install -g webpack
+    npm install -g rollup
+    npm install -g vite
+    npm install -g esbuild
 
-# Optional Development Tools
-# Uncomment if needed
-# npm install -g @nestjs/cli
-# npm install -g firebase-tools
-# npm install -g vercel
-# npm install -g netlify-cli
-# npm install -g serverless
-# npm install -g @aws-amplify/cli
+    # Documentation
+    npm install -g documentation
+    npm install -g typedoc
 
-# Configure npm
-npm config set init.author.name "Evandro Paes"
-npm config set init.author.email "evandro.reis@avos.ai"
-npm config set init.license "MIT"
+    # Optional Development Tools
+    # Uncomment if needed
+    # npm install -g @nestjs/cli
+    # npm install -g firebase-tools
+    # npm install -g vercel
+    # npm install -g netlify-cli
+    # npm install -g serverless
+    # npm install -g @aws-amplify/cli
 
-# Configure yarn
-yarn config set init-author-name "Evandro Paes"
-yarn config set init-author-email "evandro.reis@avos.ai"
-yarn config set init-license "MIT"
+    # Configure npm
+    npm config set init.author.name "Evandro Paes"
+    npm config set init.author.email "evandro.reis@avos.ai"
+    npm config set init.license "MIT"
 
-print_result $? "Node.js development environment"
+    # Configure yarn
+    yarn config set init-author-name "Evandro Paes"
+    yarn config set init-author-email "evandro.reis@avos.ai"
+    yarn config set init-license "MIT"
+
+    print_result $? "Node.js development environment"
+fi

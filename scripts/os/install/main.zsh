@@ -7,10 +7,10 @@ source "${SCRIPT_DIR}/../utils.zsh"
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # Default values
-typeset -r HOSTNAME=${1:-$(hostname)}
-typeset -r USERNAME=${2:-$(whoami)}
-typeset -r EMAIL=${3:-"evandro.reis@avos.ai"}
-typeset -r DIRECTORY=${4:-"$HOME"}
+HOSTNAME=${1:-$(hostname)}
+USERNAME=${2:-$(whoami)}
+EMAIL=${3:-"evandro.reis@avos.ai"}
+DIRECTORY=${4:-"$HOME"}
 
 print_in_purple "\n • Starting installation...\n\n"
 
