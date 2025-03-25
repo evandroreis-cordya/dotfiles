@@ -103,12 +103,12 @@ install_figlet() {
 
 display_banner() {
     if (( $+commands[figlet] )); then
-        print_in_purple "$(figlet -f roman 'Jarvis Toolset')\n"
-        print_in_purple "Welcome to ARVOS.AI Jarvis Toolset 25H1 Edition, the complete Mac OS tools and apps installer for AI and Vibe Coders!\n"
-        print_in_purple "Copyright (c) 2025 ARVOS.AI. All rights reserved.\n"
+        print_in_yellow "$(figlet -f roman 'Jarvis Toolset')\n"
+        print_in_yellow "Welcome to ARVOS.AI Jarvis Toolset 25H1 Edition, the complete Mac OS tools and apps installer for AI and Vibe Coders!\n"
+        print_in_yellow "Copyright (c) 2025 ARVOS.AI. All rights reserved.\n"
     else
-        print_in_purple "\n • Welcome to ARVOS.AI Jarvis Toolset 25H1 Edition, the complete Mac OS tools and apps installer for AI and Vibe Coders!\n"
-        print_in_purple "Copyright (c) 2025 ARVOS.AI. All rights reserved.\n"
+        print_in_yellow "\n • Welcome to ARVOS.AI Jarvis Toolset 25H1 Edition, the complete Mac OS tools and apps installer for AI and Vibe Coders!\n"
+        print_in_yellow "Copyright (c) 2025 ARVOS.AI. All rights reserved.\n"
     fi
 }
 
