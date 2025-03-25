@@ -269,11 +269,14 @@ gem_install() {
     if gem list | grep -q "^$PACKAGE_NAME "; then
         print_success "$PACKAGE_LABEL (already installed)"
     else
+        # Use direct command execution instead of the execute function
+        print_in_yellow "  [ ] $PACKAGE_LABEL"
         if [[ -n "$EXTRA_ARGS" ]]; then
-            execute "gem install $PACKAGE_NAME $EXTRA_ARGS" "$PACKAGE_LABEL"
+            gem install $PACKAGE_NAME $EXTRA_ARGS &> /dev/null
         else
-            execute "gem install $PACKAGE_NAME" "$PACKAGE_LABEL"
+            gem install $PACKAGE_NAME &> /dev/null
         fi
+        print_result $? "$PACKAGE_LABEL"
     fi
 }
 
@@ -294,12 +297,18 @@ rbenv_install() {
     if rbenv versions | grep -q "$RUBY_VERSION"; then
         print_success "Ruby $RUBY_VERSION (already installed)"
     else
-        execute "rbenv install $RUBY_VERSION" "Ruby $RUBY_VERSION"
+        # Use direct command execution instead of the execute function
+        print_in_yellow "  [ ] Ruby $RUBY_VERSION"
+        rbenv install "$RUBY_VERSION" &> /dev/null
+        print_result $? "Ruby $RUBY_VERSION"
     fi
     
     # Set as global if requested
     if [[ "$SET_GLOBAL" == "true" ]]; then
-        execute "rbenv global $RUBY_VERSION" "Setting Ruby $RUBY_VERSION as global"
+        # Use direct command execution instead of the execute function
+        print_in_yellow "  [ ] Setting Ruby $RUBY_VERSION as global"
+        rbenv global "$RUBY_VERSION" &> /dev/null
+        print_result $? "Setting Ruby $RUBY_VERSION as global"
     fi
 }
 
@@ -604,11 +613,17 @@ rbenv_install() {
     if rbenv versions | grep -q "$RUBY_VERSION"; then
         print_success "Ruby $RUBY_VERSION (already installed)"
     else
-        execute "rbenv install $RUBY_VERSION" "Ruby $RUBY_VERSION"
+        # Use direct command execution instead of the execute function
+        print_in_yellow "  [ ] Ruby $RUBY_VERSION"
+        rbenv install "$RUBY_VERSION" &> /dev/null
+        print_result $? "Ruby $RUBY_VERSION"
     fi
     
     # Set as global if requested
     if [[ "$SET_GLOBAL" == "true" ]]; then
-        execute "rbenv global $RUBY_VERSION" "Setting Ruby $RUBY_VERSION as global"
+        # Use direct command execution instead of the execute function
+        print_in_yellow "  [ ] Setting Ruby $RUBY_VERSION as global"
+        rbenv global "$RUBY_VERSION" &> /dev/null
+        print_result $? "Setting Ruby $RUBY_VERSION as global"
     fi
 }

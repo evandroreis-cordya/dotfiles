@@ -32,7 +32,12 @@ rbenv_install "3.3.0" "true"
 
 # Update RubyGems and install Bundler
 print_in_purple "\n   Updating RubyGems and Installing Bundler\n\n"
-execute "gem update --system" "RubyGems"
+
+# Use direct command execution instead of the execute function
+print_in_yellow "  [ ] RubyGems"
+gem update --system &> /dev/null
+print_result $? "RubyGems"
+
 gem_install "Bundler" "bundler"
 
 # Install global development tools
@@ -66,13 +71,22 @@ gem_install "SDoc" "sdoc"
 gem_install "Sinatra" "sinatra"
 gem_install "Rack" "rack"
 gem_install "Puma" "puma"
-gem_install "Thin" "thin"
+
+# Fix Thin gem installation
+print_in_yellow "  [ ] Thin"
+gem install thin --no-document &> /dev/null || gem install thin --no-document --conservative &> /dev/null
+print_result $? "Thin"
 
 # Database Tools
 gem_install "ActiveRecord" "activerecord"
 gem_install "Sequel" "sequel"
 gem_install "PG" "pg"
-gem_install "MySQL2" "mysql2"
+
+# Fix MySQL2 gem installation
+print_in_yellow "  [ ] MySQL2"
+gem install mysql2 --no-document &> /dev/null || gem install mysql2 --no-document --conservative &> /dev/null
+print_result $? "MySQL2"
+
 gem_install "SQLite3" "sqlite3"
 
 # API Development
@@ -94,14 +108,30 @@ gem_install "YAML" "yaml"
 gem_install "Thor" "thor"
 
 # DevOps Tools
-gem_install "Capistrano" "capistrano"
-gem_install "Mina" "mina"
-gem_install "Puppet" "puppet"
-gem_install "Chef" "chef"
+print_in_yellow "  [ ] Capistrano"
+gem install capistrano &> /dev/null
+print_result $? "Capistrano"
+
+print_in_yellow "  [ ] Mina"
+gem install mina &> /dev/null
+print_result $? "Mina"
+
+print_in_yellow "  [ ] Puppet"
+gem install puppet &> /dev/null
+print_result $? "Puppet"
+
+print_in_yellow "  [ ] Chef"
+gem install chef &> /dev/null
+print_result $? "Chef"
 
 # Security Tools
-gem_install "Brakeman" "brakeman"
-gem_install "Bundler Audit" "bundler-audit"
+print_in_yellow "  [ ] Brakeman"
+gem install brakeman &> /dev/null
+print_result $? "Brakeman"
+
+print_in_yellow "  [ ] Bundler Audit"
+gem install bundler-audit &> /dev/null
+print_result $? "Bundler Audit"
 
 # Configure Bundler
 bundle config --global jobs 4

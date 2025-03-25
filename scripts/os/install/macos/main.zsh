@@ -46,4 +46,13 @@ source "${SCRIPT_DIR}/web_font_tools.zsh"
 source "${SCRIPT_DIR}/mas.zsh"
 source "${SCRIPT_DIR}/cleanup.zsh"
 
+# Activate the Data Science environment if the activation script exists
+ACTIVATE_SCRIPT="$HOME/.jarvistoolset/scripts/activate_datascience.sh"
+if [[ -f "$ACTIVATE_SCRIPT" ]]; then
+    print_in_purple "\n • Activating Data Science Environment\n\n"
+    print_in_yellow "  To use the Data Science environment with all installed packages, run:\n"
+    print_in_green "  source $ACTIVATE_SCRIPT\n"
+    print_in_yellow "  This will activate the Python virtual environment with Jupyter, Pandas, TensorFlow, and other data science packages.\n"
+fi
+
 print_in_purple "\n • macOS setup completed!\n\n"
