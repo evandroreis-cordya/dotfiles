@@ -10,44 +10,124 @@ source "${SCRIPT_DIR}/utils.zsh"
 print_in_purple "\n   GPG Tools\n\n"
 
 # Core GPG Tools
-brew_install "GPG" "gnupg"
-brew_install "Pinentry Mac" "pinentry-mac"
-brew_install "GPG Suite" "gpg-suite" "--cask"
+if brew list | grep -q "gnupg"; then
+    print_success "GPG (already installed)"
+else
+    print_in_yellow "  [ ] GPG"
+    brew install gnupg &> /dev/null
+    print_result $? "GPG"
+fi
+
+if brew list | grep -q "pinentry-mac"; then
+    print_success "Pinentry Mac (already installed)"
+else
+    print_in_yellow "  [ ] Pinentry Mac"
+    brew install pinentry-mac &> /dev/null
+    print_result $? "Pinentry Mac"
+fi
+
+if brew list --cask | grep -q "gpg-suite"; then
+    print_success "GPG Suite (already installed)"
+else
+    print_in_yellow "  [ ] GPG Suite"
+    brew install --cask gpg-suite &> /dev/null
+    print_result $? "GPG Suite"
+fi
 
 # GPG Utilities
-brew_install "Keybase" "keybase" "--cask"
-brew_install "GPG Tools" "gpgtools"
-brew_install "GPG Agent" "gpg-agent"
+if brew list --cask | grep -q "keybase"; then
+    print_success "Keybase (already installed)"
+else
+    print_in_yellow "  [ ] Keybase"
+    brew install --cask keybase &> /dev/null
+    print_result $? "Keybase"
+fi
+
+# Note: gpgtools is a tap, not a formula
+print_in_yellow "  [ ] GPG Tools (optional)"
+print_warning "GPG Tools is part of GPG Suite which is already installed"
+
+# GPG Agent is included with gnupg
+if command -v gpg-agent &> /dev/null; then
+    print_success "GPG Agent (already installed)"
+else
+    print_in_yellow "  [ ] GPG Agent (optional)"
+    print_warning "GPG Agent is included with gnupg and should already be available"
+fi
 
 # Smart Card Support
-brew_install "PCSC-Lite" "pcsclite"
-brew_install "YubiKey Manager" "yubikey-manager"
-brew_install "YubiKey Personalization GUI" "yubikey-personalization-gui" "--cask"
+if command -v pcsc_scan &> /dev/null || brew list | grep -q "pcsclite"; then
+    print_success "PCSC-Lite (already installed)"
+else
+    print_in_yellow "  [ ] PCSC-Lite (optional)"
+    # Try to install with Homebrew
+    brew install pcsclite &> /dev/null
+    if [ $? -eq 0 ]; then
+        print_success "PCSC-Lite"
+    else
+        print_warning "PCSC-Lite installation failed (optional - skipped)"
+    fi
+fi
 
-# Optional GPG Tools
-# Uncomment if needed
-# brew_install "Kleopatra" "kleopatra"
-# brew_install "Seahorse" "seahorse"
-# brew_install "GPG Tools Beta" "gpgtools-beta"
+if command -v ykman &> /dev/null || brew list | grep -q "yubikey-manager"; then
+    print_success "YubiKey Manager (already installed)"
+else
+    print_in_yellow "  [ ] YubiKey Manager (optional)"
+    # Try to install with Homebrew
+    brew install yubikey-manager &> /dev/null
+    if [ $? -eq 0 ]; then
+        print_success "YubiKey Manager"
+    else
+        print_warning "YubiKey Manager installation failed (optional - skipped)"
+    fi
+fi
+
+if brew list --cask 2>/dev/null | grep -q "yubikey-personalization-gui"; then
+    print_success "YubiKey Personalization GUI (already installed)"
+else
+    print_in_yellow "  [ ] YubiKey Personalization GUI (optional)"
+    # Try to install with Homebrew
+    brew install --cask yubikey-personalization-gui &> /dev/null
+    if [ $? -eq 0 ]; then
+        print_success "YubiKey Personalization GUI"
+    else
+        print_warning "YubiKey Personalization GUI installation failed (optional - skipped)"
+    fi
+fi
 
 # Configure GPG Agent
-execute "mkdir -p ~/.gnupg" \
-    "Create GPG config directory"
+print_in_purple "\n   GPG Configuration\n\n"
 
-execute "chmod 700 ~/.gnupg" \
-    "Set secure permissions for GPG directory"
+# Create GPG config directory
+print_in_yellow "  [ ] Create GPG config directory"
+if [[ -d ~/.gnupg ]]; then
+    print_success "GPG config directory already exists"
+else
+    mkdir -p ~/.gnupg &> /dev/null
+    print_result $? "Create GPG config directory"
+fi
+
+# Set secure permissions for GPG directory
+print_in_yellow "  [ ] Set secure permissions for GPG directory"
+chmod 700 ~/.gnupg &> /dev/null
+print_result $? "Set secure permissions for GPG directory"
 
 # Configure GPG Agent
+print_in_yellow "  [ ] Configure GPG agent"
 cat > ~/.gnupg/gpg-agent.conf << EOL
 default-cache-ttl 3600
 max-cache-ttl 7200
-pinentry-program /usr/local/bin/pinentry-mac
+pinentry-program $(brew --prefix)/bin/pinentry-mac
 EOL
+print_result $? "Configure GPG agent"
 
-execute "chmod 600 ~/.gnupg/gpg-agent.conf" \
-    "Set secure permissions for GPG agent config"
+# Set secure permissions for GPG agent config
+print_in_yellow "  [ ] Set secure permissions for GPG agent config"
+chmod 600 ~/.gnupg/gpg-agent.conf &> /dev/null
+print_result $? "Set secure permissions for GPG agent config"
 
 # Configure GPG
+print_in_yellow "  [ ] Configure GPG"
 cat > ~/.gnupg/gpg.conf << EOL
 use-agent
 no-emit-version
@@ -55,23 +135,34 @@ no-comments
 keyid-format LONG
 with-fingerprint
 EOL
+print_result $? "Configure GPG"
 
-execute "chmod 600 ~/.gnupg/gpg.conf" \
-    "Set secure permissions for GPG config"
+# Set secure permissions for GPG config
+print_in_yellow "  [ ] Set secure permissions for GPG config"
+chmod 600 ~/.gnupg/gpg.conf &> /dev/null
+print_result $? "Set secure permissions for GPG config"
 
 # Restart GPG Agent
-execute "gpgconf --kill gpg-agent" \
-    "Restart GPG agent"
+print_in_yellow "  [ ] Restart GPG agent"
+gpgconf --kill gpg-agent &> /dev/null
+print_result $? "Restart GPG agent"
 
 # Add GPG configuration to shell
-if ! grep -q "GPG_TTY" ~/.zshrc; then
+print_in_yellow "  [ ] Add GPG_TTY to .zshrc"
+if grep -q "GPG_TTY" ~/.zshrc; then
+    print_success "GPG_TTY already in .zshrc"
+else
     echo 'export GPG_TTY=$(tty)' >> ~/.zshrc
-    echo "Added GPG_TTY to .zshrc"
+    print_result $? "Add GPG_TTY to .zshrc"
 fi
 
 # Configure Git to use GPG signing
-execute "git config --global commit.gpgsign true" \
-    "Enable GPG signing for Git commits"
+print_in_yellow "  [ ] Enable GPG signing for Git commits"
+git config --global commit.gpgsign true &> /dev/null
+print_result $? "Enable GPG signing for Git commits"
 
-execute "git config --global gpg.program $(which gpg)" \
-    "Set GPG program for Git"
+print_in_yellow "  [ ] Set GPG program for Git"
+git config --global gpg.program $(which gpg) &> /dev/null
+print_result $? "Set GPG program for Git"
+
+print_in_green "\n  GPG tools setup complete!\n"
