@@ -12,7 +12,6 @@ print_in_purple "\n   Kotlin Development Tools\n\n"
 # Install SDKMAN if not already installed
 if [[ ! -s "$HOME/.sdkman/bin/sdkman-init.sh" ]]; then
     print_in_purple "\n   Installing SDKMAN\n\n"
-    print_in_yellow "  [ ] SDKMAN"
     
     # Install SDKMAN with error handling
     curl -s "https://get.sdkman.io" | bash &> /dev/null
@@ -38,7 +37,6 @@ fi
 
 # Install Kotlin
 print_in_purple "\n   Installing Kotlin\n\n"
-print_in_yellow "  [ ] Kotlin"
 yes | sdk install kotlin &> /dev/null
 print_result $? "Kotlin"
 
@@ -46,12 +44,10 @@ print_result $? "Kotlin"
 print_in_purple "\n   Installing Build Tools\n\n"
 
 # Install Gradle
-print_in_yellow "  [ ] Gradle"
 yes | sdk install gradle &> /dev/null
 print_result $? "Gradle"
 
 # Install Maven
-print_in_yellow "  [ ] Maven"
 yes | sdk install maven &> /dev/null
 print_result $? "Maven"
 
@@ -60,7 +56,6 @@ print_in_purple "\n   Installing IntelliJ IDEA\n\n"
 if brew list --cask | grep -q "intellij-idea"; then
     print_success "IntelliJ IDEA (already installed)"
 else
-    print_in_yellow "  [ ] IntelliJ IDEA"
     brew install --cask intellij-idea &> /dev/null
     print_result $? "IntelliJ IDEA"
 fi
@@ -72,7 +67,6 @@ print_in_purple "\n   Installing Development Tools\n\n"
 if brew list | grep -q "kotlin-language-server"; then
     print_success "Kotlin Language Server (already installed)"
 else
-    print_in_yellow "  [ ] Kotlin Language Server"
     brew install kotlin-language-server &> /dev/null
     print_result $? "Kotlin Language Server"
 fi
@@ -84,7 +78,6 @@ print_in_purple "\n   Installing Kotlin Linter\n\n"
 if command -v ktlint &> /dev/null; then
     print_success "ktlint (already installed)"
 else
-    print_in_yellow "  [ ] ktlint"
     brew install ktlint &> /dev/null
     print_result $? "ktlint"
 fi

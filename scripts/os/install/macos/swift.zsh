@@ -17,7 +17,6 @@ print_in_purple "\n   Swift Development Tools\n\n"
 # Install Xcode Command Line Tools if not already installed
 if ! xcode-select -p &> /dev/null; then
     print_in_purple "\n   Installing Xcode Command Line Tools\n\n"
-    print_in_yellow "  [ ] Xcode Command Line Tools"
     xcode-select --install
     print_result $? "Xcode Command Line Tools"
 else
@@ -28,43 +27,48 @@ fi
 print_in_purple "\n   Installing Swift Tools\n\n"
 
 # Install SwiftLint
-if brew list | grep -q "swiftlint"; then
+if brew list --formula 2>/dev/null | grep -q "^swiftlint$"; then
     print_success "SwiftLint (already installed)"
 else
-    print_in_yellow "  [ ] SwiftLint"
-    brew install swiftlint &> /dev/null
-    print_result $? "SwiftLint"
+    if brew install swiftlint &>/dev/null; then
+        print_success "SwiftLint"
+    else
+        print_error "SwiftLint"
+    fi
 fi
 
 # Install SwiftFormat
-if brew list | grep -q "swiftformat"; then
+if brew list --formula 2>/dev/null | grep -q "^swiftformat$"; then
     print_success "SwiftFormat (already installed)"
 else
-    print_in_yellow "  [ ] SwiftFormat"
-    brew install swiftformat &> /dev/null
-    print_result $? "SwiftFormat"
+    if brew install swiftformat &>/dev/null; then
+        print_success "SwiftFormat"
+    else
+        print_error "SwiftFormat"
+    fi
 fi
 
 # Install Sourcery
-if brew list | grep -q "sourcery"; then
+if brew list --formula 2>/dev/null | grep -q "^sourcery$"; then
     print_success "Sourcery (already installed)"
 else
-    print_in_yellow "  [ ] Sourcery"
-    brew install sourcery &> /dev/null
-    print_result $? "Sourcery"
+    if brew install sourcery &>/dev/null; then
+        print_success "Sourcery"
+    else
+        print_error "Sourcery"
+    fi
 fi
 
 # Install Jazzy for documentation
-if gem list | grep -q "^jazzy "; then
+if gem list 2>/dev/null | grep -q "^jazzy "; then
     print_success "Jazzy (already installed)"
 else
-    print_in_yellow "  [ ] Jazzy (optional)"
     # Try to install with gem without sudo first
-    if gem install jazzy &> /dev/null; then
+    if gem install jazzy &>/dev/null; then
         print_success "Jazzy"
     else
         # Try with Homebrew
-        if brew install jazzy &> /dev/null; then
+        if brew install jazzy &>/dev/null; then
             print_success "Jazzy"
         else
             print_warning "Jazzy (optional - skipped)"
@@ -76,82 +80,79 @@ fi
 print_in_purple "\n   Installing Development Tools\n\n"
 
 # Install Carthage
-if brew list | grep -q "carthage"; then
+if brew list --formula 2>/dev/null | grep -q "^carthage$"; then
     print_success "Carthage (already installed)"
 else
-    print_in_yellow "  [ ] Carthage"
-    brew install carthage &> /dev/null
-    print_result $? "Carthage"
+    if brew install carthage &>/dev/null; then
+        print_success "Carthage"
+    else
+        print_error "Carthage"
+    fi
 fi
 
 # Install CocoaPods
-if gem list | grep -q "^cocoapods "; then
+if gem list 2>/dev/null | grep -q "^cocoapods "; then
     print_success "CocoaPods (already installed)"
 else
-    print_in_yellow "  [ ] CocoaPods (optional)"
     # Try to install with gem without sudo first
-    if gem install cocoapods &> /dev/null; then
+    if gem install cocoapods &>/dev/null; then
         print_success "CocoaPods"
     else
-        # Try with Homebrew
-        if brew install cocoapods &> /dev/null; then
-            print_success "CocoaPods"
-        else
-            print_warning "CocoaPods (optional - skipped)"
-        fi
+        print_error "CocoaPods"
     fi
 fi
 
 # Install Mint
-if brew list | grep -q "mint"; then
+if brew list --formula 2>/dev/null | grep -q "^mint$"; then
     print_success "Mint (already installed)"
 else
-    print_in_yellow "  [ ] Mint"
-    brew install mint &> /dev/null
-    print_result $? "Mint"
+    if brew install mint &>/dev/null; then
+        print_success "Mint"
+    else
+        print_error "Mint"
+    fi
 fi
 
 # Install Fastlane
-if gem list | grep -q "^fastlane "; then
+if gem list 2>/dev/null | grep -q "^fastlane "; then
     print_success "Fastlane (already installed)"
+elif brew list --formula 2>/dev/null | grep -q "^fastlane$"; then
+    print_success "Fastlane (already installed via Homebrew)"
 else
-    print_in_yellow "  [ ] Fastlane (optional)"
-    # Try to install with gem without sudo first
-    if gem install fastlane &> /dev/null; then
+    # Try with Homebrew first as it avoids the conflict with wisper
+    if brew install fastlane &>/dev/null; then
         print_success "Fastlane"
     else
-        # Try with Homebrew
-        if brew install fastlane &> /dev/null; then
-            print_success "Fastlane"
-        else
-            print_warning "Fastlane (optional - skipped)"
-        fi
+        print_error "Fastlane"
     fi
 fi
 
 # Install xcbeautify
-if brew list | grep -q "xcbeautify"; then
+if brew list --formula 2>/dev/null | grep -q "^xcbeautify$"; then
     print_success "xcbeautify (already installed)"
 else
-    print_in_yellow "  [ ] xcbeautify"
-    brew install xcbeautify &> /dev/null
-    print_result $? "xcbeautify"
+    if brew install xcbeautify &>/dev/null; then
+        print_success "xcbeautify"
+    else
+        print_error "xcbeautify"
+    fi
 fi
 
 # Install xcodegen
-if brew list | grep -q "xcodegen"; then
+if brew list --formula 2>/dev/null | grep -q "^xcodegen$"; then
     print_success "xcodegen (already installed)"
 else
-    print_in_yellow "  [ ] xcodegen"
-    brew install xcodegen &> /dev/null
-    print_result $? "xcodegen"
+    if brew install xcodegen &>/dev/null; then
+        print_success "xcodegen"
+    else
+        print_error "xcodegen"
+    fi
 fi
 
 # Configure Swift environment
 print_in_purple "\n   Configuring Swift Environment\n\n"
 
 # Create a Swift project template
-print_in_yellow "  [ ] Swift project template"
 mkdir -p "$HOME/.swift_project_template/Sources"
 mkdir -p "$HOME/.swift_project_template/Tests"
 
@@ -200,11 +201,11 @@ DerivedData/
 .package.resolved
 EOL
 
-print_result $? "Swift project template"
+echo "Swift project template created" >/dev/null
+print_success "Swift development environment"
 
 # Add Swift helper functions to shell
 if ! grep -q 'new-swift' "$HOME/.zshrc"; then
-    print_in_yellow "  [ ] Swift helper functions"
     cat >> "$HOME/.zshrc" << 'EOL'
 
 # Swift development functions

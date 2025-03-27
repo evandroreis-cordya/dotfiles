@@ -32,7 +32,6 @@ install_xcode() {
 
     # Wait until `Xcode` is installed.
 
-    print_in_yellow "  [ ] Xcode"
     while ! is_xcode_installed; do
         sleep 5
     done
@@ -51,7 +50,6 @@ install_xcode_command_line_tools() {
 
     # Wait until the `Xcode Command Line Tools` are installed.
 
-    print_in_yellow "  [ ] Xcode Command Line Tools"
     while ! are_xcode_command_line_tools_installed; do
         sleep 5
     done

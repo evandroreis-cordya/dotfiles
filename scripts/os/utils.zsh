@@ -22,9 +22,22 @@ ask_for_confirmation() {
 }
 
 ask_for_sudo() {
+    # Save sudo timestamp file location
+    local sudo_timestamp_dir="/var/run/sudo/${USER}"
+    local sudo_timestamp_file="${sudo_timestamp_dir}/ts"
+    
+    # Create a global variable to track if sudo has been requested
+    SUDO_REQUESTED=true
+    
+    print_in_yellow "Please enter your password. It will be cached for all installation tasks.\n"
+    
     # Ask for the administrator password upfront
     sudo -v &> /dev/null
-
+    
+    # Create a timestamp directory for this user if it doesn't exist
+    sudo mkdir -p "$sudo_timestamp_dir" 2>/dev/null
+    sudo chmod 700 "$sudo_timestamp_dir" 2>/dev/null
+    
     # Update existing `sudo` time stamp
     # until this script finishes
     while true; do
@@ -32,6 +45,29 @@ ask_for_sudo() {
         sleep 60
         kill -0 "$$" || exit
     done &> /dev/null &
+}
+
+sudo_is_active() {
+    if [ -n "${SUDO_REQUESTED:-}" ]; then
+        # Refresh sudo timestamp without prompting for password
+        sudo -n true 2>/dev/null
+        return $?
+    else
+        # If sudo hasn't been requested yet, do it now
+        ask_for_sudo
+        return 0
+    fi
+}
+
+sudo_execute() {
+    local -r CMDS="$1"
+    local -r MSG="${2:-$1}"
+    
+    # Ensure sudo is active
+    sudo_is_active
+    
+    # Execute the command with sudo
+    execute "sudo $CMDS" "$MSG"
 }
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -42,7 +78,7 @@ cmd_exists() {
     (( $+commands[$1] ))
 }
 
-execute() {
+execute_original() {
     local -r CMDS="$1"
     local -r MSG="${2:-$1}"
     local -r TMP_FILE="$(mktemp /tmp/XXXXX)"
@@ -53,6 +89,11 @@ execute() {
     # If the current process is ended,
     # also end all its subprocesses.
     set_trap "EXIT" "kill_all_subprocesses"
+
+    # Check if this is a sudo command and ensure sudo is active
+    if [[ "$CMDS" == sudo* ]]; then
+        sudo_is_active
+    fi
 
     # Execute commands in background
     # Ensure we're only executing the command, not the message
@@ -79,6 +120,11 @@ execute() {
     rm -rf "$TMP_FILE"
 
     return $exitCode
+}
+
+# Alias for backward compatibility
+execute() {
+    execute_original "$@"
 }
 
 kill_all_subprocesses() {

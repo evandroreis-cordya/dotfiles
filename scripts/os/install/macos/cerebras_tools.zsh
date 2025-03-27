@@ -1,8 +1,8 @@
 #!/bin/zsh
 
 # Get the directory of the current script
-SCRIPT_DIR=${0:a:h} \
-    source "../../utils.zsh"
+SCRIPT_DIR=${0:a:h}
+source "${SCRIPT_DIR}/utils.zsh"
 
 print_in_purple "\n   Cerebras AI Tools\n\n"
 

@@ -1,4 +1,3 @@
-
           __                   _       _____            _          _
           \ \  __ _ _ ____   _(_)___  /__   \___   ___ | |___  ___| |_
            \ \/ _` | '__\ \ / / / __|   / /\/ _ \ / _ \| / __|/ _ \ __|
@@ -123,6 +122,48 @@ The start_jarvis.zsh script will call setup.zsh which will:
 * Install applications and command-line tools for [`macOS`](scripts/os/install/macos)
 * Configure system preferences for [`macOS`](scripts/os/preferences/macos)
 
+## AI and Machine Learning Tools
+
+The jarvistoolset now includes comprehensive support for AI and machine learning development with the following categories of tools:
+
+### AI Desktop Applications
+
+The `ai_desktop_tools.zsh` script installs a wide range of AI desktop applications:
+
+| Category | Applications |
+|:---------|:------------|
+| **Local LLM Platforms** | Ollama, OllamaC, NotesOllama, LM Studio |
+| **AI Chat Clients** | ChatGPT Desktop, Cursor AI Code Editor |
+| **AI Image Generation** | DiffusionBee, Mochi Diffusion, Topaz Photo AI Suite |
+| **AI Video Tools** | Runway, D-ID Studio, Synthesia |
+| **AI Writing & Productivity** | Notion, Grammarly, Raindrop.io, ProWritingAid |
+| **AI Development Environments** | VS Code, JupyterLab, Jupyter Notebook Viewer, Anaconda |
+| **AI Research Tools** | Zotero, Mendeley Reference Manager |
+| **AI Generative Art** | ChaiNNer |
+| **AI Utilities** | Geekbench AI, MacAI, BoltAI, BackyardAI |
+
+Additionally, the script provides information about AI tools that need to be installed manually, such as ElevenLabs, Stable Diffusion WebUI, ComfyUI, and web-based AI services like Midjourney, Claude, and Gemini.
+
+### AI Development Tools
+
+The `ai_tools.zsh` script installs essential AI development libraries and tools:
+
+- Python-based AI frameworks and libraries
+- Machine learning model development tools
+- Data processing utilities
+- Natural language processing libraries
+
+### Swift Development Tools
+
+The `swift.zsh` script has been updated to provide better installation of Swift development tools:
+
+- SwiftLint for code quality
+- SwiftFormat for code formatting
+- Sourcery for code generation
+- Carthage and Mint for dependency management
+- Fastlane for CI/CD
+- Other Swift development utilities
+
 ## Available Scripts
 
 | Category | Script | Description |
@@ -139,6 +180,8 @@ The start_jarvis.zsh script will call setup.zsh which will:
 | | `restart.zsh` | Safely restarts the system |
 | | `set_github_ssh_key.zsh` | Sets up SSH key for GitHub |
 | | `activate_datascience.sh` | Activates the Python data science environment with all installed packages |
+| | `fix_specific_files.zsh` | Fixes specific files that might need adjustments |
+| | `update_bash_to_zsh.zsh` | Updates Bash configuration to Zsh |
 | **Installation** | |
 | | `install/main.zsh` | Main installation orchestration script |
 | | `install/macos/main.zsh` | Main macOS installation script |
@@ -161,6 +204,10 @@ The start_jarvis.zsh script will call setup.zsh which will:
 | | `install/macos/utils.zsh` | Installs utility tools |
 | | `install/macos/misc.zsh` | Installs miscellaneous tools |
 | | `install/macos/misc_tools.zsh` | Installs additional miscellaneous tools |
+| | `install/macos/generative_ai_productivity.zsh` | Installs top 10 Generative AI productivity tools |
+| | `install/macos/ai_desktop_tools.zsh` | Installs AI desktop applications and tools |
+| | `install/macos/ai_tools.zsh` | Installs AI development libraries and tools |
+| | `install/macos/swift.zsh` | Installs Swift development tools with improved error handling |
 | | `install/macos/cleanup.zsh` | Cleans up after installation |
 | | `install/npm.zsh` | Installs NPM packages |
 | | `install/nvm.zsh` | Installs Node Version Manager |
@@ -168,7 +215,8 @@ The start_jarvis.zsh script will call setup.zsh which will:
 | **Development** | |
 | | `install/macos/node.zsh` | Sets up Node.js development environment |
 | | `install/macos/php.zsh` | Configures PHP development environment |
-| | `install/macos/python.zsh` | Sets up Python development environment with data science packages |
+| | `install/macos/python.zsh` | Sets up Python development environment |
+| | `install/macos/datascience.zsh` | Sets up Data Science environment with ML/AI packages |
 | | `install/macos/ruby.zsh` | Configures Ruby development environment |
 | | `install/macos/go.zsh` | Sets up Go development environment |
 | | `install/macos/java.zsh` | Configures Java development environment |
@@ -199,21 +247,21 @@ The start_jarvis.zsh script will call setup.zsh which will:
 | | `preferences/macos/app_store.zsh` | App Store preferences |
 | | `preferences/macos/bluetooth.zsh` | Bluetooth settings |
 | | `preferences/macos/dashboard.zsh` | Dashboard settings |
-| | `preferences/macos/date_time.zsh` | Date and time settings |
-| | `preferences/macos/energy.zsh` | Energy saving settings |
-| | `preferences/macos/firefox.zsh` | Firefox preferences |
-| | `preferences/macos/icloud.zsh` | iCloud settings |
 | | `preferences/macos/mail.zsh` | Mail app settings |
 | | `preferences/macos/maps.zsh` | Maps app settings |
 | | `preferences/macos/messages.zsh` | Messages app settings |
 | | `preferences/macos/mission_control.zsh` | Mission Control settings |
 | | `preferences/macos/mouse.zsh` | Mouse settings |
+| | `preferences/macos/energy.zsh` | Energy saver settings |
+| | `preferences/macos/firefox.zsh` | Firefox browser settings |
+| | `preferences/macos/icloud.zsh` | iCloud settings |
 | | `preferences/macos/music.zsh` | Music app settings |
 | | `preferences/macos/network.zsh` | Network settings |
 | | `preferences/macos/notifications.zsh` | Notification settings |
 | | `preferences/macos/photos.zsh` | Photos app settings |
-| | `preferences/macos/safari.zsh` | Safari preferences |
+| | `preferences/macos/safari.zsh` | Safari browser settings |
 | | `preferences/macos/screen.zsh` | Screen settings |
+| | `preferences/macos/security_tools.zsh` | Security tools settings |
 | | `preferences/macos/sharing.zsh` | Sharing settings |
 | | `preferences/macos/siri.zsh` | Siri settings |
 | | `preferences/macos/software_update.zsh` | Software update settings |
@@ -222,32 +270,27 @@ The start_jarvis.zsh script will call setup.zsh which will:
 | | `preferences/macos/system.zsh` | System settings |
 | | `preferences/macos/textedit.zsh` | TextEdit settings |
 | | `preferences/macos/time_machine.zsh` | Time Machine settings |
-| | `preferences/macos/users_groups.zsh` | Users and groups settings |
+| | `preferences/macos/users_groups.zsh` | Users & Groups settings |
 | **AI Tools** | |
-| | `preferences/macos/ai_tools.zsh` | General AI tools settings |
-| | `preferences/macos/ai_desktop_tools.zsh` | Desktop AI tools settings |
-| | `preferences/macos/amazon_ai_tools.zsh` | Amazon AI tools settings |
-| | `preferences/macos/anthropic_tools.zsh` | Anthropic AI tools settings |
-| | `preferences/macos/autonomous_agents.zsh` | Autonomous agents settings |
-| | `preferences/macos/azure_ai_tools.zsh` | Azure AI tools settings |
-| | `preferences/macos/deepseek_tools.zsh` | DeepSeek AI tools settings |
-| | `preferences/macos/generative_ai.zsh` | Generative AI tools settings |
-| | `preferences/macos/google_ai_tools.zsh` | Google AI tools settings |
-| | `preferences/macos/grok_tools.zsh` | Grok AI tools settings |
-| | `preferences/macos/meta_ai_tools.zsh` | Meta AI tools settings |
-| | `preferences/macos/ml_tools.zsh` | Machine learning tools settings |
-| | `preferences/macos/nvidia_tools.zsh` | NVIDIA AI tools settings |
-| | `preferences/macos/openai_tools.zsh` | OpenAI tools settings |
-| | `preferences/macos/oracle_ai_tools.zsh` | Oracle AI tools settings |
-| | `preferences/macos/vercel_tools.zsh` | Vercel AI tools settings |
-| **Other Tools** | |
-| | `preferences/macos/backend_tools.zsh` | Backend development tools settings |
-| | `preferences/macos/cloud_tools.zsh` | Cloud tools settings |
-| | `preferences/macos/communication_tools.zsh` | Communication tools settings |
-| | `preferences/macos/creative_tools.zsh` | Creative tools settings |
-| | `preferences/macos/frontend_tools.zsh` | Frontend development tools settings |
-| | `preferences/macos/kaspersky_tools.zsh` | Kaspersky security tools settings |
-| | `preferences/macos/security_tools.zsh` | Security tools settings |
+| | `preferences/macos/ai_tools.zsh` | Installs and configures general AI development tools |
+| | `preferences/macos/ai_desktop_tools.zsh` | Installs AI desktop applications |
+| | `preferences/macos/generative_ai.zsh` | Sets up generative AI tools and libraries |
+| | `preferences/macos/ml_tools.zsh` | Configures machine learning tools and libraries |
+| | `preferences/macos/autonomous_agents.zsh` | Sets up autonomous agent frameworks |
+| | `preferences/macos/backend_tools.zsh` | Installs backend development tools for AI |
+| | `preferences/macos/frontend_tools.zsh` | Installs frontend development tools for AI |
+| **Vendor AI Tools** | |
+| | `preferences/macos/openai_tools.zsh` | Installs OpenAI-specific tools and SDKs |
+| | `preferences/macos/anthropic_tools.zsh` | Installs Anthropic-specific tools and SDKs |
+| | `preferences/macos/google_ai_tools.zsh` | Installs Google AI tools and SDKs |
+| | `preferences/macos/meta_ai_tools.zsh` | Installs Meta AI tools and SDKs |
+| | `preferences/macos/amazon_ai_tools.zsh` | Installs Amazon AI tools and SDKs |
+| | `preferences/macos/azure_ai_tools.zsh` | Installs Microsoft Azure AI tools |
+| | `preferences/macos/nvidia_tools.zsh` | Installs NVIDIA AI and ML tools |
+| | `preferences/macos/oracle_ai_tools.zsh` | Installs Oracle AI tools and SDKs |
+| | `preferences/macos/grok_tools.zsh` | Installs Grok AI tools and SDKs |
+| | `preferences/macos/kaspersky_tools.zsh` | Installs Kaspersky security AI tools |
+| | `preferences/macos/vercel_tools.zsh` | Installs Vercel AI tools and SDKs |
 
 ## Customization
 

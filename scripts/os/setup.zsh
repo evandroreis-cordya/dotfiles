@@ -19,6 +19,28 @@ USERNAME=${2:-$(whoami)}
 EMAIL=${3:-"evandro.reis@arvos.ai"}
 DIRECTORY=${4:-"$HOME"}
 
+# Script groups for installation
+# Ensure we're using zsh associative arrays properly
+typeset -A SCRIPT_GROUPS
+SCRIPT_GROUPS=(
+    "system" "System Setup (xcode, homebrew)"
+    "dev_langs" "Development Languages (python, node, ruby, go, java, kotlin, rust, swift, php)"
+    "data_science" "Data Science Environment"
+    "dev_tools" "Development Tools (devtools, databasetools, docker, git, gpg, jetbrains, vscode, yarn)"
+    "web_tools" "Web and Frontend Tools"
+    "daily_tools" "Daily Tools and Utilities (browsers, compression, misc, office, apps)"
+    "media_tools" "Media and Creative Tools"
+    "cloud_tools" "Cloud and DevOps Tools"
+    "ai_tools" "AI and Productivity Tools"
+    "app_store" "App Store and System Tools"
+)
+
+# Default: all groups are selected
+typeset -A SELECTED_GROUPS
+for group in ${(k)SCRIPT_GROUPS}; do
+    SELECTED_GROUPS[$group]="true"
+done
+
 # ----------------------------------------------------------------------
 # | Helper Functions                                                     |
 # ----------------------------------------------------------------------
@@ -142,11 +164,105 @@ display_banner() {
     fi
 }
 
+# Interactive menu to select script groups
+select_script_groups() {
+    local answer
+    
+    print_in_purple "\n • Installation Options\n\n"
+    print_in_yellow "Would you like to install the complete toolset or select specific groups?\n"
+    print_in_yellow "1) Install complete toolset (all groups)\n"
+    print_in_yellow "2) Select specific groups to install\n"
+    
+    read -r "answer?Enter your choice (1/2): "
+    
+    if [[ "$answer" == "2" ]]; then
+        # Reset all groups to false
+        for group in ${(k)SCRIPT_GROUPS}; do
+            SELECTED_GROUPS[$group]="false"
+        done
+        
+        # Display interactive menu for each group
+        for group in ${(k)SCRIPT_GROUPS}; do
+            local group_answer
+            print_in_yellow "\nInstall ${SCRIPT_GROUPS[$group]}? (y/n): "
+            read -r -s group_answer
+            echo
+            
+            if [[ "$group_answer" =~ ^[Yy]$ ]]; then
+                SELECTED_GROUPS[$group]="true"
+                print_success "Selected: ${SCRIPT_GROUPS[$group]}"
+            else
+                print_in_yellow "Skipping: ${SCRIPT_GROUPS[$group]}"
+            fi
+        done
+        
+        # Summary of selected groups
+        print_in_purple "\n • Installation Summary\n\n"
+        for group in ${(k)SCRIPT_GROUPS}; do
+            if [[ "${SELECTED_GROUPS[$group]}" == "true" ]]; then
+                print_success "Will install: ${SCRIPT_GROUPS[$group]}"
+            else
+                print_in_yellow "Will skip: ${SCRIPT_GROUPS[$group]}"
+            fi
+        done
+        
+        # Confirmation
+        print_in_yellow "\nProceed with installation? (y/n): "
+        read -r answer
+        if [[ ! "$answer" =~ ^[Yy]$ ]]; then
+            print_in_red "Installation cancelled by user."
+            exit 0
+        fi
+    else
+        print_in_green "Installing complete toolset (all groups)\n"
+    fi
+}
+
 # ----------------------------------------------------------------------
 # | Main                                                                |
 # ----------------------------------------------------------------------
 
 main() {
+    # Ensure that the following actions
+    # are made relative to this file's path.
+    cd "$(dirname "${BASH_SOURCE[0]}")" \
+        || exit 1
+
+    # Load utils
+    source "./utils.zsh"
+    # Install figlet for banner display
+    install_figlet
+    
+    # Display welcome banner
+    display_banner
+    
+    # Ask for sudo password upfront and keep sudo credentials alive
+    print_in_purple "\n • Requesting administrator privileges...\n\n"
+    ask_for_sudo
+
+    # Create a sudo timestamp directory with appropriate permissions
+    setup_sudo_timestamp_dir() {
+        local sudo_timestamp_dir="/var/run/sudo/${USER}"
+        
+        # Create the timestamp directory if it doesn't exist
+        if [ ! -d "$sudo_timestamp_dir" ]; then
+            sudo mkdir -p "$sudo_timestamp_dir" 2>/dev/null
+            sudo chmod 700 "$sudo_timestamp_dir" 2>/dev/null
+        fi
+        
+        # Set the sudo timeout to 2 hours (7200 seconds)
+        sudo sh -c "echo 'Defaults:${USER} timestamp_timeout=7200' > /etc/sudoers.d/jarvis_timeout"
+        sudo chmod 440 /etc/sudoers.d/jarvis_timeout
+        
+        # Export the SUDO_REQUESTED variable to child processes
+        export SUDO_REQUESTED=true
+    }
+
+    # Set up the sudo timestamp directory
+    setup_sudo_timestamp_dir
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
     # Install figlet for banner display
     install_figlet
     
@@ -168,23 +284,25 @@ main() {
     # Install Git if not already installed
     install_git
 
+    # Interactive menu to select script groups
+    select_script_groups
+
     # Create directories
     source "${SCRIPT_DIR}/create_directories.zsh"
     
     # Create local config files
     source "${SCRIPT_DIR}/create_local_config_files.zsh"
 
+    # Use typeset -A to ensure the associative array is properly exported
+    typeset -Ax SELECTED_GROUPS
+    export SELECTED_GROUPS
+
     # Install everything
-    if ! $skipQuestions; then
-        ask_for_confirmation "Do you want to install the applications and tools?"
-        if answer_is_yes; then
-            source "${SCRIPT_DIR}/install/main.zsh" \
-                "$HOSTNAME" \
-                "$USERNAME" \
-                "$EMAIL" \
-                "$DIRECTORY"
-        fi
-    fi
+    source "${SCRIPT_DIR}/install/main.zsh" \
+        "$HOSTNAME" \
+        "$USERNAME" \
+        "$EMAIL" \
+        "$DIRECTORY"
 
     print_in_purple "\n • Setup completed! Please restart your terminal.\n\n"
 }

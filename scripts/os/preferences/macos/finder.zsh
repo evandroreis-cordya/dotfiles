@@ -6,6 +6,30 @@ source "${SCRIPT_DIR}/../../utils.zsh"
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+# Minimum supported macOS version for this script
+MINIMUM_MACOS_VERSION="14.0.0"  # macOS Sonoma
+
+# Check macOS version compatibility
+check_macos_compatibility() {
+    local current_version=$(sw_vers -productVersion)
+    
+    if ! is_supported_version "$current_version" "$MINIMUM_MACOS_VERSION"; then
+        print_error "Your macOS version ($current_version) is not supported for Finder preferences"
+        print_in_yellow "Please upgrade to macOS Sonoma ($MINIMUM_MACOS_VERSION) or later.\n"
+        return 1
+    fi
+    
+    return 0
+}
+
+# Check compatibility before proceeding
+if ! check_macos_compatibility; then
+    exit 1
+fi
+
+# Get macOS major version for version-specific settings
+MACOS_MAJOR_VERSION=$(sw_vers -productVersion | cut -d. -f1)
+
 print_in_purple "\n   Finder\n\n"
 
 # Finder Window Settings
@@ -64,8 +88,14 @@ execute "defaults write com.apple.finder ShowSidebar -bool true" \
 execute "defaults write com.apple.finder ShowPreviewPane -bool true" \
     "Show preview pane"
 
-execute "defaults write com.apple.finder ShowTabView -bool true" \
-    "Show tab bar"
+# Tab view setting might be different in newer macOS versions
+if [[ $MACOS_MAJOR_VERSION -ge 14 ]]; then
+    execute "defaults write com.apple.finder ShowTabBar -bool true" \
+        "Show tab bar (Sonoma syntax)"
+else
+    execute "defaults write com.apple.finder ShowTabView -bool true" \
+        "Show tab bar (pre-Sonoma syntax)"
+fi
 
 # Advanced Settings
 execute "defaults write com.apple.finder AppleShowAllFiles -bool true" \
@@ -84,8 +114,15 @@ execute "defaults write com.apple.finder ShowPreviewPane -bool true" \
 execute "defaults write com.apple.finder _FXSortFoldersFirst -bool true" \
     "Keep folders on top when sorting by name"
 
-execute "defaults write com.apple.finder FXRemoveOldTrashItems -bool true" \
-    "Remove items from Trash after 30 days"
+# This setting might have changed in newer macOS versions
+if [[ $MACOS_MAJOR_VERSION -ge 14 ]]; then
+    execute "defaults write com.apple.finder FXRemoveOldTrashItems -bool true" \
+        "Remove items from Trash after 30 days"
+    print_in_yellow "Note: Trash auto-removal settings may also be controlled via System Settings in Sonoma\n"
+else
+    execute "defaults write com.apple.finder FXRemoveOldTrashItems -bool true" \
+        "Remove items from Trash after 30 days"
+fi
 
 execute "defaults write com.apple.finder FXPreferredGroupBy -string 'Name'" \
     "Group items by name"
@@ -107,27 +144,37 @@ execute "defaults write com.apple.finder NewWindowTargetPath -string 'file://${H
 execute "defaults write com.apple.finder QLEnableTextSelection -bool true" \
     "Enable text selection in Quick Look"
 
-execute "defaults write com.apple.finder FXEnableRemoveFromICloudDriveWarning -bool false" \
-    "Disable warning when removing from iCloud Drive"
+# iCloud Drive settings may have changed in newer macOS versions
+if [[ $MACOS_MAJOR_VERSION -ge 14 ]]; then
+    print_in_yellow "Note: iCloud Drive settings may need to be configured via System Settings in Sonoma\n"
+    execute "defaults write com.apple.finder FXEnableRemoveFromICloudDriveWarning -bool false" \
+        "Disable warning when removing from iCloud Drive"
+else
+    execute "defaults write com.apple.finder FXEnableRemoveFromICloudDriveWarning -bool false" \
+        "Disable warning when removing from iCloud Drive"
+    execute "defaults write com.apple.finder FXICloudDriveDesktop -bool true" \
+        "Enable iCloud Drive desktop sync"
+    execute "defaults write com.apple.finder FXICloudDriveDocuments -bool true" \
+        "Enable iCloud Drive documents sync"
+fi
 
-execute "defaults write com.apple.finder FXICloudDriveDesktop -bool true" \
-    "Enable iCloud Drive desktop sync"
-
-execute "defaults write com.apple.finder FXICloudDriveDocuments -bool true" \
-    "Enable iCloud Drive documents sync"
-
-# Sidebar Settings
-execute "defaults write com.apple.finder SidebarDevicesSectionDisclosedState -bool true" \
-    "Expand Devices section in sidebar"
-
-execute "defaults write com.apple.finder SidebarPlacesSectionDisclosedState -bool true" \
-    "Expand Places section in sidebar"
-
-execute "defaults write com.apple.finder SidebarShowingSignedIntoiCloud -bool true" \
-    "Show iCloud Drive in sidebar"
-
-execute "defaults write com.apple.finder SidebarShowAllTags -bool false" \
-    "Hide All Tags in sidebar"
+# Sidebar Settings - these may have changed in newer macOS versions
+if [[ $MACOS_MAJOR_VERSION -ge 14 ]]; then
+    print_in_yellow "Note: Some sidebar settings may need to be configured via System Settings in Sonoma\n"
+    execute "defaults write com.apple.finder SidebarDevicesSectionDisclosedState -bool true" \
+        "Expand Devices section in sidebar"
+    execute "defaults write com.apple.finder SidebarPlacesSectionDisclosedState -bool true" \
+        "Expand Places section in sidebar"
+else
+    execute "defaults write com.apple.finder SidebarDevicesSectionDisclosedState -bool true" \
+        "Expand Devices section in sidebar"
+    execute "defaults write com.apple.finder SidebarPlacesSectionDisclosedState -bool true" \
+        "Expand Places section in sidebar"
+    execute "defaults write com.apple.finder SidebarShowingSignedIntoiCloud -bool true" \
+        "Show iCloud Drive in sidebar"
+    execute "defaults write com.apple.finder SidebarShowAllTags -bool false" \
+        "Hide All Tags in sidebar"
+fi
 
 # Search Settings
 execute "defaults write com.apple.finder FXDefaultSearchScope -string 'SCcf'" \

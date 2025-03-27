@@ -4,6 +4,9 @@
 SCRIPT_DIR=${0:a:h}
 source "${SCRIPT_DIR}/../../utils.zsh"
 
+# Add trap to handle broken pipe errors
+trap '' PIPE
+
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # | Homebrew Functions                                                 |
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -24,7 +27,7 @@ brew_install() {
     local -r INSTALL_FLAGS="${3:-}"  # Optional flags like --cask
 
     # Check if Homebrew is installed
-    if ! cmd_exists "brew"; then
+    if ! command -v brew &>/dev/null; then
         print_error "$FORMULA_READABLE_NAME (Homebrew is not installed)"
         return 1
     fi
@@ -33,10 +36,21 @@ brew_install() {
     if brew list "$FORMULA" &> /dev/null; then
         print_success "$FORMULA_READABLE_NAME (already installed)"
     else
+        echo "$FORMULA_READABLE_NAME" >/dev/null
         if [[ -n "$INSTALL_FLAGS" ]]; then
-            execute "brew install $FORMULA $INSTALL_FLAGS" "$FORMULA_READABLE_NAME"
+            if brew install "$FORMULA" $INSTALL_FLAGS &>/dev/null; then
+                print_success "$FORMULA_READABLE_NAME"
+            else
+                print_error "$FORMULA_READABLE_NAME"
+                return 1
+            fi
         else
-            execute "brew install $FORMULA" "$FORMULA_READABLE_NAME"
+            if brew install "$FORMULA" &>/dev/null; then
+                print_success "$FORMULA_READABLE_NAME"
+            else
+                print_error "$FORMULA_READABLE_NAME"
+                return 1
+            fi
         fi
     fi
 }
@@ -59,7 +73,7 @@ brew_tap() {
 brew_update() {
     # Initialize Homebrew directories if needed
     if ! is_dir "$(brew --repo)"; then
-        execute "git clone https://github.com/Homebrew/brew $(brew --repo)" "Initialize Homebrew repository"
+        execute "mkdir -p $(brew --repo)" "Creating Homebrew directories"
     fi
 
     execute "brew update" "Homebrew (update)"
@@ -73,6 +87,44 @@ brew_upgrade() {
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # Additional utility functions for Homebrew management
+
+brew_cask_install() {
+    local -r APP_NAME="$1"
+    local -r DESCRIPTION="${2:-Installing $APP_NAME}"
+    local -r OPTIONAL="${3:-false}"
+    
+    # Check if Homebrew is installed
+    if ! command -v brew &>/dev/null; then
+        print_error "$APP_NAME (Homebrew is not installed)"
+        return 1
+    fi
+    
+    # Check if the cask exists in the Homebrew repository
+    if brew info --cask "$APP_NAME" &>/dev/null; then
+        # Install or upgrade cask
+        if brew list --cask "$APP_NAME" &>/dev/null; then
+            print_success "$APP_NAME (already installed)"
+        else
+            # Use direct command execution instead of execute function
+            echo "$DESCRIPTION" >/dev/null
+            if brew install --cask "$APP_NAME" &>/dev/null; then
+                print_success "$DESCRIPTION"
+            else
+                print_error "$DESCRIPTION"
+                return 1
+            fi
+        fi
+    else
+        # If the cask doesn't exist but it's optional, just print a message
+        if [[ "$OPTIONAL" == "true" ]]; then
+            print_warning "$APP_NAME (cask not available, skipping)"
+            return 0
+        else
+            print_error "$APP_NAME (cask not available)"
+            return 1
+        fi
+    fi
+}
 
 brew_doctor() {
     execute "brew doctor" "Check Homebrew for issues"
@@ -101,24 +153,76 @@ brew_outdated() {
 }
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# | Sudo Handling Functions                                             |
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Ensure sudo is active before running commands that require sudo privileges
+ensure_sudo_active() {
+    # Check if the sudo_is_active function exists in the parent utils.zsh
+    if typeset -f sudo_is_active > /dev/null; then
+        sudo_is_active
+    else
+        # Fallback to the original ask_for_sudo function if sudo_is_active doesn't exist
+        if typeset -f ask_for_sudo > /dev/null; then
+            ask_for_sudo
+        else
+            # Last resort: direct sudo command
+            sudo -v &> /dev/null
+        fi
+    fi
+}
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # | Command Execution Functions                                        |
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Define execute_original function to handle command execution
+execute_original() {
+    local -r CMDS="$1"
+    local -r MSG="${2:-$1}"
+    local -r TMP_FILE="$(mktemp /tmp/XXXXX)"
+    local exitCode=0
+    
+    # Execute commands with proper error handling for broken pipes
+    { eval "$CMDS" 2>"$TMP_FILE" || exitCode=$?; } 2>/dev/null
+    
+    print_result $exitCode "$MSG" 2>/dev/null
+    
+    if [ $exitCode -ne 0 ]; then
+        print_error_stream < "$TMP_FILE" 2>/dev/null
+    fi
+    
+    rm -rf "$TMP_FILE"
+    return $exitCode
+}
+
+# Override the execute function from the parent utils.zsh
+# to ensure sudo is active when needed
+execute() {
+    local -r CMDS="$1"
+    local -r MSG="${2:-$1}"
+    
+    # Check if this is a sudo command and ensure sudo is active
+    if [[ "$CMDS" == sudo* ]]; then
+        ensure_sudo_active
+    fi
+    
+    # Call the execute_original function
+    execute_original "$CMDS" "$MSG"
+}
 
 run_command() {
     local -r CMD="$1"
     local -r MSG="${2:-$1}"
     
-    # Display progress indicator
-    print_in_yellow "  [ ] $MSG"
+    # Check if this is a sudo command and ensure sudo is active
+    if [[ "$CMD" == sudo* ]]; then
+        ensure_sudo_active
+    fi
     
     # Execute the command
     eval "$CMD" &> /dev/null
-    local exitCode=$?
-    
-    # Show result
-    print_result $exitCode "$MSG"
-    
-    return $exitCode
+    print_result $? "$MSG"
 }
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -131,19 +235,31 @@ pip_install() {
     local -r INSTALL_FLAGS="${3:-}"  # Optional flags
 
     # Check if pip is installed
-    if ! cmd_exists "pip3"; then
-        print_error "$PACKAGE_READABLE_NAME (pip3 is not installed)"
+    if ! command -v pip3 &>/dev/null; then
+        print_error "$PACKAGE_READABLE_NAME (pip3 is not installed)" 2>/dev/null
         return 1
     fi
 
     # Check if package is already installed
-    if pip3 list | grep -q "^$PACKAGE "; then
-        print_success "$PACKAGE_READABLE_NAME (already installed)"
+    if pip3 list 2>/dev/null | grep -q "^$PACKAGE " 2>/dev/null; then
+        print_success "$PACKAGE_READABLE_NAME (already installed)" 2>/dev/null
     else
         if [[ -n "$INSTALL_FLAGS" ]]; then
-            execute "pip3 install $PACKAGE $INSTALL_FLAGS" "$PACKAGE_READABLE_NAME"
+            # Use pip directly without execute to avoid command not found errors
+            if pip3 install "$PACKAGE" $INSTALL_FLAGS --break-system-packages &>/dev/null; then
+                print_success "$PACKAGE_READABLE_NAME"
+            else
+                print_error "$PACKAGE_READABLE_NAME"
+                return 1
+            fi
         else
-            execute "pip3 install $PACKAGE" "$PACKAGE_READABLE_NAME"
+            # Use pip directly without execute to avoid command not found errors
+            if pip3 install "$PACKAGE" --break-system-packages &>/dev/null; then
+                print_success "$PACKAGE_READABLE_NAME"
+            else
+                print_error "$PACKAGE_READABLE_NAME"
+                return 1
+            fi
         fi
     fi
 }
@@ -164,12 +280,7 @@ pipx_install() {
         print_success "$PACKAGE_READABLE_NAME (already installed)"
     else
         # Use direct command execution instead of the execute function
-        print_in_yellow "  [ ] $PACKAGE_READABLE_NAME"
-        if [[ -n "$INSTALL_FLAGS" ]]; then
-            pipx install "$PACKAGE" $INSTALL_FLAGS &> /dev/null
-        else
-            pipx install "$PACKAGE" &> /dev/null
-        fi
+        pipx install "$PACKAGE" $INSTALL_FLAGS &> /dev/null
         print_result $? "$PACKAGE_READABLE_NAME"
     fi
 }
@@ -194,12 +305,7 @@ npm_install() {
         print_success "$PACKAGE_READABLE_NAME (already installed)"
     else
         # Use direct command execution instead of the execute function
-        print_in_yellow "  [ ] $PACKAGE_READABLE_NAME"
-        if [[ -n "$INSTALL_FLAGS" ]]; then
-            npm install "$PACKAGE" $INSTALL_FLAGS &> /dev/null
-        else
-            npm install -g "$PACKAGE" &> /dev/null
-        fi
+        npm install "$PACKAGE" $INSTALL_FLAGS &> /dev/null
         print_result $? "$PACKAGE_READABLE_NAME"
     fi
 }
@@ -270,12 +376,7 @@ gem_install() {
         print_success "$PACKAGE_LABEL (already installed)"
     else
         # Use direct command execution instead of the execute function
-        print_in_yellow "  [ ] $PACKAGE_LABEL"
-        if [[ -n "$EXTRA_ARGS" ]]; then
-            gem install $PACKAGE_NAME $EXTRA_ARGS &> /dev/null
-        else
-            gem install $PACKAGE_NAME &> /dev/null
-        fi
+        gem install $PACKAGE_NAME $EXTRA_ARGS &> /dev/null
         print_result $? "$PACKAGE_LABEL"
     fi
 }
@@ -298,7 +399,6 @@ rbenv_install() {
         print_success "Ruby $RUBY_VERSION (already installed)"
     else
         # Use direct command execution instead of the execute function
-        print_in_yellow "  [ ] Ruby $RUBY_VERSION"
         rbenv install "$RUBY_VERSION" &> /dev/null
         print_result $? "Ruby $RUBY_VERSION"
     fi
@@ -306,7 +406,6 @@ rbenv_install() {
     # Set as global if requested
     if [[ "$SET_GLOBAL" == "true" ]]; then
         # Use direct command execution instead of the execute function
-        print_in_yellow "  [ ] Setting Ruby $RUBY_VERSION as global"
         rbenv global "$RUBY_VERSION" &> /dev/null
         print_result $? "Setting Ruby $RUBY_VERSION as global"
     fi
@@ -363,6 +462,11 @@ rustup_install() {
 export PATH="$HOME/.cargo/bin:$PATH"
 EOL
     fi
+    
+    # Load NVM for the current session
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 }
 
 rustup_update() {
@@ -469,8 +573,6 @@ go_install() {
     fi
     
     # Install the package using direct command execution with better error handling
-    print_in_yellow "  [ ] $PACKAGE_LABEL"
-    
     # Try different installation approaches
     # First try with @latest (modern approach)
     go install "$PACKAGE_NAME@$VERSION" &> /dev/null || \
@@ -499,12 +601,11 @@ nvm_install() {
     print_in_purple "\n   Installing NVM\n\n"
     
     # Use direct command execution instead of the execute function
-    print_in_yellow "  [ ] NVM"
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/$NVM_VERSION/install.sh | bash &> /dev/null
     print_result $? "NVM"
     
     # Add NVM to shell configuration if not already there
-    if ! grep -q "NVM_DIR" "$HOME/.zshrc"; then
+    if ! grep -q 'export NVM_DIR="$HOME/.nvm"' "$HOME/.zshrc"; then
         cat >> "$HOME/.zshrc" << 'EOL'
 
 # NVM Configuration
@@ -534,11 +635,10 @@ node_install() {
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
     
     # Check if the requested version is already installed
-    if nvm ls | grep -q "$NODE_VERSION"; then
+    if nvm ls "$NODE_VERSION" &> /dev/null; then
         print_success "Node.js $NODE_VERSION (already installed)"
     else
         # Use direct command execution instead of the execute function
-        print_in_yellow "  [ ] Node.js $NODE_VERSION"
         nvm install "$NODE_VERSION" &> /dev/null
         print_result $? "Node.js $NODE_VERSION"
     fi
@@ -546,7 +646,6 @@ node_install() {
     # Set as default if requested
     if [[ "$2" == "default" ]]; then
         # Use direct command execution instead of the execute function
-        print_in_yellow "  [ ] Setting Node.js $NODE_VERSION as default"
         nvm alias default "$NODE_VERSION" &> /dev/null
         print_result $? "Setting Node.js $NODE_VERSION as default"
     fi
@@ -579,16 +678,13 @@ pyenv_install() {
     if pyenv versions | grep -q "$PYTHON_VERSION"; then
         print_success "Python $PYTHON_VERSION (already installed)"
     else
-        # Use direct command execution instead of the execute function
-        print_in_yellow "  [ ] Python $PYTHON_VERSION"
+        # Install the Python version
         pyenv install "$PYTHON_VERSION" &> /dev/null
         print_result $? "Python $PYTHON_VERSION"
     fi
     
     # Set as global if requested
     if [[ "$SET_GLOBAL" == "true" ]]; then
-        # Use direct command execution instead of the execute function
-        print_in_yellow "  [ ] Setting Python $PYTHON_VERSION as global"
         pyenv global "$PYTHON_VERSION" &> /dev/null
         print_result $? "Setting Python $PYTHON_VERSION as global"
     fi
@@ -625,7 +721,6 @@ rbenv_install() {
         print_success "Ruby $RUBY_VERSION (already installed)"
     else
         # Use direct command execution instead of the execute function
-        print_in_yellow "  [ ] Ruby $RUBY_VERSION"
         rbenv install "$RUBY_VERSION" &> /dev/null
         print_result $? "Ruby $RUBY_VERSION"
     fi
@@ -633,7 +728,6 @@ rbenv_install() {
     # Set as global if requested
     if [[ "$SET_GLOBAL" == "true" ]]; then
         # Use direct command execution instead of the execute function
-        print_in_yellow "  [ ] Setting Ruby $RUBY_VERSION as global"
         rbenv global "$RUBY_VERSION" &> /dev/null
         print_result $? "Setting Ruby $RUBY_VERSION as global"
     fi
@@ -676,15 +770,12 @@ sdk_install() {
         PACKAGE_NAME="$PACKAGE_TYPE"
     fi
     
-    print_in_yellow "  [ ] $DISPLAY_NAME"
-    
     # Check if already installed (more robust check)
     if sdk list "$PACKAGE_TYPE" 2>/dev/null | grep -q "$PACKAGE_NAME" && sdk list "$PACKAGE_TYPE" 2>/dev/null | grep -q "installed"; then
         print_success "$DISPLAY_NAME (already installed)"
         
         # Set as default if requested
         if [[ "$SET_DEFAULT" == "true" ]]; then
-            print_in_yellow "  [ ] Setting $DISPLAY_NAME as default"
             sdk default "$PACKAGE_TYPE" "$PACKAGE_NAME" &> /dev/null
             print_result $? "Setting $DISPLAY_NAME as default"
         fi
@@ -696,13 +787,11 @@ sdk_install() {
     local RESULT=1
     if [[ -n "$VERSION" ]]; then
         # Install specific version
-        print_in_yellow "  [ ] Installing $DISPLAY_NAME..."
-        yes | sdk install "$PACKAGE_TYPE" "$PACKAGE_NAME" &> /dev/null
+        sdk install "$PACKAGE_TYPE" "$PACKAGE_NAME" &> /dev/null
         RESULT=$?
     else
         # Install latest version
-        print_in_yellow "  [ ] Installing latest $DISPLAY_NAME..."
-        yes | sdk install "$PACKAGE_TYPE" &> /dev/null
+        sdk install "$PACKAGE_TYPE" &> /dev/null
         RESULT=$?
     fi
     
@@ -711,7 +800,6 @@ sdk_install() {
         
         # Set as default if requested and installation was successful
         if [[ "$SET_DEFAULT" == "true" ]]; then
-            print_in_yellow "  [ ] Setting $DISPLAY_NAME as default"
             sdk default "$PACKAGE_TYPE" "$PACKAGE_NAME" &> /dev/null
             print_result $? "Setting $DISPLAY_NAME as default"
         fi

@@ -6,106 +6,143 @@ source "${SCRIPT_DIR}/../../utils.zsh"
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+# Minimum supported macOS version for this script
+MINIMUM_MACOS_VERSION="14.0.0"  # macOS Sonoma
+
+# Check macOS version compatibility
+check_macos_compatibility() {
+    local current_version=$(sw_vers -productVersion)
+    
+    if ! is_supported_version "$current_version" "$MINIMUM_MACOS_VERSION"; then
+        print_error "Your macOS version ($current_version) is not supported for Trackpad preferences"
+        print_in_yellow "Please upgrade to macOS Sonoma ($MINIMUM_MACOS_VERSION) or later.\n"
+        return 1
+    fi
+    
+    return 0
+}
+
+# Check compatibility before proceeding
+if ! check_macos_compatibility; then
+    exit 1
+fi
+
+# Get macOS major version for version-specific settings
+MACOS_MAJOR_VERSION=$(sw_vers -productVersion | cut -d. -f1)
+
 print_in_purple "\n   Trackpad\n\n"
 
 # Enable tap to click
-execute "defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true && \
-         defaults write com.apple.AppleMultitouchTrackpad Clicking -int 1 && \
-         defaults write -g com.apple.mouse.tapBehavior -int 1 && \
-         defaults -currentHost write -g com.apple.mouse.tapBehavior -int 1" \
-    "Enable tap to click"
+execute "defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true" \
+    "Enable tap to click for trackpad"
 
-# Configure right-click behavior
-execute "defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadRightClick -bool true && \
-         defaults write com.apple.AppleMultitouchTrackpad TrackpadRightClick -int 1 && \
-         defaults -currentHost write -g com.apple.trackpad.enableSecondaryClick -bool true && \
-         defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadCornerSecondaryClick -int 0 && \
-         defaults write com.apple.AppleMultitouchTrackpad TrackpadCornerSecondaryClick -int 0 && \
-         defaults -currentHost write -g com.apple.trackpad.trackpadCornerClickBehavior -int 0" \
-    "Map 'click or tap with two fingers' to secondary click"
+execute "defaults write com.apple.AppleMultitouchTrackpad Clicking -bool true" \
+    "Enable tap to click for trackpad (system-wide)"
 
-# Enable three finger drag
-execute "defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerDrag -bool true && \
-         defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerDrag -bool true" \
-    "Enable three finger drag"
+execute "defaults -currentHost write NSGlobalDomain com.apple.mouse.tapBehavior -int 1" \
+    "Enable tap to click for the current host"
 
-# Configure tracking speed
-execute "defaults write -g com.apple.trackpad.scaling -float 2.5" \
-    "Set tracking speed"
+execute "defaults write NSGlobalDomain com.apple.mouse.tapBehavior -int 1" \
+    "Enable tap to click globally"
 
-# Enable force click and haptic feedback
-execute "defaults write -g com.apple.trackpad.forceClick -bool true" \
-    "Enable force click and haptic feedback"
+# Enable secondary click (right-click)
+execute "defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadRightClick -bool true" \
+    "Enable secondary click (right-click) for trackpad"
 
-# Configure swipe between pages
-execute "defaults write -g AppleEnableSwipeNavigateWithScrolls -bool true" \
-    "Enable swipe between pages"
+execute "defaults write com.apple.AppleMultitouchTrackpad TrackpadRightClick -bool true" \
+    "Enable secondary click (right-click) for trackpad (system-wide)"
 
-# Configure App Exposé swipe down
-execute "defaults write com.apple.dock showAppExposeGestureEnabled -bool true" \
-    "Enable App Exposé swipe down gesture"
+execute "defaults -currentHost write NSGlobalDomain com.apple.trackpad.enableSecondaryClick -bool true" \
+    "Enable secondary click for the current host"
 
-# Configure Mission Control gesture
-execute "defaults write com.apple.dock showMissionControlGestureEnabled -bool true" \
-    "Enable Mission Control gesture"
+execute "defaults write NSGlobalDomain com.apple.trackpad.enableSecondaryClick -bool true" \
+    "Enable secondary click globally"
 
-# Configure natural scrolling
+# Set tracking speed
+execute "defaults write NSGlobalDomain com.apple.trackpad.scaling -float 2.0" \
+    "Set trackpad tracking speed"
+
+# Enable natural scrolling
 execute "defaults write NSGlobalDomain com.apple.swipescrolldirection -bool true" \
     "Enable natural scrolling"
 
-# Configure momentum scrolling
-execute "defaults write NSGlobalDomain AppleMomentumScrollSupported -bool true" \
-    "Enable momentum scrolling"
+# Enable App Exposé swipe
+execute "defaults write com.apple.dock showAppExposeGestureEnabled -bool true" \
+    "Enable App Exposé swipe"
 
-# Configure zoom gestures
-execute "defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadPinch -bool true" \
-    "Enable pinch to zoom"
+# Enable three finger drag
+if [[ $MACOS_MAJOR_VERSION -ge 14 ]]; then
+    # In Sonoma, this setting might be in a different location
+    print_in_yellow "Note: In macOS Sonoma, three finger drag must be enabled in System Settings > Accessibility > Pointer Control > Trackpad Options\n"
+    execute "defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerDrag -bool true" \
+        "Enable three finger drag (may require manual configuration in System Settings)"
+    execute "defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerDrag -bool true" \
+        "Enable three finger drag for Bluetooth trackpad (may require manual configuration in System Settings)"
+else
+    execute "defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerDrag -bool true" \
+        "Enable three finger drag"
+    execute "defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerDrag -bool true" \
+        "Enable three finger drag for Bluetooth trackpad"
+fi
 
-execute "defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadTwoFingerDoubleTapGesture -bool true" \
-    "Enable smart zoom"
+# Enable Force Click
+execute "defaults write NSGlobalDomain com.apple.trackpad.forceClick -bool true" \
+    "Enable Force Click"
 
-# Configure rotation gesture
-execute "defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadRotate -bool true" \
-    "Enable rotate gesture"
+# Configure gesture settings
+execute "defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerHorizSwipeGesture -int 2" \
+    "Enable three finger swipe between pages"
 
-# Configure notification center gesture
-execute "defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadTwoFingerFromRightEdgeSwipeGesture -int 3" \
-    "Enable notification center gesture"
+execute "defaults write com.apple.AppleMultitouchTrackpad TrackpadFourFingerHorizSwipeGesture -int 2" \
+    "Enable four finger swipe between full-screen apps"
 
-# Configure launchpad gesture
-execute "defaults write com.apple.dock showLaunchpadGestureEnabled -bool true" \
-    "Enable launchpad gesture"
+execute "defaults write com.apple.AppleMultitouchTrackpad TrackpadFourFingerVertSwipeGesture -int 2" \
+    "Enable four finger swipe for Mission Control/App Exposé"
 
-# Configure show desktop gesture
-execute "defaults write com.apple.dock showDesktopGestureEnabled -bool true" \
-    "Enable show desktop gesture"
+execute "defaults write com.apple.AppleMultitouchTrackpad TrackpadFiveFingerPinchGesture -int 2" \
+    "Enable five finger pinch for Launchpad"
 
-# Configure look up gesture
-execute "defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerTapGesture -int 2" \
-    "Enable look up gesture"
+# Configure trackpad corner settings
+if [[ $MACOS_MAJOR_VERSION -ge 14 ]]; then
+    print_in_yellow "Note: In macOS Sonoma, trackpad corner settings may need to be configured in System Settings\n"
+else
+    execute "defaults write com.apple.AppleMultitouchTrackpad TrackpadCornerSecondaryClick -int 2" \
+        "Set bottom right corner to right-click"
+fi
 
-# Configure app switcher gesture
-execute "defaults write com.apple.dock showAppSwitcherGestureEnabled -bool true" \
-    "Enable app switcher gesture"
-
-# Configure pressure sensitivity
+# Configure trackpad haptic feedback
 execute "defaults write com.apple.AppleMultitouchTrackpad FirstClickThreshold -int 1" \
     "Set light clicking pressure"
 
 execute "defaults write com.apple.AppleMultitouchTrackpad SecondClickThreshold -int 1" \
     "Set light second clicking pressure"
 
-# Configure trackpad sound
+# Configure trackpad silent clicking
 execute "defaults write com.apple.AppleMultitouchTrackpad ActuationStrength -int 0" \
-    "Disable trackpad sound"
+    "Enable silent clicking"
 
-# Configure palm rejection
+# Configure trackpad palm rejection
 execute "defaults write com.apple.AppleMultitouchTrackpad PalmNoiseReduction -bool true" \
     "Enable palm rejection"
 
-# Restart affected services
+# Configure trackpad zoom settings
+execute "defaults write com.apple.AppleMultitouchTrackpad TrackpadPinch -bool true" \
+    "Enable pinch to zoom"
+
+execute "defaults write com.apple.AppleMultitouchTrackpad TrackpadRotate -bool true" \
+    "Enable rotate gesture"
+
+# Configure trackpad smart zoom
+execute "defaults write com.apple.AppleMultitouchTrackpad TrackpadTwoFingerDoubleTapGesture -bool true" \
+    "Enable smart zoom"
+
+# Configure trackpad momentum scrolling
+execute "defaults write NSGlobalDomain AppleScrollerPagingBehavior -bool false" \
+    "Enable momentum scrolling"
+
+# Restart affected applications
 execute "killall Dock" \
-    "Restart Dock"
+    "Restart Dock to apply changes"
 
 execute "killall SystemUIServer" \
-    "Restart SystemUIServer"
+    "Restart SystemUIServer to apply changes"

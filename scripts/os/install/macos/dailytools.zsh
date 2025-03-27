@@ -15,7 +15,6 @@ print_in_purple "   System Utilities\n\n"
 if brew list --cask | grep -q "appcleaner"; then
     print_success "AppCleaner (already installed)"
 else
-    print_in_yellow "  [ ] AppCleaner"
     brew install --cask appcleaner &> /dev/null
     print_result $? "AppCleaner"
 fi
@@ -23,7 +22,6 @@ fi
 if brew list --cask | grep -q "rectangle"; then
     print_success "Rectangle (already installed)"
 else
-    print_in_yellow "  [ ] Rectangle"
     brew install --cask rectangle &> /dev/null
     print_result $? "Rectangle"
 fi
@@ -31,7 +29,6 @@ fi
 if brew list --cask | grep -q "spectacle"; then
     print_success "Spectacle (already installed)"
 else
-    print_in_yellow "  [ ] Spectacle"
     brew install --cask spectacle &> /dev/null
     print_result $? "Spectacle"
 fi
@@ -42,7 +39,6 @@ print_in_purple "\n   Cloud Storage\n\n"
 if brew list --cask | grep -q "dropbox"; then
     print_success "Dropbox (already installed)"
 else
-    print_in_yellow "  [ ] Dropbox"
     brew install --cask dropbox &> /dev/null
     print_result $? "Dropbox"
 fi
@@ -50,7 +46,6 @@ fi
 if brew list --cask | grep -q "google-drive"; then
     print_success "Google Drive (already installed)"
 else
-    print_in_yellow "  [ ] Google Drive"
     brew install --cask google-drive &> /dev/null
     print_result $? "Google Drive"
 fi
@@ -61,7 +56,6 @@ print_in_purple "\n   Security Tools\n\n"
 if brew list --cask | grep -q "veracrypt"; then
     print_success "VeraCrypt (already installed)"
 else
-    print_in_yellow "  [ ] VeraCrypt"
     brew install --cask veracrypt &> /dev/null
     print_result $? "VeraCrypt"
 fi
@@ -69,7 +63,6 @@ fi
 if brew list --cask | grep -q "1password"; then
     print_success "1Password (already installed)"
 else
-    print_in_yellow "  [ ] 1Password"
     brew install --cask 1password &> /dev/null
     print_result $? "1Password"
 fi
@@ -80,7 +73,6 @@ print_in_purple "\n   Development Tools\n\n"
 if brew list --cask | grep -q "powershell"; then
     print_success "PowerShell (already installed)"
 else
-    print_in_yellow "  [ ] PowerShell"
     brew install --cask powershell &> /dev/null
     print_result $? "PowerShell"
 fi
@@ -88,7 +80,6 @@ fi
 if brew list --cask | grep -q "iterm2"; then
     print_success "iTerm2 (already installed)"
 else
-    print_in_yellow "  [ ] iTerm2"
     brew install --cask iterm2 &> /dev/null
     print_result $? "iTerm2"
 fi
@@ -99,7 +90,6 @@ print_in_purple "\n   Media Tools\n\n"
 if brew list --cask | grep -q "vlc"; then
     print_success "VLC (already installed)"
 else
-    print_in_yellow "  [ ] VLC"
     brew install --cask vlc &> /dev/null
     print_result $? "VLC"
 fi
@@ -107,7 +97,6 @@ fi
 if brew list --cask | grep -q "smart-converter"; then
     print_success "Smart Converter (already installed)"
 else
-    print_in_yellow "  [ ] Smart Converter"
     brew install --cask smart-converter &> /dev/null
     print_result $? "Smart Converter"
 fi
@@ -118,7 +107,6 @@ print_in_purple "\n   Communication\n\n"
 if brew list --cask | grep -q "slack"; then
     print_success "Slack (already installed)"
 else
-    print_in_yellow "  [ ] Slack"
     brew install --cask slack &> /dev/null
     print_result $? "Slack"
 fi
@@ -126,7 +114,6 @@ fi
 if brew list --cask | grep -q "zoom"; then
     print_success "Zoom (already installed)"
 else
-    print_in_yellow "  [ ] Zoom"
     brew install --cask zoom &> /dev/null
     print_result $? "Zoom"
 fi
@@ -137,7 +124,6 @@ print_in_purple "\n   Productivity Tools\n\n"
 if brew list --cask | grep -q "grammarly"; then
     print_success "Grammarly (already installed)"
 else
-    print_in_yellow "  [ ] Grammarly"
     brew install --cask grammarly &> /dev/null
     print_result $? "Grammarly"
 fi
@@ -145,7 +131,6 @@ fi
 if brew list --cask | grep -q "parallels"; then
     print_success "Parallels Desktop (already installed)"
 else
-    print_in_yellow "  [ ] Parallels Desktop"
     brew install --cask parallels &> /dev/null
     print_result $? "Parallels Desktop"
 fi
@@ -153,7 +138,6 @@ fi
 if brew list --cask | grep -q "goodsync"; then
     print_success "GoodSync (already installed)"
 else
-    print_in_yellow "  [ ] GoodSync"
     brew install --cask goodsync &> /dev/null
     print_result $? "GoodSync"
 fi
@@ -161,7 +145,6 @@ fi
 if brew list --cask | grep -q "snagit"; then
     print_success "SnagIt (already installed)"
 else
-    print_in_yellow "  [ ] SnagIt"
     brew install --cask snagit &> /dev/null
     print_result $? "SnagIt"
 fi
@@ -169,7 +152,6 @@ fi
 if brew list --cask | grep -q "teamviewer"; then
     print_success "TeamViewer (already installed)"
 else
-    print_in_yellow "  [ ] TeamViewer"
     brew install --cask teamviewer &> /dev/null
     print_result $? "TeamViewer"
 fi
@@ -177,7 +159,6 @@ fi
 if brew list --cask | grep -q "anydesk"; then
     print_success "AnyDesk (already installed)"
 else
-    print_in_yellow "  [ ] AnyDesk"
     brew install --cask anydesk &> /dev/null
     print_result $? "AnyDesk"
 fi
@@ -185,7 +166,6 @@ fi
 if brew list --cask | grep -q "notion"; then
     print_success "Notion (already installed)"
 else
-    print_in_yellow "  [ ] Notion"
     brew install --cask notion &> /dev/null
     print_result $? "Notion"
 fi
@@ -193,7 +173,6 @@ fi
 if brew list --cask | grep -q "microsoft-teams"; then
     print_success "Microsoft Teams (already installed)"
 else
-    print_in_yellow "  [ ] Microsoft Teams"
     brew install --cask microsoft-teams &> /dev/null
     print_result $? "Microsoft Teams"
 fi

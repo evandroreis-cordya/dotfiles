@@ -13,7 +13,6 @@ print_in_purple "\n   GPG Tools\n\n"
 if brew list | grep -q "gnupg"; then
     print_success "GPG (already installed)"
 else
-    print_in_yellow "  [ ] GPG"
     brew install gnupg &> /dev/null
     print_result $? "GPG"
 fi
@@ -21,7 +20,6 @@ fi
 if brew list | grep -q "pinentry-mac"; then
     print_success "Pinentry Mac (already installed)"
 else
-    print_in_yellow "  [ ] Pinentry Mac"
     brew install pinentry-mac &> /dev/null
     print_result $? "Pinentry Mac"
 fi
@@ -29,7 +27,6 @@ fi
 if brew list --cask | grep -q "gpg-suite"; then
     print_success "GPG Suite (already installed)"
 else
-    print_in_yellow "  [ ] GPG Suite"
     brew install --cask gpg-suite &> /dev/null
     print_result $? "GPG Suite"
 fi
@@ -38,20 +35,17 @@ fi
 if brew list --cask | grep -q "keybase"; then
     print_success "Keybase (already installed)"
 else
-    print_in_yellow "  [ ] Keybase"
     brew install --cask keybase &> /dev/null
     print_result $? "Keybase"
 fi
 
 # Note: gpgtools is a tap, not a formula
-print_in_yellow "  [ ] GPG Tools (optional)"
 print_warning "GPG Tools is part of GPG Suite which is already installed"
 
 # GPG Agent is included with gnupg
 if command -v gpg-agent &> /dev/null; then
     print_success "GPG Agent (already installed)"
 else
-    print_in_yellow "  [ ] GPG Agent (optional)"
     print_warning "GPG Agent is included with gnupg and should already be available"
 fi
 
@@ -59,8 +53,6 @@ fi
 if command -v pcsc_scan &> /dev/null || brew list | grep -q "pcsclite"; then
     print_success "PCSC-Lite (already installed)"
 else
-    print_in_yellow "  [ ] PCSC-Lite (optional)"
-    # Try to install with Homebrew
     brew install pcsclite &> /dev/null
     if [ $? -eq 0 ]; then
         print_success "PCSC-Lite"
@@ -72,8 +64,6 @@ fi
 if command -v ykman &> /dev/null || brew list | grep -q "yubikey-manager"; then
     print_success "YubiKey Manager (already installed)"
 else
-    print_in_yellow "  [ ] YubiKey Manager (optional)"
-    # Try to install with Homebrew
     brew install yubikey-manager &> /dev/null
     if [ $? -eq 0 ]; then
         print_success "YubiKey Manager"
@@ -85,8 +75,6 @@ fi
 if brew list --cask 2>/dev/null | grep -q "yubikey-personalization-gui"; then
     print_success "YubiKey Personalization GUI (already installed)"
 else
-    print_in_yellow "  [ ] YubiKey Personalization GUI (optional)"
-    # Try to install with Homebrew
     brew install --cask yubikey-personalization-gui &> /dev/null
     if [ $? -eq 0 ]; then
         print_success "YubiKey Personalization GUI"
@@ -99,7 +87,6 @@ fi
 print_in_purple "\n   GPG Configuration\n\n"
 
 # Create GPG config directory
-print_in_yellow "  [ ] Create GPG config directory"
 if [[ -d ~/.gnupg ]]; then
     print_success "GPG config directory already exists"
 else
@@ -108,12 +95,10 @@ else
 fi
 
 # Set secure permissions for GPG directory
-print_in_yellow "  [ ] Set secure permissions for GPG directory"
 chmod 700 ~/.gnupg &> /dev/null
 print_result $? "Set secure permissions for GPG directory"
 
 # Configure GPG Agent
-print_in_yellow "  [ ] Configure GPG agent"
 cat > ~/.gnupg/gpg-agent.conf << EOL
 default-cache-ttl 3600
 max-cache-ttl 7200
@@ -122,12 +107,10 @@ EOL
 print_result $? "Configure GPG agent"
 
 # Set secure permissions for GPG agent config
-print_in_yellow "  [ ] Set secure permissions for GPG agent config"
 chmod 600 ~/.gnupg/gpg-agent.conf &> /dev/null
 print_result $? "Set secure permissions for GPG agent config"
 
 # Configure GPG
-print_in_yellow "  [ ] Configure GPG"
 cat > ~/.gnupg/gpg.conf << EOL
 use-agent
 no-emit-version
@@ -138,17 +121,14 @@ EOL
 print_result $? "Configure GPG"
 
 # Set secure permissions for GPG config
-print_in_yellow "  [ ] Set secure permissions for GPG config"
 chmod 600 ~/.gnupg/gpg.conf &> /dev/null
 print_result $? "Set secure permissions for GPG config"
 
 # Restart GPG Agent
-print_in_yellow "  [ ] Restart GPG agent"
 gpgconf --kill gpg-agent &> /dev/null
 print_result $? "Restart GPG agent"
 
 # Add GPG configuration to shell
-print_in_yellow "  [ ] Add GPG_TTY to .zshrc"
 if grep -q "GPG_TTY" ~/.zshrc; then
     print_success "GPG_TTY already in .zshrc"
 else
@@ -157,11 +137,9 @@ else
 fi
 
 # Configure Git to use GPG signing
-print_in_yellow "  [ ] Enable GPG signing for Git commits"
 git config --global commit.gpgsign true &> /dev/null
 print_result $? "Enable GPG signing for Git commits"
 
-print_in_yellow "  [ ] Set GPG program for Git"
 git config --global gpg.program $(which gpg) &> /dev/null
 print_result $? "Set GPG program for Git"
 

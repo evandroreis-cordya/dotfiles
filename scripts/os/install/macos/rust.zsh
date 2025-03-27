@@ -17,7 +17,6 @@ print_in_purple "\n   Rust Development Tools\n\n"
 # Install Rust using rustup
 if ! command -v rustup &> /dev/null; then
     print_in_purple "\n   Installing Rust\n\n"
-    print_in_yellow "  [ ] Rustup"
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y &> /dev/null
     print_result $? "Rustup"
     
@@ -40,7 +39,6 @@ fi
 source "$HOME/.cargo/env"
 
 # Update Rust
-print_in_yellow "  [ ] Rustup (update)"
 rustup update &> /dev/null
 print_result $? "Rustup (update)"
 
@@ -51,7 +49,6 @@ print_in_purple "\n   Installing Rust Toolchains\n\n"
 if rustup toolchain list | grep -q "nightly"; then
     print_success "Nightly Toolchain (already installed)"
 else
-    print_in_yellow "  [ ] Nightly Toolchain"
     rustup toolchain install nightly &> /dev/null
     print_result $? "Nightly Toolchain"
 fi
@@ -60,7 +57,6 @@ fi
 if rustup component list | grep -q "rust-src (installed)"; then
     print_success "Rust Source (already installed)"
 else
-    print_in_yellow "  [ ] Rust Source"
     rustup component add rust-src &> /dev/null
     print_result $? "Rust Source"
 fi
@@ -69,7 +65,6 @@ fi
 if rustup component list | grep -q "rust-analyzer (installed)"; then
     print_success "Rust Analyzer (already installed)"
 else
-    print_in_yellow "  [ ] Rust Analyzer"
     rustup component add rust-analyzer &> /dev/null
     print_result $? "Rust Analyzer"
 fi
@@ -78,7 +73,6 @@ fi
 if rustup component list | grep -q "clippy (installed)"; then
     print_success "Clippy (already installed)"
 else
-    print_in_yellow "  [ ] Clippy"
     rustup component add clippy &> /dev/null
     print_result $? "Clippy"
 fi
@@ -87,7 +81,6 @@ fi
 if rustup component list | grep -q "rustfmt (installed)"; then
     print_success "Rustfmt (already installed)"
 else
-    print_in_yellow "  [ ] Rustfmt"
     rustup component add rustfmt &> /dev/null
     print_result $? "Rustfmt"
 fi
@@ -100,7 +93,6 @@ print_in_purple "\n   Installing Cargo Extensions\n\n"
 if cargo install --list | grep -q "^cargo-edit "; then
     print_success "Cargo Edit (already installed)"
 else
-    print_in_yellow "  [ ] Cargo Edit"
     cargo install cargo-edit &> /dev/null
     print_result $? "Cargo Edit"
 fi
@@ -109,14 +101,12 @@ fi
 if command -v cargo-watch &> /dev/null || cargo install --list | grep -q "^cargo-watch "; then
     print_success "Cargo Watch (already installed)"
 else
-    print_in_yellow "  [ ] Cargo Watch (optional)"
     # Try installing with Homebrew first, then fall back to cargo
-    if brew install cargo-watch &> /dev/null; then
-        print_success "Cargo Watch"
-    elif cargo install cargo-watch --features=notify &> /dev/null; then
-        print_success "Cargo Watch"
-    else
-        print_warning "Cargo Watch (optional - skipped)"
+    brew install cargo-watch &> /dev/null
+    print_result $? "Cargo Watch"
+    if [ $? -ne 0 ]; then
+        cargo install cargo-watch --features=notify &> /dev/null
+        print_result $? "Cargo Watch"
     fi
 fi
 
@@ -124,7 +114,6 @@ fi
 if cargo install --list | grep -q "^cargo-expand "; then
     print_success "Cargo Expand (already installed)"
 else
-    print_in_yellow "  [ ] Cargo Expand"
     cargo install cargo-expand &> /dev/null
     print_result $? "Cargo Expand"
 fi
@@ -133,7 +122,6 @@ fi
 if cargo install --list | grep -q "^cargo-update "; then
     print_success "Cargo Update (already installed)"
 else
-    print_in_yellow "  [ ] Cargo Update"
     cargo install cargo-update &> /dev/null
     print_result $? "Cargo Update"
 fi
@@ -142,7 +130,6 @@ fi
 if cargo install --list | grep -q "^cargo-audit "; then
     print_success "Cargo Audit (already installed)"
 else
-    print_in_yellow "  [ ] Cargo Audit"
     cargo install cargo-audit &> /dev/null
     print_result $? "Cargo Audit"
 fi
@@ -151,7 +138,6 @@ fi
 if cargo install --list | grep -q "^cargo-outdated "; then
     print_success "Cargo Outdated (already installed)"
 else
-    print_in_yellow "  [ ] Cargo Outdated"
     cargo install cargo-outdated &> /dev/null
     print_result $? "Cargo Outdated"
 fi
@@ -160,7 +146,6 @@ fi
 if cargo install --list | grep -q "^cargo-bloat "; then
     print_success "Cargo Bloat (already installed)"
 else
-    print_in_yellow "  [ ] Cargo Bloat"
     cargo install cargo-bloat &> /dev/null
     print_result $? "Cargo Bloat"
 fi
@@ -169,7 +154,6 @@ fi
 if cargo install --list | grep -q "^flamegraph "; then
     print_success "Cargo Flamegraph (already installed)"
 else
-    print_in_yellow "  [ ] Cargo Flamegraph"
     cargo install flamegraph &> /dev/null
     print_result $? "Cargo Flamegraph"
 fi
@@ -179,7 +163,6 @@ fi
 if cargo install --list | grep -q "^cargo-modules "; then
     print_success "Cargo Modules (already installed)"
 else
-    print_in_yellow "  [ ] Cargo Modules"
     cargo install cargo-modules &> /dev/null
     print_result $? "Cargo Modules"
 fi
@@ -188,7 +171,6 @@ fi
 if cargo install --list | grep -q "^cargo-tree "; then
     print_success "Cargo Tree (already installed)"
 else
-    print_in_yellow "  [ ] Cargo Tree"
     cargo install cargo-tree &> /dev/null
     print_result $? "Cargo Tree"
 fi
@@ -198,7 +180,6 @@ fi
 if cargo install --list | grep -q "^cargo-tarpaulin "; then
     print_success "Cargo Tarpaulin (already installed)"
 else
-    print_in_yellow "  [ ] Cargo Tarpaulin"
     cargo install cargo-tarpaulin &> /dev/null
     print_result $? "Cargo Tarpaulin"
 fi
@@ -207,7 +188,6 @@ fi
 if cargo install --list | grep -q "^cargo-nextest "; then
     print_success "Cargo Nextest (already installed)"
 else
-    print_in_yellow "  [ ] Cargo Nextest"
     cargo install cargo-nextest &> /dev/null
     print_result $? "Cargo Nextest"
 fi
@@ -216,7 +196,6 @@ fi
 if cargo install --list | grep -q "^cargo-criterion "; then
     print_success "Cargo Criterion (already installed)"
 else
-    print_in_yellow "  [ ] Cargo Criterion"
     cargo install cargo-criterion &> /dev/null
     print_result $? "Cargo Criterion"
 fi
@@ -226,14 +205,12 @@ fi
 if command -v cargo-docs &> /dev/null || cargo install --list | grep -q "^cargo-docs "; then
     print_success "Cargo Docs (already installed)"
 else
-    print_in_yellow "  [ ] Cargo Docs (optional)"
     # Try installing with Homebrew first, then fall back to cargo
-    if brew install cargo-docs &> /dev/null; then
-        print_success "Cargo Docs"
-    elif cargo install cargo-docs &> /dev/null; then
-        print_success "Cargo Docs"
-    else
-        print_warning "Cargo Docs (optional - skipped)"
+    brew install cargo-docs &> /dev/null
+    print_result $? "Cargo Docs"
+    if [ $? -ne 0 ]; then
+        cargo install cargo-docs &> /dev/null
+        print_result $? "Cargo Docs"
     fi
 fi
 
@@ -241,7 +218,6 @@ fi
 if cargo install --list | grep -q "^mdbook "; then
     print_success "Mdbook (already installed)"
 else
-    print_in_yellow "  [ ] Mdbook"
     cargo install mdbook &> /dev/null
     print_result $? "Mdbook"
 fi
@@ -251,7 +227,6 @@ fi
 if cargo install --list | grep -q "^cargo-profiler "; then
     print_success "Cargo Profiler (already installed)"
 else
-    print_in_yellow "  [ ] Cargo Profiler"
     cargo install cargo-profiler &> /dev/null
     print_result $? "Cargo Profiler"
 fi
@@ -261,7 +236,6 @@ fi
 if cargo install --list | grep -q "^trunk "; then
     print_success "Trunk (already installed)"
 else
-    print_in_yellow "  [ ] Trunk"
     cargo install trunk &> /dev/null
     print_result $? "Trunk"
 fi
@@ -270,7 +244,6 @@ fi
 if cargo install --list | grep -q "^wasm-pack "; then
     print_success "Wasm Pack (already installed)"
 else
-    print_in_yellow "  [ ] Wasm Pack"
     cargo install wasm-pack &> /dev/null
     print_result $? "Wasm Pack"
 fi
@@ -280,7 +253,6 @@ fi
 if cargo install --list | grep -q "^cargo-generate "; then
     print_success "Cargo Generate (already installed)"
 else
-    print_in_yellow "  [ ] Cargo Generate"
     cargo install cargo-generate &> /dev/null
     print_result $? "Cargo Generate"
 fi
@@ -289,7 +261,6 @@ fi
 if cargo install --list | grep -q "^cargo-make "; then
     print_success "Cargo Make (already installed)"
 else
-    print_in_yellow "  [ ] Cargo Make"
     cargo install cargo-make &> /dev/null
     print_result $? "Cargo Make"
 fi
@@ -350,11 +321,8 @@ EOL
 if command -v sccache &> /dev/null; then
     print_success "sccache (already installed)"
 else
-    print_in_yellow "  [ ] sccache"
     brew install sccache &> /dev/null
     print_result $? "sccache"
 fi
 
 print_in_green "\n  Rust development environment setup complete!\n"
-
-

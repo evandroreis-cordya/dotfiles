@@ -78,6 +78,13 @@ export SHELL=\"$brewPrefix/bin/zsh\"
 main() {
     print_in_purple "\n   Shell\n\n"
 
+    # Check if Java is installed, and install it if needed
+    if ! command -v java &> /dev/null; then
+        print_in_purple "\n   Installing Java Runtime (required dependency)\n\n"
+        brew install --cask temurin &> /dev/null
+        print_result $? "Java Runtime"
+    fi
+
     brew_install "zsh"
     brew_install "zsh-completions"
     brew_install "zsh-syntax-highlighting"

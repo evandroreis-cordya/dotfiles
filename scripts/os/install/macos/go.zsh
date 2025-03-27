@@ -195,7 +195,6 @@ print_result $? "Go development environment"
 brew_install "protobuf" "protobuf"  # Protocol Buffers
 
 # Fix graphviz installation
-print_in_yellow "  [ ] graphviz"
 brew install graphviz &> /dev/null
 print_result $? "graphviz"
 

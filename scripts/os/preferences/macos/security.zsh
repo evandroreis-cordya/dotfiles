@@ -6,200 +6,224 @@ source "${SCRIPT_DIR}/../../utils.zsh"
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-print_in_purple "\n   Security & Privacy\n\n"
+# Minimum supported macOS version for this script
+MINIMUM_MACOS_VERSION="14.0.0"  # macOS Sonoma
 
-# FileVault
-execute "sudo fdesetup status | grep 'FileVault is On' || sudo fdesetup enable" \
-    "Enable FileVault"
+# Check macOS version compatibility
+check_macos_compatibility() {
+    local current_version=$(sw_vers -productVersion)
+    
+    if ! is_supported_version "$current_version" "$MINIMUM_MACOS_VERSION"; then
+        print_error "Your macOS version ($current_version) is not supported for Security preferences"
+        print_in_yellow "Please upgrade to macOS Sonoma ($MINIMUM_MACOS_VERSION) or later.\n"
+        return 1
+    fi
+    
+    return 0
+}
 
-execute "sudo defaults write /Library/Preferences/com.apple.security.fdesetup ShowRecoveryKey -bool false" \
-    "Hide FileVault recovery key"
+# Check compatibility before proceeding
+if ! check_macos_compatibility; then
+    exit 1
+fi
 
-execute "sudo pmset -a destroyfvkeyonstandby 1" \
-    "Destroy FileVault key when going to standby mode"
+# Get macOS major version for version-specific settings
+MACOS_MAJOR_VERSION=$(sw_vers -productVersion | cut -d. -f1)
 
-execute "sudo pmset -a hibernatemode 25" \
-    "Enable secure hibernation mode"
+print_in_purple "\n   Security\n\n"
 
-# Firewall
+# Ensure sudo is available for privileged operations
+sudo_is_active
+
+# General Security Settings
+print_in_yellow "\n • Configuring General Security Settings\n"
+
+# Enable FileVault if not already enabled
+if ! fdesetup isactive >/dev/null; then
+    print_in_yellow "FileVault is not enabled. It's recommended to enable it via System Settings > Privacy & Security.\n"
+    print_in_yellow "This script will not automatically enable FileVault as it requires user interaction.\n"
+else
+    print_success "FileVault is already enabled"
+fi
+
+# Enable Firewall
 execute "sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on" \
     "Enable Firewall"
 
-execute "sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setloggingmode on" \
-    "Enable Firewall Logging"
-
+# Enable Stealth Mode (don't respond to ICMP ping requests)
 execute "sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setstealthmode on" \
-    "Enable Stealth Mode"
+    "Enable Firewall Stealth Mode"
 
-execute "sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setallowsigned on" \
-    "Allow signed apps through firewall"
+# Disable automatic login
+execute "sudo defaults write /Library/Preferences/com.apple.loginwindow autoLoginUser -bool false" \
+    "Disable automatic login"
 
-execute "sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setallowsignedapp on" \
-    "Allow signed app downloads"
+# Require password immediately after sleep or screen saver begins
+execute "defaults write com.apple.screensaver askForPassword -bool true" \
+    "Require password after sleep or screen saver"
 
-execute "sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setblockall on" \
-    "Block all incoming connections"
+execute "defaults write com.apple.screensaver askForPasswordDelay -int 0" \
+    "Require password immediately"
 
-# Gatekeeper
+# Disable IR remote control
+execute "sudo defaults write /Library/Preferences/com.apple.driver.AppleIRController DeviceEnabled -bool false" \
+    "Disable IR remote control"
+
+# Disable guest account
+execute "sudo defaults write /Library/Preferences/com.apple.loginwindow GuestEnabled -bool false" \
+    "Disable guest account"
+
+# Disable sharing of local printers with other computers
+execute "cupsctl --no-share-printers" \
+    "Disable printer sharing"
+
+# Disable Bonjour multicast advertising
+execute "sudo defaults write /Library/Preferences/com.apple.mDNSResponder.plist NoMulticastAdvertisements -bool true" \
+    "Disable Bonjour multicast advertising"
+
+# Application Security Settings
+print_in_yellow "\n • Configuring Application Security Settings\n"
+
+# Enable Gatekeeper
 execute "sudo spctl --master-enable" \
     "Enable Gatekeeper"
 
-execute "sudo spctl --enable" \
-    "Enable app assessment"
+# Enable app verification
+if [[ $MACOS_MAJOR_VERSION -ge 14 ]]; then
+    # macOS Sonoma specific settings
+    execute "sudo defaults write /Library/Preferences/com.apple.security.assessment.plist AllowIdentifiedDevelopers -bool true" \
+        "Allow apps from identified developers (Sonoma)"
+else
+    execute "sudo defaults write /Library/Preferences/com.apple.security GKAutoRearm -bool true" \
+        "Enable app verification (pre-Sonoma)"
+fi
 
-execute "sudo defaults write /Library/Preferences/com.apple.security GKAutoRearm -bool true" \
-    "Auto-rearm Gatekeeper after 30 days"
+# Safari Security Settings
+print_in_yellow "\n • Configuring Safari Security Settings\n"
 
-# Login Window
-execute "sudo defaults write /Library/Preferences/com.apple.loginwindow SHOWFULLNAME -bool true" \
-    "Show name and password fields in login window"
+# Disable Safari's thumbnail cache for History and Top Sites
+execute "defaults write com.apple.Safari DebugSnapshotsUpdatePolicy -int 2" \
+    "Disable Safari's thumbnail cache"
 
-execute "sudo defaults write /Library/Preferences/com.apple.loginwindow RetriesUntilHint -int 0" \
-    "Disable password hints"
+# Enable Safari's debug menu
+execute "defaults write com.apple.Safari IncludeInternalDebugMenu -bool true" \
+    "Enable Safari's debug menu"
 
-execute "sudo defaults write /Library/Preferences/com.apple.loginwindow DisableConsoleAccess -bool true" \
-    "Disable console access at login"
+# Make Safari's search banners default to Contains instead of Starts With
+execute "defaults write com.apple.Safari FindOnPageMatchesWordStartsOnly -bool false" \
+    "Set Safari search to Contains"
 
-execute "sudo defaults write /Library/Preferences/com.apple.loginwindow LoginwindowText 'Unauthorized access is prohibited.'" \
-    "Set login window message"
+# Enable the Develop menu and the Web Inspector in Safari
+execute "defaults write com.apple.Safari IncludeDevelopMenu -bool true" \
+    "Enable Safari Develop menu"
 
-# Password Policy
-execute "sudo pwpolicy -setglobalpolicy 'maxMinutesUntilChangePassword=129600'" \
-    "Set password expiration to 90 days"
+execute "defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true" \
+    "Enable Safari WebKit developer extras"
 
-execute "sudo pwpolicy -setglobalpolicy 'minChars=12'" \
-    "Set minimum password length to 12 characters"
+execute "defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled -bool true" \
+    "Enable Safari WebKit2 developer extras"
 
-execute "sudo pwpolicy -setglobalpolicy 'requiresNumeric=1 requiresAlpha=1 requiresSymbol=1'" \
-    "Require complex passwords"
-
-# Screen Lock
-execute "defaults write com.apple.screensaver askForPassword -int 1" \
-    "Require password immediately after sleep or screen saver"
-
-execute "defaults write com.apple.screensaver askForPasswordDelay -int 0" \
-    "Set password delay to 0 seconds"
-
-execute "defaults write com.apple.screensaver idleTime -int 300" \
-    "Set screen saver timeout to 5 minutes"
-
-execute "defaults write com.apple.screensaver moduleDict -dict moduleName 'Random' path '/System/Library/Screen Savers/Random.saver'" \
-    "Set screen saver to Random"
-
-# Safari Security
+# Warn about fraudulent websites
 execute "defaults write com.apple.Safari WarnAboutFraudulentWebsites -bool true" \
     "Warn about fraudulent websites"
 
+# Disable Java
 execute "defaults write com.apple.Safari WebKitJavaEnabled -bool false" \
-    "Disable Java"
+    "Disable Java in Safari"
 
+execute "defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaEnabled -bool false" \
+    "Disable Java in Safari WebKit2"
+
+# Block pop-up windows
 execute "defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically -bool false" \
-    "Block pop-up windows"
+    "Block pop-up windows in Safari"
 
+execute "defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaScriptCanOpenWindowsAutomatically -bool false" \
+    "Block pop-up windows in Safari WebKit2"
+
+# Enable Do Not Track
 execute "defaults write com.apple.Safari SendDoNotTrackHTTPHeader -bool true" \
-    "Enable Do Not Track"
+    "Enable Do Not Track in Safari"
 
-execute "defaults write com.apple.Safari AutoFillPasswords -bool false" \
-    "Disable AutoFill passwords"
+# Update extensions automatically
+execute "defaults write com.apple.Safari InstallExtensionUpdatesAutomatically -bool true" \
+    "Update Safari extensions automatically"
 
-execute "defaults write com.apple.Safari AutoFillCreditCardData -bool false" \
-    "Disable AutoFill credit cards"
+# Privacy Settings
+print_in_yellow "\n • Configuring Privacy Settings\n"
 
-execute "defaults write com.apple.Safari WebKitPreferences.privateClickMeasurementEnabled -bool true" \
-    "Enable Private Click Measurement"
-
-execute "defaults write com.apple.Safari WebKitPreferences.dnsPrefetchingEnabled -bool false" \
-    "Disable DNS prefetching"
-
-# System Security
-execute "sudo defaults write /Library/Preferences/com.apple.security GKAutoRearm -bool true" \
-    "Auto-rearm Gatekeeper after 30 days"
-
-execute "defaults write com.apple.CrashReporter DialogType -string 'none'" \
-    "Disable crash reporter"
-
-execute "sudo defaults write /Library/Preferences/com.apple.security.libraryvalidation Enabled -bool true" \
-    "Enable library validation"
-
-execute "sudo defaults write /Library/Preferences/com.apple.security.plist SecureTimestamp -bool true" \
-    "Enable secure timestamp"
-
-# Privacy
-execute "defaults write com.apple.assistant.support 'Assistant Enabled' -bool false" \
-    "Disable Siri"
-
-execute "defaults write com.apple.AdLib allowApplePersonalizedAdvertising -bool false" \
-    "Disable personalized advertising"
-
+# Disable sending Safari search queries to Apple
 execute "defaults write com.apple.Safari UniversalSearchEnabled -bool false" \
-    "Disable Safari Universal Search"
+    "Disable sending Safari search queries to Apple"
 
 execute "defaults write com.apple.Safari SuppressSearchSuggestions -bool true" \
-    "Disable Safari Search Suggestions"
+    "Disable Safari search suggestions"
 
-execute "defaults write com.apple.locationd LocationServicesEnabled -bool false" \
-    "Disable Location Services"
+# Disable analytics data submission
+if [[ $MACOS_MAJOR_VERSION -ge 14 ]]; then
+    print_in_yellow "Note: In macOS Sonoma, analytics settings are managed in System Settings > Privacy & Security > Analytics & Improvements\n"
+else
+    execute "defaults write /Library/Application\ Support/CrashReporter/DiagnosticMessagesHistory.plist AutoSubmit -bool false" \
+        "Disable automatic submission of diagnostic reports"
+    
+    execute "defaults write /Library/Application\ Support/CrashReporter/DiagnosticMessagesHistory.plist ThirdPartyDataSubmit -bool false" \
+        "Disable third-party diagnostic data submission"
+fi
 
-execute "defaults write com.apple.security.privacy AllowAppsToRequestAccess -bool false" \
-    "Disable apps requesting access to protected data"
+# Disable location services for Spotlight suggestions
+execute "defaults write com.apple.safari.spotlighthelper LocationServicesEnabled -bool false" \
+    "Disable location services for Spotlight suggestions"
 
-execute "defaults write com.apple.assistant.backedup 'Use device speaker for TTS' -int 3" \
-    "Disable Hey Siri"
+# Network Security
+print_in_yellow "\n • Configuring Network Security Settings\n"
 
-# Secure Keyboard Entry
-execute "defaults write com.apple.terminal SecureKeyboardEntry -bool true" \
-    "Enable secure keyboard entry in Terminal"
+# Disable wake on network access
+execute "sudo pmset -a womp 0" \
+    "Disable wake on network access"
 
-# Time Machine
+# Disable remote login (SSH)
+execute "sudo systemsetup -setremotelogin off" \
+    "Disable remote login (SSH)"
+
+# Disable remote Apple events
+execute "sudo systemsetup -setremoteappleevents off" \
+    "Disable remote Apple events"
+
+# Disable Bluetooth sharing
+execute "defaults write com.apple.Bluetooth PrefKeyServicesEnabled -bool false" \
+    "Disable Bluetooth sharing"
+
+# Disable AirDrop
+execute "defaults write com.apple.NetworkBrowser DisableAirDrop -bool true" \
+    "Disable AirDrop"
+
+# Disable automatic joining of WiFi networks
+execute "defaults write /Library/Preferences/SystemConfiguration/com.apple.airport.preferences RememberRecentNetworks -bool false" \
+    "Disable automatic joining of WiFi networks"
+
+execute "defaults write /Library/Preferences/SystemConfiguration/com.apple.airport.preferences JoinMode -string 'Preferred'" \
+    "Set WiFi join mode to Preferred"
+
+# Time Machine Security
+print_in_yellow "\n • Configuring Time Machine Security Settings\n"
+
+# Disable Time Machine prompts to use new hard drives as backup volume
 execute "defaults write com.apple.TimeMachine DoNotOfferNewDisksForBackup -bool true" \
-    "Disable Time Machine prompts for new disks"
+    "Disable Time Machine new disk prompts"
 
-execute "defaults write com.apple.TimeMachine RequiresEncryption -bool true" \
-    "Require encrypted Time Machine backups"
-
-# Software Updates
-execute "defaults write com.apple.SoftwareUpdate AutomaticCheckEnabled -bool true" \
-    "Enable automatic update checks"
-
-execute "defaults write com.apple.SoftwareUpdate AutomaticDownload -bool true" \
-    "Enable automatic downloads"
-
-execute "defaults write com.apple.SoftwareUpdate CriticalUpdateInstall -bool true" \
-    "Install critical updates automatically"
-
-execute "defaults write com.apple.commerce AutoUpdate -bool true" \
-    "Enable automatic App Store updates"
-
-execute "defaults write com.apple.SoftwareUpdate ConfigDataInstall -bool true" \
-    "Install system data files"
-
-execute "defaults write com.apple.SoftwareUpdate AutomaticallyInstallMacOSUpdates -bool true" \
-    "Install macOS updates automatically"
-
-# Secure Empty Trash
-execute "defaults write com.apple.finder EmptyTrashSecurely -bool true" \
-    "Enable secure empty trash"
-
-# Bluetooth Security
-execute "defaults write com.apple.Bluetooth ControllerPowerState -int 0" \
-    "Disable Bluetooth by default"
-
-execute "defaults write com.apple.Bluetooth DisableIncomingRequests -bool true" \
-    "Disable incoming Bluetooth requests"
-
-# iCloud Security
-execute "defaults write com.apple.icloud FindMyMac -bool true" \
-    "Enable Find My Mac"
-
-execute "defaults write com.apple.icloud KeychainSyncEnabled -bool false" \
-    "Disable iCloud Keychain sync"
+# Disable local Time Machine backups
+execute "sudo tmutil disablelocal" \
+    "Disable local Time Machine backups"
 
 # Restart affected services
+print_in_yellow "\n • Applying changes and restarting services\n"
+
 execute "killall Finder" \
     "Restart Finder"
 
 execute "killall SystemUIServer" \
     "Restart SystemUIServer"
 
-execute "sudo pkill -f bluetoothd" \
-    "Restart Bluetooth daemon"
+print_success "Security preferences have been configured"
+print_in_yellow "Note: Some security settings may require a system restart to take effect.\n"
+print_in_yellow "Note: Some settings may need to be manually configured in System Settings > Privacy & Security.\n"

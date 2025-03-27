@@ -6,6 +6,27 @@ source "${SCRIPT_DIR}/../../utils.zsh"
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+# Minimum supported macOS version for this script
+MINIMUM_MACOS_VERSION="14.0.0"  # macOS Sonoma
+
+# Check macOS version compatibility
+check_macos_compatibility() {
+    local current_version=$(sw_vers -productVersion)
+    
+    if ! is_supported_version "$current_version" "$MINIMUM_MACOS_VERSION"; then
+        print_error "Your macOS version ($current_version) is not supported for Dock preferences"
+        print_in_yellow "Please upgrade to macOS Sonoma ($MINIMUM_MACOS_VERSION) or later.\n"
+        return 1
+    fi
+    
+    return 0
+}
+
+# Check compatibility before proceeding
+if ! check_macos_compatibility; then
+    exit 1
+fi
+
 print_in_purple "\n   Dock\n\n"
 
 # Dock Appearance
@@ -64,11 +85,21 @@ execute "defaults write com.apple.dock showhidden -bool true" \
 execute "defaults write com.apple.dock enable-spring-load-actions-on-all-items -bool true" \
     "Enable spring loading for all Dock items"
 
-execute "defaults write com.apple.dock persistent-apps -array" \
-    "Remove all persistent apps from Dock"
+# Modern macOS uses persistent-apps differently - clear with caution
+if [[ $(sw_vers -productVersion | cut -d. -f1) -ge 14 ]]; then
+    print_in_yellow "Note: Not removing persistent apps from Dock on macOS Sonoma or later\n"
+else
+    execute "defaults write com.apple.dock persistent-apps -array" \
+        "Remove all persistent apps from Dock"
+fi
 
-execute "defaults write com.apple.dock static-only -bool true" \
-    "Show only active applications in Dock"
+# This setting might not work as expected in newer macOS versions
+if [[ $(sw_vers -productVersion | cut -d. -f1) -ge 14 ]]; then
+    print_in_yellow "Note: 'Show only active applications' may not work as expected in macOS Sonoma or later\n"
+else
+    execute "defaults write com.apple.dock static-only -bool true" \
+        "Show only active applications in Dock"
+fi
 
 execute "defaults write com.apple.dock show-process-indicators -bool true" \
     "Show application indicators"
@@ -90,8 +121,13 @@ execute "defaults write com.apple.dock show-recently-used-items -bool false" \
 execute "defaults write com.apple.dock expose-animation-duration -float 0.1" \
     "Speed up Mission Control animations"
 
-execute "defaults write com.apple.dock dashboard-in-overlay -bool true" \
-    "Don't show Dashboard as a Space"
+# Dashboard is deprecated in macOS Catalina and later
+if [[ $(sw_vers -productVersion | cut -d. -f1) -lt 11 ]]; then
+    execute "defaults write com.apple.dock dashboard-in-overlay -bool true" \
+        "Don't show Dashboard as a Space"
+else
+    print_in_yellow "Note: Dashboard is no longer available in macOS Catalina and later\n"
+fi
 
 execute "defaults write com.apple.dock expose-group-by-app -bool false" \
     "Don't group windows by application in Mission Control"
@@ -126,12 +162,12 @@ execute "defaults write com.apple.dock ResetLaunchPad -bool true" \
 #  4: Desktop
 #  5: Start screen saver
 #  6: Disable screen saver
-#  7: Dashboard
+#  7: Dashboard (removed in macOS Catalina)
 # 10: Put display to sleep
 # 11: Launchpad
 # 12: Notification Center
 # 13: Lock Screen
-# 14: Quick Note
+# 14: Quick Note (macOS Monterey and later)
 
 # Top left hot corner → Mission Control
 execute "defaults write com.apple.dock wvous-tl-corner -int 2 && \
@@ -148,10 +184,18 @@ execute "defaults write com.apple.dock wvous-bl-corner -int 5 && \
          defaults write com.apple.dock wvous-bl-modifier -int 0" \
     "Set bottom left hot corner to Start screen saver"
 
-# Bottom right hot corner → Quick Note
-execute "defaults write com.apple.dock wvous-br-corner -int 14 && \
-         defaults write com.apple.dock wvous-br-modifier -int 0" \
-    "Set bottom right hot corner to Quick Note"
+# Quick Note is only available in macOS Monterey (12.0) and later
+if [[ $(sw_vers -productVersion | cut -d. -f1) -ge 12 ]]; then
+    # Bottom right hot corner → Quick Note
+    execute "defaults write com.apple.dock wvous-br-corner -int 14 && \
+             defaults write com.apple.dock wvous-br-modifier -int 0" \
+        "Set bottom right hot corner to Quick Note"
+else
+    # Bottom right hot corner → Notification Center (fallback for older macOS)
+    execute "defaults write com.apple.dock wvous-br-corner -int 12 && \
+             defaults write com.apple.dock wvous-br-modifier -int 0" \
+        "Set bottom right hot corner to Notification Center"
+fi
 
 # Restart Dock to apply changes
 execute "killall Dock" \

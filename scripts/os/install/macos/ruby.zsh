@@ -34,14 +34,13 @@ rbenv_install "3.3.0" "true"
 print_in_purple "\n   Updating RubyGems and Installing Bundler\n\n"
 
 # Use direct command execution instead of the execute function
-print_in_yellow "  [ ] RubyGems"
 gem update --system &> /dev/null
 print_result $? "RubyGems"
 
 gem_install "Bundler" "bundler"
 
 # Install global development tools
-print_in_purple "\n   Installing Development Tools\n\n"
+print_in_purple "\n   Installing More Ruby Development Tools\n\n"
 
 # Package Management
 gem_install "Bundler" "bundler"
@@ -72,30 +71,67 @@ gem_install "Sinatra" "sinatra"
 gem_install "Rack" "rack"
 gem_install "Puma" "puma"
 
-# # Fix Thin gem installation with better error handling
-# print_in_yellow "  [ ] Thin"
-# # Install eventmachine first as it's a dependency for Thin
-# gem install eventmachine --no-document &> /dev/null
-# # Try different installation approaches for Thin
-# gem install thin --no-document &> /dev/null || \
-# gem install thin --no-document --conservative &> /dev/null || \
-# gem install thin --no-document --platform=ruby &> /dev/null || \
-# print_error "Failed to install Thin gem. You may need to install system dependencies."
-# print_success "Thin"
+# Install Thin
+if gem list | grep -q "^thin "; then
+    print_success "Thin (already installed)"
+else
+    gem install thin &> /dev/null
+    print_result $? "Thin"
+fi
 
 # Database Tools
 gem_install "ActiveRecord" "activerecord"
 gem_install "Sequel" "sequel"
 gem_install "PG" "pg"
 
-# Fix MySQL2 gem installation with better error handling
-print_in_yellow "  [ ] MySQL2"
-# Try different installation approaches for MySQL2
-gem install mysql2 --no-document &> /dev/null || \
-gem install mysql2 --no-document --conservative &> /dev/null || \
-gem install mysql2 --no-document --platform=ruby &> /dev/null || \
-print_error "Failed to install MySQL2 gem. You may need to install MySQL server first."
-print_success "MySQL2"
+# Install MySQL and necessary dependencies
+print_in_purple "\n   Installing MySQL and dependencies\n\n"
+
+# Install MySQL
+brew_install "mysql" "mysql"
+
+# Install OpenSSL (required for MySQL2 gem)
+brew_install "openssl" "openssl"
+
+# Make sure MySQL is properly installed and running
+if ! brew services list | grep -q "mysql.*started"; then
+    brew services start mysql &> /dev/null
+    print_result $? "Starting MySQL service"
+    # Wait for MySQL to start
+    sleep 3
+fi
+
+# Fix MySQL2 gem installation
+print_in_purple "\n   Installing MySQL2 gem\n\n"
+
+# Get paths for required libraries
+MYSQL_DIR=$(brew --prefix mysql)
+OPENSSL_DIR=$(brew --prefix openssl)
+
+# Create a script to install the MySQL2 gem with all necessary flags
+cat > /tmp/install_mysql2_gem.sh << EOL
+#!/bin/bash
+export LDFLAGS="-L${MYSQL_DIR}/lib -L${OPENSSL_DIR}/lib"
+export CPPFLAGS="-I${MYSQL_DIR}/include -I${OPENSSL_DIR}/include"
+export LIBRARY_PATH="${MYSQL_DIR}/lib:${OPENSSL_DIR}/lib"
+export PKG_CONFIG_PATH="${MYSQL_DIR}/lib/pkgconfig:${OPENSSL_DIR}/lib/pkgconfig"
+export ARCHFLAGS="-arch $(uname -m)"
+
+# Try different installation methods
+gem install mysql2 --no-document -- --with-mysql-config=${MYSQL_DIR}/bin/mysql_config || \
+gem install mysql2 --no-document -- --with-mysql-dir=${MYSQL_DIR} || \
+gem install mysql2 --no-document -- --with-opt-dir=${MYSQL_DIR}:${OPENSSL_DIR}
+EOL
+
+# Make the script executable
+chmod +x /tmp/install_mysql2_gem.sh
+
+# Run the script
+/tmp/install_mysql2_gem.sh &> /dev/null
+print_result $? "MySQL2"
+
+# Clean up
+rm /tmp/install_mysql2_gem.sh
 
 gem_install "SQLite3" "sqlite3"
 
@@ -118,28 +154,22 @@ gem_install "YAML" "yaml"
 gem_install "Thor" "thor"
 
 # DevOps Tools
-print_in_yellow "  [ ] Capistrano"
 gem install capistrano &> /dev/null
 print_result $? "Capistrano"
 
-print_in_yellow "  [ ] Mina"
 gem install mina &> /dev/null
 print_result $? "Mina"
 
-print_in_yellow "  [ ] Puppet"
 gem install puppet &> /dev/null
 print_result $? "Puppet"
 
-print_in_yellow "  [ ] Chef"
 gem install chef &> /dev/null
 print_result $? "Chef"
 
 # Security Tools
-print_in_yellow "  [ ] Brakeman"
 gem install brakeman &> /dev/null
 print_result $? "Brakeman"
 
-print_in_yellow "  [ ] Bundler Audit"
 gem install bundler-audit &> /dev/null
 print_result $? "Bundler Audit"
 

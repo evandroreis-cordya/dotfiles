@@ -26,14 +26,11 @@ else
     node_install "lts/*" "default"  # Install latest LTS version and set as default
     
     # Ensure the default Node.js version is being used
-    print_in_yellow "  [ ] Activating Node.js environment"
     nvm use default &> /dev/null
     print_result $? "Node.js environment activation"
     
     # If npm is not available, try a more direct approach
     if ! command -v npm &> /dev/null; then
-        print_in_yellow "  [ ] Setting up npm"
-        
         # Get the path to the installed Node.js version
         NODE_PATH=$(nvm which default 2>/dev/null)
         if [[ -n "$NODE_PATH" ]]; then

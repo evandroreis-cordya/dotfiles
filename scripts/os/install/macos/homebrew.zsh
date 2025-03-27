@@ -40,20 +40,20 @@ configure_homebrew() {
     print_in_purple "\n   Configuring Homebrew\n\n"
 
     # Opt-out of Homebrew's analytics
-    brew analytics off
+    brew analytics off &> /dev/null
 
     # Note: The following taps have been deprecated as their contents
     # have been migrated to the main Homebrew repositories
     # No need to tap them explicitly anymore
 
     # Update Homebrew recipes
-    brew update
+    brew update &> /dev/null
 
     # Upgrade any already-installed formulae
-    brew upgrade
+    brew upgrade &> /dev/null
 
     # Remove outdated versions from the cellar
-    brew cleanup
+    brew cleanup &> /dev/null
 
     print_result $? "Homebrew (configuration)"
 }
