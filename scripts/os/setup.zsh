@@ -169,12 +169,12 @@ select_script_groups() {
     local answer
     
     print_in_purple "\n >> Installation Options\n\n"
-    print_in_yellow "Would you like to install the complete toolset or select specific groups?\n"
+    print_in_yellow "Would you like to install the complete toolset or select specific groups?\n\n"
     print_in_yellow "1) Install complete toolset (all groups)\n"
-    print_in_yellow "2) Select specific groups to install\n"
+    print_in_yellow "2) Select specific groups to install\n\n"
     
-    # Use zsh's special read syntax with a prompt
-    read -r "answer?Enter your choice (1/2): "
+    answer=""
+    vared -p $'Enter your choice (1/2): ' answer
     
     if [[ "$answer" == "2" ]]; then
         # Reset all groups to false
@@ -182,71 +182,80 @@ select_script_groups() {
             SELECTED_GROUPS[$group]="false"
         done
         
-        # Display interactive menu for each group
+        print_in_purple " >> Available groups to install\n\n"
+
         for group in ${(k)SCRIPT_GROUPS}; do
-            local group_answer
-            # Use zsh's special read syntax with a prompt
-            read -r "group_answer?Install ${SCRIPT_GROUPS[$group]}? (y/n): "
+            local group_answer=""
+            
+            vared -p $'Install '"${SCRIPT_GROUPS[$group]}"$'? (y/n): ' group_answer
             
             if [[ "$group_answer" =~ ^[Yy]$ ]]; then
                 SELECTED_GROUPS[$group]="true"
-                print_success "Selected: ${SCRIPT_GROUPS[$group]}"
             else
-                print_in_yellow "Skipping: ${SCRIPT_GROUPS[$group]}"
+                SELECTED_GROUPS[$group]="false"
             fi
         done
         
         # Summary of selected groups
-        print_in_purple "\n >> Installation Summary\n\n"
+        print_in_purple "\n\n >> Installation Summary\n\n"
         for group in ${(k)SCRIPT_GROUPS}; do
             if [[ "${SELECTED_GROUPS[$group]}" == "true" ]]; then
-                print_success "Will install: ${SCRIPT_GROUPS[$group]}"
+                print_in_green "Will install: ${SCRIPT_GROUPS[$group]}\n"
             else
-                print_in_yellow "Will skip: ${SCRIPT_GROUPS[$group]}"
+                print_in_red "Will skip: ${SCRIPT_GROUPS[$group]}\n"
             fi
         done
         
         # Confirmation
-        read -r "answer?Proceed with installation? (y/n): "
-        if [[ ! "$answer" =~ ^[Yy]$ ]]; then
-            print_in_red "Installation cancelled by user."
+        local confirm_answer=""
+        vared -p $'\n\n >> Proceed with installation? (y/n): ' confirm_answer
+        
+        if [[ ! "$confirm_answer" =~ ^[Yy]$ ]]; then
+            print_in_red "\n\n** Installation cancelled by user!!\n\n"
             exit 0
         fi
     else
-        print_in_green "Installing complete toolset (all groups)\n"
+        print_in_green "\n\nInstalling complete toolset (all groups).\n\n"
     fi
 }
 
 # Function to update configuration
 update_configuration() {
-    local update_config
+    local update_config=""
     
-    # Use zsh's special read syntax with a prompt
-    read -r "update_config?Would you like to update this configuration? (y/n): "
+    vared -p $'Would you like to update this configuration? (y/n): ' update_config
     
     if [[ "$update_config" =~ ^[Yy]$ ]]; then
         print_in_yellow "\nEnter new values (or press Enter to keep current value):\n"
         
         # Update hostname
-        read -r "new_hostname?Hostname [$HOSTNAME]: "
+        local new_hostname=""
+        vared -p $'Hostname ['"$HOSTNAME"$']: ' new_hostname
+        
         if [[ -n "$new_hostname" ]]; then
             HOSTNAME="$new_hostname"
         fi
         
         # Update username
-        read -r "new_username?Username [$USERNAME]: "
+        local new_username=""
+        vared -p $'Username ['"$USERNAME"$']: ' new_username
+        
         if [[ -n "$new_username" ]]; then
             USERNAME="$new_username"
         fi
         
         # Update email
-        read -r "new_email?Email [$EMAIL]: "
+        local new_email=""
+        vared -p $'Email ['"$EMAIL"$']: ' new_email
+        
         if [[ -n "$new_email" ]]; then
             EMAIL="$new_email"
         fi
         
         # Update directory
-        read -r "new_directory?Directory [$DIRECTORY]: "
+        local new_directory=""
+        vared -p $'Directory ['"$DIRECTORY"$']: ' new_directory
+        
         if [[ -n "$new_directory" ]]; then
             DIRECTORY="$new_directory"
         fi
