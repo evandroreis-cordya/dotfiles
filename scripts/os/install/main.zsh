@@ -12,7 +12,7 @@ USERNAME=${2:-$(whoami)}
 EMAIL=${3:-"evandro.reis@avos.ai"}
 DIRECTORY=${4:-"$HOME"}
 
-print_in_purple "\n • Starting installation...\n\n"
+print_in_purple "\n >> Starting installation...\n\n"
 
 # Get OS type and run appropriate setup script
 OS_TYPE=$(get_os)
@@ -23,4 +23,4 @@ else
     exit 1
 fi
 
-print_in_purple "\n • Installation completed!\n\n"
+print_in_purple "\n >> Installation completed!\n\n"

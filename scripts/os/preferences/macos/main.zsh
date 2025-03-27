@@ -17,7 +17,7 @@ MINIMUM_MACOS_VERSION="14.0.0"  # macOS Sonoma
 check_macos_compatibility() {
     local current_version=$(sw_vers -productVersion)
     
-    print_in_yellow "\n • Checking macOS version compatibility\n"
+    print_in_yellow "\n >> Checking macOS version compatibility\n"
     print_in_yellow "   Current macOS version: $current_version\n"
     print_in_yellow "   Minimum supported version: $MINIMUM_MACOS_VERSION\n"
     
@@ -106,7 +106,7 @@ fi
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-print_in_purple "\n • Applying Selected System Preferences\n\n"
+print_in_purple "\n >> Applying Selected System Preferences\n\n"
 
 # Define all available preference scripts with their categories
 typeset -A PREFERENCE_SCRIPTS
@@ -184,10 +184,10 @@ for script in ${(k)PREFERENCE_SCRIPTS}; do
     fi
 done
 
-print_in_purple "\n • System preferences configuration completed\n\n"
+print_in_purple "\n >> System preferences configuration completed\n\n"
 
 # Application Preferences
 # Add application preferences scripts here if needed
 
-print_in_purple "\n • All selected preferences have been configured\n\n"
+print_in_purple "\n >> All selected preferences have been configured\n\n"
 print_in_yellow "Note: Some changes may require a system restart to take effect.\n"

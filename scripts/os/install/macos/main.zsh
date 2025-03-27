@@ -7,11 +7,11 @@ source "${SCRIPT_DIR}/utils.zsh"
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-print_in_purple "\n • Starting macOS setup\n\n"
+print_in_purple "\n >> Starting macOS setup\n\n"
 
 # System setup scripts
 if [[ "${SELECTED_GROUPS[system]}" == "true" ]]; then
-    print_in_purple "\n • Installing System Setup\n\n"
+    print_in_purple "\n >> Installing System Setup\n\n"
     source "${SCRIPT_DIR}/xcode.zsh"
     source "${SCRIPT_DIR}/homebrew.zsh"
     # #source "${SCRIPT_DIR}/bash.zsh"
@@ -21,7 +21,7 @@ fi
 
 # Development environments
 if [[ "${SELECTED_GROUPS[dev_langs]}" == "true" ]]; then
-    print_in_purple "\n • Installing Development Languages\n\n"
+    print_in_purple "\n >> Installing Development Languages\n\n"
     source "${SCRIPT_DIR}/python.zsh"
     source "${SCRIPT_DIR}/node.zsh"
     source "${SCRIPT_DIR}/ruby.zsh"
@@ -35,13 +35,13 @@ fi
 
 # Data Science environment
 if [[ "${SELECTED_GROUPS[data_science]}" == "true" ]]; then
-    print_in_purple "\n • Installing Data Science Environment\n\n"
+    print_in_purple "\n >> Installing Data Science Environment\n\n"
     source "${SCRIPT_DIR}/datascience.zsh"
 fi
 
 # Development tools
 if [[ "${SELECTED_GROUPS[dev_tools]}" == "true" ]]; then
-    print_in_purple "\n • Installing Development Tools\n\n"
+    print_in_purple "\n >> Installing Development Tools\n\n"
     source "${SCRIPT_DIR}/devtools.zsh"
     source "${SCRIPT_DIR}/databasetools.zsh"
     source "${SCRIPT_DIR}/docker.zsh"
@@ -54,7 +54,7 @@ fi
 
 # Web and frontend tools
 if [[ "${SELECTED_GROUPS[web_tools]}" == "true" ]]; then
-    print_in_purple "\n • Installing Web and Frontend Tools\n\n"
+    print_in_purple "\n >> Installing Web and Frontend Tools\n\n"
     source "${SCRIPT_DIR}/frontend_tools.zsh"
     source "${SCRIPT_DIR}/backend_tools.zsh"
     source "${SCRIPT_DIR}/web_font_tools.zsh"
@@ -62,7 +62,7 @@ fi
 
 # Daily tools and utilities
 if [[ "${SELECTED_GROUPS[daily_tools]}" == "true" ]]; then
-    print_in_purple "\n • Installing Daily Tools and Utilities\n\n"
+    print_in_purple "\n >> Installing Daily Tools and Utilities\n\n"
     source "${SCRIPT_DIR}/browsers.zsh"
     source "${SCRIPT_DIR}/browser_tools.zsh"
     source "${SCRIPT_DIR}/compression_tools.zsh"
@@ -76,7 +76,7 @@ fi
 
 # Media and creative tools
 if [[ "${SELECTED_GROUPS[media_tools]}" == "true" ]]; then
-    print_in_purple "\n • Installing Media and Creative Tools\n\n"
+    print_in_purple "\n >> Installing Media and Creative Tools\n\n"
     source "${SCRIPT_DIR}/video_tools.zsh"
     source "${SCRIPT_DIR}/image_tools.zsh"
     source "${SCRIPT_DIR}/creative_tools.zsh"
@@ -84,7 +84,7 @@ fi
 
 # Cloud and DevOps tools
 if [[ "${SELECTED_GROUPS[cloud_tools]}" == "true" ]]; then
-    print_in_purple "\n • Installing Cloud and DevOps Tools\n\n"
+    print_in_purple "\n >> Installing Cloud and DevOps Tools\n\n"
     source "${SCRIPT_DIR}/cloud_tools.zsh"
     source "${SCRIPT_DIR}/security_tools.zsh"
     source "${SCRIPT_DIR}/vercel_tools.zsh"
@@ -92,7 +92,7 @@ fi
 
 # AI and productivity tools
 if [[ "${SELECTED_GROUPS[ai_tools]}" == "true" ]]; then
-    print_in_purple "\n • Installing AI and Productivity Tools\n\n"
+    print_in_purple "\n >> Installing AI and Productivity Tools\n\n"
     source "${SCRIPT_DIR}/ai_tools.zsh"
     source "${SCRIPT_DIR}/ai_desktop_tools.zsh"
     source "${SCRIPT_DIR}/amazon_ai_tools.zsh"
@@ -116,7 +116,7 @@ fi
 
 # App Store and system tools
 if [[ "${SELECTED_GROUPS[app_store]}" == "true" ]]; then
-    print_in_purple "\n • Installing App Store and System Tools\n\n"
+    print_in_purple "\n >> Installing App Store and System Tools\n\n"
     source "${SCRIPT_DIR}/app_store.zsh"
     source "${SCRIPT_DIR}/mas.zsh"
 fi
@@ -125,7 +125,7 @@ fi
 if [[ "${SELECTED_GROUPS[data_science]}" == "true" ]]; then
     ACTIVATE_SCRIPT="$HOME/.jarvistoolset/scripts/activate_datascience.sh"
     if [[ -f "$ACTIVATE_SCRIPT" ]]; then
-        print_in_purple "\n • Activating Data Science Environment\n\n"
+        print_in_purple "\n >> Activating Data Science Environment\n\n"
         print_in_yellow "  To use the Data Science environment with all installed packages, run:\n"
         print_in_green "  source $ACTIVATE_SCRIPT\n"
         print_in_yellow "  This will activate the Python virtual environment with Jupyter, Pandas, TensorFlow, and other data science packages.\n"
@@ -135,10 +135,10 @@ fi
 # Always run cleanup
 source "${SCRIPT_DIR}/cleanup.zsh"
 
-print_in_purple "\n • macOS setup completed!\n\n"
+print_in_purple "\n >> macOS setup completed!\n\n"
 
 # Ask user if they want to configure macOS preferences
-print_in_purple "\n • Configure macOS Preferences\n\n"
+print_in_purple "\n >> Configure macOS Preferences\n\n"
 print_in_yellow "Would you like to configure macOS preferences now? (y/n): "
 read -r configure_preferences
 
@@ -273,4 +273,4 @@ else
     print_in_yellow "Skipping preferences configuration.\n"
 fi
 
-print_in_purple "\n • Installation and configuration completed!\n\n"
+print_in_purple "\n >> Installation and configuration completed!\n\n"

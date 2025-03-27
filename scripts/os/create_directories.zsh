@@ -41,7 +41,7 @@ create_directories() {
         "$HOME/.config/zsh"    # Zsh configuration
     )
 
-    print_in_purple "\n • Creating directories\n\n"
+    print_in_purple "\n >> Creating directories\n\n"
 
     # Create directories with proper permissions
     for dir in $DIRECTORIES; do

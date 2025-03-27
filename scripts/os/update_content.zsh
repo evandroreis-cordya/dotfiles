@@ -21,7 +21,7 @@ verify_git_config() {
 }
 
 verify_github_ssh() {
-    print_in_purple "\n • Verifying GitHub SSH access\n\n"
+    print_in_purple "\n >> Verifying GitHub SSH access\n\n"
     
     if ! ssh -T git@github.com &> /dev/null; then
         if [[ $? -ne 1 ]]; then
@@ -41,7 +41,7 @@ update_jarvistoolset() {
         return 1
     fi
 
-    print_in_purple "\n • Updating jarvistoolset content\n\n"
+    print_in_purple "\n >> Updating jarvistoolset content\n\n"
 
     # Stash any local changes
     if ! git diff --quiet HEAD; then

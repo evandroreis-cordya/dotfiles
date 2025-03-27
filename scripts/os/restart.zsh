@@ -36,7 +36,7 @@ save_open_files() {
 }
 
 restart_system() {
-    print_in_purple "\n • System restart\n\n"
+    print_in_purple "\n >> System restart\n\n"
 
     ask_for_confirmation "Are you sure you want to restart the system?"
     printf "\n"

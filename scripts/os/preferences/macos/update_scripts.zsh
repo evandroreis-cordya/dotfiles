@@ -7,7 +7,7 @@
 SCRIPT_DIR=${0:a:h}
 source "${SCRIPT_DIR}/../../utils.zsh"
 
-print_in_purple "\n • Updating macOS preference scripts with version compatibility checks\n\n"
+print_in_purple "\n >> Updating macOS preference scripts with version compatibility checks\n\n"
 
 # List of scripts to update (excluding main.zsh, dock.zsh, finder.zsh, and template.zsh which are already updated)
 SCRIPTS=(
@@ -114,5 +114,5 @@ for script in "${SCRIPTS[@]}"; do
     fi
 done
 
-print_in_purple "\n • All preference scripts have been updated with version compatibility checks\n\n"
+print_in_purple "\n >> All preference scripts have been updated with version compatibility checks\n\n"
 print_in_yellow "Note: You may need to review each script for specific version-dependent settings.\n"

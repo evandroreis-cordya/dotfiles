@@ -60,7 +60,7 @@ install_mas_apps() {
 
 main() {
 
-    print_in_purple "\n • Instalando apps da Mac App Store\n\n"
+    print_in_purple "\n >> Instalando apps da Mac App Store\n\n"
 
     install_mas
     login_to_app_store

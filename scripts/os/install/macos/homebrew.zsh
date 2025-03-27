@@ -87,7 +87,7 @@ setup_homebrew_environment() {
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 main() {
-    print_in_purple "\n • Installing and configuring Homebrew\n\n"
+    print_in_purple "\n >> Installing and configuring Homebrew\n\n"
 
     install_homebrew
     setup_homebrew_environment

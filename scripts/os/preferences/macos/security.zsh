@@ -36,7 +36,7 @@ print_in_purple "\n   Security\n\n"
 sudo_is_active
 
 # General Security Settings
-print_in_yellow "\n • Configuring General Security Settings\n"
+print_in_yellow "\n >> Configuring General Security Settings\n"
 
 # Enable FileVault if not already enabled
 if ! fdesetup isactive >/dev/null; then
@@ -82,7 +82,7 @@ execute "sudo defaults write /Library/Preferences/com.apple.mDNSResponder.plist 
     "Disable Bonjour multicast advertising"
 
 # Application Security Settings
-print_in_yellow "\n • Configuring Application Security Settings\n"
+print_in_yellow "\n >> Configuring Application Security Settings\n"
 
 # Enable Gatekeeper
 execute "sudo spctl --master-enable" \
@@ -99,7 +99,7 @@ else
 fi
 
 # Safari Security Settings
-print_in_yellow "\n • Configuring Safari Security Settings\n"
+print_in_yellow "\n >> Configuring Safari Security Settings\n"
 
 # Disable Safari's thumbnail cache for History and Top Sites
 execute "defaults write com.apple.Safari DebugSnapshotsUpdatePolicy -int 2" \
@@ -150,7 +150,7 @@ execute "defaults write com.apple.Safari InstallExtensionUpdatesAutomatically -b
     "Update Safari extensions automatically"
 
 # Privacy Settings
-print_in_yellow "\n • Configuring Privacy Settings\n"
+print_in_yellow "\n >> Configuring Privacy Settings\n"
 
 # Disable sending Safari search queries to Apple
 execute "defaults write com.apple.Safari UniversalSearchEnabled -bool false" \
@@ -175,7 +175,7 @@ execute "defaults write com.apple.safari.spotlighthelper LocationServicesEnabled
     "Disable location services for Spotlight suggestions"
 
 # Network Security
-print_in_yellow "\n • Configuring Network Security Settings\n"
+print_in_yellow "\n >> Configuring Network Security Settings\n"
 
 # Disable wake on network access
 execute "sudo pmset -a womp 0" \
@@ -205,7 +205,7 @@ execute "defaults write /Library/Preferences/SystemConfiguration/com.apple.airpo
     "Set WiFi join mode to Preferred"
 
 # Time Machine Security
-print_in_yellow "\n • Configuring Time Machine Security Settings\n"
+print_in_yellow "\n >> Configuring Time Machine Security Settings\n"
 
 # Disable Time Machine prompts to use new hard drives as backup volume
 execute "defaults write com.apple.TimeMachine DoNotOfferNewDisksForBackup -bool true" \
@@ -216,7 +216,7 @@ execute "sudo tmutil disablelocal" \
     "Disable local Time Machine backups"
 
 # Restart affected services
-print_in_yellow "\n • Applying changes and restarting services\n"
+print_in_yellow "\n >> Applying changes and restarting services\n"
 
 execute "killall Finder" \
     "Restart Finder"

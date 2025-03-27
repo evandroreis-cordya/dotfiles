@@ -36,7 +36,7 @@ print_in_purple "\n   System\n\n"
 sudo_is_active
 
 # General System Settings
-print_in_yellow "\n • Configuring General System Settings\n"
+print_in_yellow "\n >> Configuring General System Settings\n"
 
 # Set computer name (as done via System Preferences → Sharing)
 COMPUTER_NAME="jarvis-mac"
@@ -132,7 +132,7 @@ execute "defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -boo
     "Disable auto-correct"
 
 # Power Management Settings
-print_in_yellow "\n • Configuring Power Management Settings\n"
+print_in_yellow "\n >> Configuring Power Management Settings\n"
 
 # Sleep settings
 execute "sudo pmset -a displaysleep 15" \
@@ -158,7 +158,7 @@ execute "sudo pmset -a hibernatemode 3" \
     "Set hibernatemode to 3 (safe sleep)"
 
 # Performance Settings
-print_in_yellow "\n • Configuring Performance Settings\n"
+print_in_yellow "\n >> Configuring Performance Settings\n"
 
 # Disable sudden motion sensor (not needed for SSDs)
 execute "sudo pmset -a sms 0" \
@@ -185,7 +185,7 @@ execute "sudo pmset -a sms 0" \
     "Disable motion sensor"
 
 # System UI Settings
-print_in_yellow "\n • Configuring System UI Settings\n"
+print_in_yellow "\n >> Configuring System UI Settings\n"
 
 # Menu bar: show battery percentage
 execute "defaults write com.apple.menuextra.battery ShowPercent -string 'YES'" \
@@ -272,7 +272,7 @@ else
 fi
 
 # Restart affected applications
-print_in_yellow "\n • Applying changes and restarting services\n"
+print_in_yellow "\n >> Applying changes and restarting services\n"
 
 execute "killall Finder" \
     "Restart Finder"

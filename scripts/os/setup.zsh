@@ -91,7 +91,7 @@ verify_os() {
 
 install_homebrew() {
     if ! (( $+commands[brew] )); then
-        print_in_purple "\n • Installing Homebrew\n\n"
+        print_in_purple "\n >> Installing Homebrew\n\n"
         
         # Install Homebrew using the official script
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -110,7 +110,7 @@ install_homebrew() {
 
 install_figlet() {
     if ! (( $+commands[figlet] )); then
-        print_in_purple "\n • Installing figlet for banner display\n\n"
+        print_in_purple "\n >> Installing figlet for banner display\n\n"
         
         # Install Homebrew if not already installed
         install_homebrew
@@ -125,7 +125,7 @@ install_figlet() {
 
 install_git() {
     if ! (( $+commands[git] )); then
-        print_in_purple "\n • Installing Git\n\n"
+        print_in_purple "\n >> Installing Git\n\n"
         
         # Install Homebrew if not already installed
         install_homebrew
@@ -159,7 +159,7 @@ display_banner() {
         print_in_yellow "Welcome to ARVOS.AI Jarvis Toolset 25H1 Edition, the complete Mac OS tools and apps installer for AI and Vibe Coders!\n"
         print_in_yellow "Copyright (c) 2025 ARVOS.AI. All rights reserved.\n"
     else
-        print_in_yellow "\n • Welcome to ARVOS.AI Jarvis Toolset 25H1 Edition, the complete Mac OS tools and apps installer for AI and Vibe Coders!\n"
+        print_in_yellow "\n >> Welcome to ARVOS.AI Jarvis Toolset 25H1 Edition, the complete Mac OS tools and apps installer for AI and Vibe Coders!\n"
         print_in_yellow "Copyright (c) 2025 ARVOS.AI. All rights reserved.\n"
     fi
 }
@@ -168,7 +168,7 @@ display_banner() {
 select_script_groups() {
     local answer
     
-    print_in_purple "\n • Installation Options\n\n"
+    print_in_purple "\n >> Installation Options\n\n"
     print_in_yellow "Would you like to install the complete toolset or select specific groups?\n"
     print_in_yellow "1) Install complete toolset (all groups)\n"
     print_in_yellow "2) Select specific groups to install\n"
@@ -197,7 +197,7 @@ select_script_groups() {
         done
         
         # Summary of selected groups
-        print_in_purple "\n • Installation Summary\n\n"
+        print_in_purple "\n >> Installation Summary\n\n"
         for group in ${(k)SCRIPT_GROUPS}; do
             if [[ "${SELECTED_GROUPS[$group]}" == "true" ]]; then
                 print_success "Will install: ${SCRIPT_GROUPS[$group]}"
@@ -237,7 +237,7 @@ main() {
     display_banner
     
     # Ask for sudo password upfront and keep sudo credentials alive
-    print_in_purple "\n • Requesting administrator privileges...\n\n"
+    print_in_purple "\n >> Requesting administrator privileges...\n\n"
     ask_for_sudo
 
     # Create a sudo timestamp directory with appropriate permissions
@@ -261,16 +261,8 @@ main() {
     # Set up the sudo timestamp directory
     setup_sudo_timestamp_dir
 
-    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-    # Install figlet for banner display
-    install_figlet
-    
-    # Display welcome banner
-    display_banner
-
     # Display information about what's happening
-    print_in_green "\n • Starting Jarvis Toolset with the following configuration:\n"
+    print_in_green "\n >> Starting Jarvis Toolset with the following configuration:\n"
     print_in_green "---------------------------------------------------------------\n"
     print_in_green "Hostname: $HOSTNAME\n"
     print_in_green "Username : $USERNAME\n"
@@ -304,7 +296,7 @@ main() {
         "$EMAIL" \
         "$DIRECTORY"
 
-    print_in_purple "\n • Setup completed! Please restart your terminal.\n\n"
+    print_in_purple "\n >> Setup completed! Please restart your terminal.\n\n"
 }
 
 main "$@"
