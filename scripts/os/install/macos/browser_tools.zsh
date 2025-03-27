@@ -25,8 +25,24 @@ execute "open -a 'Brave Browser' https://chrome.google.com/webstore/detail/claud
 execute "open -a 'Brave Browser' https://chrome.google.com/webstore/detail/bard-ai/nmpbpmgkokjpjhkjphjgdgmgbgjcooke" \
     "Installing Bard AI"
 
-execute "open -a 'Brave Browser' https://chrome.google.com/webstore/detail/github-copilot/codcgekjehkfmlkbfhodjlhpfbkdlbpi" \
+execute "open -a 'Brave Browser' https://chrome.google.com/webstore/detail/github-copilot/codcgekjehkbfmlkbfhodjlhpfbkdlbpi" \
     "Installing GitHub Copilot"
+
+# Productivity Extensions
+execute "echo 'Installing Productivity Extensions for Brave:'" \
+    "Productivity Extensions Notice"
+
+execute "open -a 'Brave Browser' https://chrome.google.com/webstore/detail/notion-web-clipper/knheggckgoiihginacbkhaalnibhilkk" \
+    "Installing Notion Web Clipper"
+
+execute "open -a 'Brave Browser' https://chrome.google.com/webstore/detail/grammarly/kbfnbcaeplbcioakkpcpgfkobkghlhen" \
+    "Installing Grammarly"
+
+execute "open -a 'Brave Browser' https://chrome.google.com/webstore/detail/todoist/jldhpllghnbhlbpcmnajkpdmadaolakh" \
+    "Installing Todoist"
+
+execute "open -a 'Brave Browser' https://chrome.google.com/webstore/detail/raindropio/ldgfbffkinooeloadekpmfoklnobpien" \
+    "Installing Raindrop.io Bookmarks Manager"
 
 # Development Extensions
 execute "echo 'Installing Development Extensions for Brave:'" \
@@ -56,19 +72,6 @@ execute "open -a 'Brave Browser' https://chrome.google.com/webstore/detail/priva
 
 execute "open -a 'Brave Browser' https://chrome.google.com/webstore/detail/https-everywhere/gcbommkclmclpchllfjekcdonpmejbdp" \
     "Installing HTTPS Everywhere"
-
-# Productivity Extensions
-execute "echo 'Installing Productivity Extensions for Brave:'" \
-    "Productivity Extensions Notice"
-
-execute "open -a 'Brave Browser' https://chrome.google.com/webstore/detail/notion-web-clipper/knheggckgoiihginacbkhaalnibhilkk" \
-    "Installing Notion Web Clipper"
-
-execute "open -a 'Brave Browser' https://chrome.google.com/webstore/detail/grammarly/kbfnbcaeplbcioakkpcpgfkobkghlhen" \
-    "Installing Grammarly"
-
-execute "open -a 'Brave Browser' https://chrome.google.com/webstore/detail/todoist/jldhpllghnbhlbpcmnajkpdmadaolakh" \
-    "Installing Todoist"
 
 # Development Tools
 execute "echo 'Installing Development Tools Extensions for Brave:'" \

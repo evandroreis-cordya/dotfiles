@@ -204,9 +204,34 @@ EOL
 echo "Swift project template created" >/dev/null
 print_success "Swift development environment"
 
-# Add Swift helper functions to shell
-if ! grep -q 'new-swift' "$HOME/.zshrc"; then
-    cat >> "$HOME/.zshrc" << 'EOL'
+# Create modular configuration file for Swift
+create_swift_config() {
+    local config_dir="$HOME/.jarvistoolset/zsh_configs"
+    local config_file="$config_dir/swift.zsh"
+    
+    # Create directory if it doesn't exist
+    mkdir -p "$config_dir"
+    
+    # Create Swift configuration file
+    cat > "$config_file" << 'EOL'
+#!/bin/zsh
+#
+# Swift configuration for zsh
+# This file contains all Swift-related configurations
+#
+
+# Swift environment variables
+export PATH="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin:$PATH"
+export TOOLCHAINS=swift
+
+# Swift aliases
+alias sb="swift build"
+alias sr="swift run"
+alias st="swift test"
+alias sp="swift package"
+alias spi="swift package init"
+alias spu="swift package update"
+alias swiftc="swiftc -O"
 
 # Swift development functions
 new-swift() {
@@ -224,17 +249,22 @@ new-swift() {
         echo "Please provide a project name"
     fi
 }
-
-# Swift aliases
-alias sb="swift build"
-alias sr="swift run"
-alias st="swift test"
-alias sp="swift package"
-alias spi="swift package init"
-alias spu="swift package update"
-alias swiftc="swiftc -O"
 EOL
-    print_result $? "Swift helper functions"
+    
+    print_result $? "Created Swift configuration file"
+}
+
+# Create modular configuration
+create_swift_config
+
+# Check if oh-my-zsh.zsh is already sourcing the modular configs
+if ! grep -q "source \"\$HOME/.jarvistoolset/zsh_configs/swift.zsh\"" "$HOME/.zshrc"; then
+    # Add a line to source the Swift config in .zshrc if oh-my-zsh.zsh isn't handling it
+    cat >> "$HOME/.zshrc" << 'EOL'
+# Load Swift configuration
+source "$HOME/.jarvistoolset/zsh_configs/swift.zsh"
+EOL
+    print_result $? "Added Swift configuration to .zshrc"
 fi
 
 print_in_green "\n  Swift development environment setup complete!\n"

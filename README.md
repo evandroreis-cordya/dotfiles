@@ -16,6 +16,7 @@ First and foremost, I want to express my gratitude to [Victor Cavalcante](https:
 ```zsh
 git clone https://github.com/YOUR_USERNAME/jarvistoolset.git ~/.jarvistoolset
 ```
+**WARNING:** If you don't fork this repository, you will not be able to make changes to the configuration files. It must be downloaded from your forked repository. You must clone it in the `~/.jarvistoolset` directory otherwise the script will not work.
 
 ## Quick Start
 
@@ -27,11 +28,6 @@ cd ~/.jarvistoolset
 ./start_jarvis.zsh
 ```
 
-Alternatively, you can run the setup script directly:
-```zsh
-~/.jarvistoolset/start_jarvis.zsh
-```
-
 ## Core Files
 
 Review the code and remove anything you find unnecessary. The main files you should review are:
@@ -41,6 +37,18 @@ Review the code and remove anything you find unnecessary. The main files you sho
 | `start_jarvis.zsh` | Main entry script that calls setup.zsh with default arguments |
 | `setup.zsh` | Main setup script and hub for calling other scripts |
 | `create_local_config_files.zsh` | Creation of local configurations (.local) |
+
+## Modular Configuration Approach
+
+The jarvistoolset now uses a modular configuration approach for all programming languages and development tools. Instead of directly modifying `.zshrc`, `.zprofile`, or `.profile`, each tool or language creates its own configuration file in `$HOME/.jarvistoolset/zsh_configs/`.
+
+Benefits of this approach:
+- Prevents duplicate entries in shell configuration files
+- Makes it easier to update or modify configurations for specific tools
+- Improves organization by keeping related configurations together
+- Simplifies troubleshooting by isolating configuration issues
+
+All configuration files are automatically loaded by a single entry in `.zshrc` that sources all files in the `zsh_configs` directory.
 
 ## System Preferences
 
@@ -122,6 +130,26 @@ The start_jarvis.zsh script will call setup.zsh which will:
 * Install applications and command-line tools for [`macOS`](scripts/os/install/macos)
 * Configure system preferences for [`macOS`](scripts/os/preferences/macos)
 
+## Programming Languages and Development Tools
+
+The jarvistoolset now includes comprehensive support for various programming languages and development tools, each with its own modular configuration file:
+
+| Language/Tool | Script | Configuration File | Features |
+|:--------------|:-------|:-------------------|:---------|
+| **C/C++** | `cpp.zsh` | `zsh_configs/cpp.zsh` | GCC, Clang, CMake, Boost, debugging tools, project creation |
+| **Go** | `go.zsh` | `zsh_configs/go.zsh` | Go compiler, environment variables, project creation |
+| **Java** | `java.zsh` | `zsh_configs/java.zsh` | JDK, Maven, Gradle, environment setup |
+| **Kotlin** | `kotlin.zsh` | `zsh_configs/kotlin.zsh` | Kotlin compiler, environment variables |
+| **Node.js** | `nodejs.zsh` | `zsh_configs/nodejs.zsh` | NVM, npm, yarn, environment setup |
+| **PHP** | `php.zsh` | `zsh_configs/php.zsh` | PHP, Composer, environment variables |
+| **Python** | `python.zsh` | `zsh_configs/python.zsh` | Python, pip, virtualenv, pyenv |
+| **Ruby** | `ruby.zsh` | `zsh_configs/ruby.zsh` | Ruby, RVM, gems, environment setup |
+| **Rust** | `rust.zsh` | `zsh_configs/rust.zsh` | Rust, Cargo, environment variables |
+| **Swift** | `swift.zsh` | `zsh_configs/swift.zsh` | Swift compiler, development tools, project creation |
+| **Xcode** | `xcode.zsh` | `zsh_configs/xcode.zsh` | Xcode CLI tools, iOS/macOS development utilities |
+
+Each script installs the necessary tools and creates a dedicated configuration file with environment variables, aliases, and functions specific to that language or tool.
+
 ## AI and Machine Learning Tools
 
 The jarvistoolset now includes comprehensive support for AI and machine learning development with the following categories of tools:
@@ -190,6 +218,7 @@ The `swift.zsh` script has been updated to provide better installation of Swift 
 | | `install/macos/xcode.zsh` | Installs Xcode and command line tools |
 | | `install/macos/apps.zsh` | Installs general applications |
 | | `install/macos/browsers.zsh` | Installs web browsers |
+| | `install/macos/browser_tools.zsh` | Installs browser extensions including Raindrop.io |
 | | `install/macos/docker.zsh` | Installs Docker and related tools |
 | | `install/macos/git.zsh` | Configures Git and installs related tools |
 | | `install/macos/gpg.zsh` | Sets up GPG for secure communications |
@@ -203,11 +232,12 @@ The `swift.zsh` script has been updated to provide better installation of Swift 
 | | `install/macos/tmux.zsh` | Installs and configures Tmux |
 | | `install/macos/utils.zsh` | Installs utility tools |
 | | `install/macos/misc.zsh` | Installs miscellaneous tools |
-| | `install/macos/misc_tools.zsh` | Installs additional miscellaneous tools |
 | | `install/macos/generative_ai_productivity.zsh` | Installs top 10 Generative AI productivity tools |
 | | `install/macos/ai_desktop_tools.zsh` | Installs AI desktop applications and tools |
 | | `install/macos/ai_tools.zsh` | Installs AI development libraries and tools |
+| | `install/macos/ai_bookmarks.zsh` | Creates AI tools and models bookmarks in browsers |
 | | `install/macos/swift.zsh` | Installs Swift development tools with improved error handling |
+| | `install/macos/oh_my_zsh.zsh` | Installs and configures Oh My Zsh with custom themes and plugins |
 | | `install/macos/cleanup.zsh` | Cleans up after installation |
 | | `install/npm.zsh` | Installs NPM packages |
 | | `install/nvm.zsh` | Installs Node Version Manager |
@@ -292,146 +322,85 @@ The `swift.zsh` script has been updated to provide better installation of Swift 
 | | `preferences/macos/kaspersky_tools.zsh` | Installs Kaspersky security AI tools |
 | | `preferences/macos/vercel_tools.zsh` | Installs Vercel AI tools and SDKs |
 
-## Customization
+## Browser Extensions and Tools
 
-All scripts are designed to be modular and easily customizable. Here's how you can personalize your setup:
+The jarvistoolset installs and configures a variety of browser extensions to enhance your browsing experience:
 
-1. **Local Configurations**: Edit files in `~/.local` for machine-specific settings:
-   - `~/.local/shell/zsh.local`: Custom shell configurations
-   - `~/.local/git/config.local`: Local Git settings
+### AI Extensions
+- ChatGPT for Brave
+- Claude AI
+- Bard AI (Google Gemini)
+- GitHub Copilot
 
-2. **Development Environments**: Modify language-specific scripts in `scripts/os/install/macos/` to:
-   - Add/remove packages
-   - Configure environment variables
-   - Set up development tools
+### Productivity Extensions
+- Notion Web Clipper
+- Grammarly
+- Todoist
+- Raindrop.io Bookmarks Manager
 
-3. **System Preferences**: Customize `preferences/macos` for:
-   - UI/UX settings
-   - Security preferences
-   - Application defaults
+### Development Extensions
+- React Developer Tools
+- Redux DevTools
+- Vue DevTools
+- JSON Viewer
+- And more...
 
-4. **Package Selection**: Edit installation scripts to:
-   - Choose which applications to install
-   - Add custom Homebrew formulas
-   - Configure development tools
+### AI Bookmarks
 
-## Maintenance
+The `ai_bookmarks.zsh` script creates a dedicated "AI Tools and Models" folder in your browser's bookmarks bar, containing links to popular AI tools and services:
 
-Keep your jarvistoolset up to date with these commands:
+- ElevenLabs - Voice AI and text-to-speech
+- Hugging Face - AI model repository and community
+- Stable Diffusion WebUI - Image generation interface
+- ComfyUI - Node-based UI for Stable Diffusion
+- Claude - Anthropic's conversational AI
+- Weights & Biases - ML experiment tracking
+- Midjourney - AI image generation
+- Leonardo.AI - Creative AI platform
+- Perplexity AI - AI-powered search engine
+- ChatGPT - OpenAI's conversational model
+- Google Gemini - Google's multimodal AI
+- Whisper Studio - Speech recognition playground
+- Replicate - Cloud AI model deployment
+- Hugging Face Spaces - Hosted AI demos
+- RunwayML - Creative AI tools
+- Ollama - Run LLMs locally
+- LM Studio - Local LLM interface
 
-```zsh
-# Update jarvistoolset repository
-~/.jarvistoolset/scripts/os/update_content.zsh
+This makes it easy to access all your AI tools from one organized location in your browser.
 
-# Update installed packages
-brew update && brew upgrade
-```
+## Modular Configuration System
 
-## Directory Structure
+The jarvistoolset uses a modular configuration approach that keeps your shell environment clean and organized:
 
-The jarvistoolset follows the XDG Base Directory Specification:
+### How It Works
 
-```
-~/.config/          # User configuration files
-~/.local/bin/       # User executables
-~/.local/share/     # User data files
-~/.local/state/     # User state files
-~/.cache/           # User cache files
-```
+1. Each tool or language creates its own configuration file in `$HOME/.jarvistoolset/zsh_configs/`
+2. A single entry in your `.zshrc` loads all these configuration files automatically
+3. No duplicate entries or conflicts between different tools
 
-Development environments are organized in:
+### Benefits
 
-```
-~/Projects/         # Development projects
-~/Workspace/        # Work-related files
-~/.npm-global/      # Global npm packages
-~/.composer/        # Composer packages
-~/.gradle/         # Gradle configuration
-~/.m2/             # Maven configuration
-```
+- **Clean Organization**: Related configurations stay together
+- **Easy Maintenance**: Update one tool without affecting others
+- **No Duplication**: Prevents multiple entries of the same configuration
+- **Simple Troubleshooting**: Isolate issues to specific configuration files
 
-## Contributing
+### Supported Tools
 
-1. Fork the repository
-2. Create your feature branch: `git checkout -b feature/my-new-feature`
-3. Commit your changes: `git commit -am 'Add some feature'`
-4. Push to the branch: `git push origin feature/my-new-feature`
-5. Submit a pull request
+The following tools use the modular configuration system:
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-* [Victor Cavalcante](https://github.com/vcavalcante/) for introducing me to jarvistoolset
-* [Cătălin Mariș](https://github.com/alrra) for the initial scripts
-* The open-source community for all the amazing tools
-
-## Zsh Configuration
-
-The jarvistoolset is optimized for Zsh, the default shell in macOS since Catalina. Here are some key Zsh features and configurations included:
-
-1. **Zsh Completion**: Enhanced tab completion for commands and arguments
-   ```zsh
-   # Example of using Zsh completion
-   git <TAB>  # Shows all available git commands
-   ```
-
-2. **Zsh Plugins**: Useful plugins are automatically installed
-   - Syntax highlighting
-   - Auto-suggestions
-   - History substring search
-
-3. **Zsh Theme**: A customized prompt with git status information
-
-4. **Zsh Aliases**: Helpful shortcuts for common commands
-   ```zsh
-   # Example aliases
-   alias g='git'
-   alias ls='ls -G'  # Colorized output
-   ```
-
-5. **Custom Functions**: Productivity-enhancing functions
-   ```zsh
-   # Example of a custom function
-   mkcd() {
-     mkdir -p "$1" && cd "$1"
-   }
-   ```
-
-To customize your Zsh configuration, edit the following files:
-- `~/.zshrc.local`: Personal Zsh configuration
-- `~/.zsh_aliases.local`: Personal aliases
-
-## Features
-
-### 1. Development Environment
-
-The jarvistoolset sets up a complete development environment with:
-
-1. **Multiple Programming Languages**:
-   - Python (with data science packages in a dedicated virtual environment)
-   - Node.js (with NVM for version management)
-   - Ruby (with RVM for version management)
-   - Go
-   - Java
-   - Kotlin
-   - Rust
-   - Swift
-
-2. **Data Science Environment**:
-   - A dedicated Python virtual environment with:
-     - Jupyter, Pandas, NumPy, Matplotlib, Seaborn
-     - SciPy, Scikit-learn, TensorFlow, PyTorch
-     - And other essential data science libraries
-   - Activation script: `source ~/.jarvistoolset/scripts/activate_datascience.sh`
-
-3. **Development Tools**:
-   - Git with enhanced configuration
-   - Docker and Docker Compose
-   - Database tools (PostgreSQL, MongoDB, Redis)
-   - Visual Studio Code with extensions
-   - JetBrains IDEs
+| Tool/Language | Configuration File | Contents |
+|:--------------|:-------------------|:---------|
+| Swift | `swift.zsh` | Swift environment variables, aliases, and functions |
+| C/C++ | `cpp.zsh` | C/C++ compiler settings, build tools, and project templates |
+| Xcode | `xcode.zsh` | Xcode command line tools and iOS/macOS development settings |
+| Python | `python.zsh` | Python environment, virtualenv, and package management |
+| Node.js | `nodejs.zsh` | Node.js version management and npm configuration |
+| Ruby | `ruby.zsh` | Ruby environment, gems, and version management |
+| Go | `go.zsh` | Go environment variables and workspace settings |
+| Java | `java.zsh` | Java environment variables and build tool configuration |
+| Kotlin | `kotlin.zsh` | Kotlin compiler and environment settings |
+| Rust | `rust.zsh` | Rust toolchain and Cargo configuration |
 
 ## Happy Vibe Coding! :)

@@ -675,18 +675,25 @@ pyenv_install() {
     eval "$(pyenv virtualenv-init -)"
     
     # Check if the requested version is already installed
-    if pyenv versions | grep -q "$PYTHON_VERSION"; then
+    if pyenv versions 2>/dev/null | grep -q "$PYTHON_VERSION"; then
         print_success "Python $PYTHON_VERSION (already installed)"
     else
         # Install the Python version
-        pyenv install "$PYTHON_VERSION" &> /dev/null
-        print_result $? "Python $PYTHON_VERSION"
+        print_in_yellow "Installing Python $PYTHON_VERSION (this may take a while)...\n"
+        pyenv install "$PYTHON_VERSION" 2>/dev/null || {
+            print_error "Failed to install Python $PYTHON_VERSION"
+            return 1
+        }
+        print_success "Python $PYTHON_VERSION"
     fi
     
     # Set as global if requested
     if [[ "$SET_GLOBAL" == "true" ]]; then
-        pyenv global "$PYTHON_VERSION" &> /dev/null
-        print_result $? "Setting Python $PYTHON_VERSION as global"
+        pyenv global "$PYTHON_VERSION" 2>/dev/null || {
+            print_error "Failed to set Python $PYTHON_VERSION as global"
+            return 1
+        }
+        print_success "Setting Python $PYTHON_VERSION as global"
     fi
 }
 

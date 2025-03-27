@@ -1,9 +1,8 @@
 #!/usr/bin/env zsh
 
-# Get the directory of the current script
-SCRIPT_DIR=${0:a:h}
-source "${SCRIPT_DIR}/../../utils.zsh"
-source "${SCRIPT_DIR}/utils.zsh"
+cd "$(dirname "${BASH_SOURCE[0]}")" \
+    && source "../../utils.zsh" \
+    && source "./utils.zsh"
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -13,76 +12,273 @@ print_in_purple "\n   Ruby Development Tools\n\n"
 brew_install "rbenv" "rbenv"
 brew_install "ruby-build" "ruby-build"
 
-# Add rbenv to shell configuration
-if ! grep -q 'eval "$(rbenv init -)"' "$HOME/.zshrc"; then
-    cat >> "$HOME/.zshrc" << 'EOL'
+# Create modular configuration file for Ruby
+create_ruby_config() {
+    local config_dir="$HOME/.jarvistoolset/zsh_configs"
+    local config_file="$config_dir/ruby.zsh"
+    
+    # Create directory if it doesn't exist
+    mkdir -p "$config_dir"
+    
+    # Create Ruby configuration file
+    cat > "$config_file" << 'EOL'
+#!/bin/zsh
+#
+# Ruby configuration for zsh
+# This file contains all Ruby-related configurations
+#
 
-# rbenv configuration
-export PATH="$HOME/.rbenv/bin:$PATH"
-eval "$(rbenv init -)"
-EOL
-fi
+# Ruby environment variables
+export RBENV_ROOT="$HOME/.rbenv"
+export PATH="$RBENV_ROOT/bin:$PATH"
+export PATH="$RBENV_ROOT/shims:$PATH"
+export PATH="$HOME/.gem/ruby/3.0.0/bin:$PATH"
 
 # Initialize rbenv
-eval "$(rbenv init -)"
-
-# Install latest Ruby versions
-print_in_purple "\n   Installing Ruby Versions\n\n"
-rbenv_install "3.3.0" "true"
-
-# Update RubyGems and install Bundler
-print_in_purple "\n   Updating RubyGems and Installing Bundler\n\n"
-
-# Use direct command execution instead of the execute function
-gem update --system &> /dev/null
-print_result $? "RubyGems"
-
-gem_install "Bundler" "bundler"
-
-# Install global development tools
-print_in_purple "\n   Installing More Ruby Development Tools\n\n"
-
-# Package Management
-gem_install "Bundler" "bundler"
-gem_install "Rake" "rake"
-
-# Development Tools
-gem_install "Solargraph" "solargraph"          # Language server
-gem_install "RuboCop" "rubocop"                # Linter
-gem_install "Ruby Debug IDE" "ruby-debug-ide"  # Debugger
-gem_install "Debase" "debase"                  # Debugger
-gem_install "Fasterer" "fasterer"              # Performance suggestions
-gem_install "Reek" "reek"                      # Code smell detector
-gem_install "Rails" "rails"                    # Web framework
-
-# Testing Tools
-gem_install "RSpec" "rspec"
-gem_install "Minitest" "minitest"
-gem_install "Cucumber" "cucumber"
-gem_install "Capybara" "capybara"
-gem_install "Selenium WebDriver" "selenium-webdriver"
-
-# Documentation Tools
-gem_install "YARD" "yard"
-gem_install "SDoc" "sdoc"
-
-# Web Development
-gem_install "Sinatra" "sinatra"
-gem_install "Rack" "rack"
-gem_install "Puma" "puma"
-
-# Install Thin
-if gem list | grep -q "^thin "; then
-    print_success "Thin (already installed)"
-else
-    gem install thin &> /dev/null
-    print_result $? "Thin"
+if command -v rbenv 1>/dev/null 2>&1; then
+    eval "$(rbenv init -)"
 fi
 
-# Database Tools
-gem_install "ActiveRecord" "activerecord"
-gem_install "Sequel" "sequel"
-gem_install "PG" "pg"
+# Ruby aliases
+alias rb="ruby"
+alias gem-update="gem update --system"
+alias bundle-update="bundle update"
+alias bundle-install="bundle install"
+alias bundle-exec="bundle exec"
+alias be="bundle exec"
+alias bi="bundle install"
+alias bu="bundle update"
+alias bx="bundle exec"
+alias b="bundle"
+
+# Ruby development functions
+mkrepo() {
+    if [[ -n "$1" ]]; then
+        mkdir "$1"
+        cd "$1"
+        git init
+        rbenv local 3.3.0
+        echo "3.3.0" > .ruby-version
+        cp "$HOME/.gemfile_template" Gemfile
+        bundle install
+        git add .
+        git commit -m "Initial commit"
+    else
+        echo "Please provide a project name"
+    fi
+}
+
+# Ruby project creation function
+new-ruby() {
+    if [ $# -lt 1 ]; then
+        echo "Usage: new-ruby <project-name>"
+        return 1
+    fi
+    
+    local project_name=$1
+    
+    # Create project directory
+    mkdir -p "$project_name"
+    cd "$project_name" || return
+    
+    # Initialize bundler
+    bundle init
+    
+    # Create basic project structure
+    mkdir -p lib bin spec
+    
+    # Create main lib file
+    cat > "lib/${project_name}.rb" << EOF
+# Main module for ${project_name}
+module $(echo "${project_name}" | sed -r 's/(^|_)([a-z])/\U\2/g')
+  VERSION = '0.1.0'
+end
+EOF
+    
+    # Create executable
+    cat > "bin/${project_name}" << EOF
+#!/usr/bin/env ruby
+
+require_relative '../lib/${project_name}'
+
+# Your code here
+EOF
+    chmod +x "bin/${project_name}"
+    
+    # Create spec helper
+    cat > "spec/spec_helper.rb" << EOF
+require 'bundler/setup'
+require '${project_name}'
+
+RSpec.configure do |config|
+  # Enable flags like --only-failures and --next-failure
+  config.example_status_persistence_file_path = ".rspec_status"
+
+  # Disable RSpec exposing methods globally on \`Module\` and \`main\`
+  config.disable_monkey_patching!
+
+  config.expect_with :rspec do |c|
+    c.syntax = :expect
+  end
+end
+EOF
+    
+    # Create main spec file
+    cat > "spec/${project_name}_spec.rb" << EOF
+require 'spec_helper'
+
+RSpec.describe $(echo "${project_name}" | sed -r 's/(^|_)([a-z])/\U\2/g') do
+  it "has a version number" do
+    expect($(echo "${project_name}" | sed -r 's/(^|_)([a-z])/\U\2/g')::VERSION).not_to be nil
+  end
+end
+EOF
+    
+    # Update Gemfile
+    cat > "Gemfile" << EOF
+source "https://rubygems.org"
+
+# Specify your gem's dependencies in ${project_name}.gemspec
+gemspec
+
+gem "rake", "~> 13.0"
+gem "rspec", "~> 3.0"
+gem "rubocop", "~> 1.21"
+EOF
+    
+    # Create gemspec
+    cat > "${project_name}.gemspec" << EOF
+# frozen_string_literal: true
+
+Gem::Specification.new do |spec|
+  spec.name = "${project_name}"
+  spec.version = "0.1.0"
+  spec.authors = ["Your Name"]
+  spec.email = ["your.email@example.com"]
+
+  spec.summary = "A short summary of your gem"
+  spec.description = "A longer description of your gem"
+  spec.homepage = "https://github.com/username/${project_name}"
+  spec.license = "MIT"
+  spec.required_ruby_version = ">= 2.6.0"
+
+  spec.metadata["homepage_uri"] = spec.homepage
+  spec.metadata["source_code_uri"] = spec.homepage
+  spec.metadata["changelog_uri"] = "\#{spec.homepage}/blob/main/CHANGELOG.md"
+
+  # Specify which files should be added to the gem when it is released.
+  # The \`git ls-files -z\` loads the files in the RubyGem that have been added into git.
+  spec.files = Dir.chdir(__dir__) do
+    \`git ls-files -z\`.split("\\x0").reject do |f|
+      (f == __FILE__) || f.match(%r{\A(?:(?:bin|test|spec|features)/|\.(?:git|travis|circleci)|appveyor)})
+    end
+  end
+  spec.bindir = "bin"
+  spec.executables = spec.files.grep(%r{\Abin/}) { |f| File.basename(f) }
+  spec.require_paths = ["lib"]
+end
+EOF
+    
+    # Create README
+    cat > "README.md" << EOF
+# ${project_name}
+
+A Ruby project.
+
+## Installation
+
+\`\`\`bash
+gem install ${project_name}
+\`\`\`
+
+## Usage
+
+\`\`\`ruby
+require '${project_name}'
+# Your code here
+\`\`\`
+
+## Development
+
+After checking out the repo, run \`bin/setup\` to install dependencies. Then, run \`rake spec\` to run the tests. You can also run \`bin/console\` for an interactive prompt that will allow you to experiment.
+
+## License
+
+The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+EOF
+    
+    # Create .gitignore
+    cat > ".gitignore" << EOF
+/.bundle/
+/.yardoc
+/_yardoc/
+/coverage/
+/doc/
+/pkg/
+/spec/reports/
+/tmp/
+*.gem
+EOF
+    
+    # Initialize git repository if git is available
+    if command -v git >/dev/null 2>&1; then
+        git init
+        git add .
+        git commit -m "Initial commit"
+    fi
+    
+    echo "Ruby project '${project_name}' created successfully!"
+}
+EOL
+    
+    print_result $? "Created Ruby configuration file"
+}
+
+# Install the latest stable version of Ruby
+print_in_purple "\n   Installing Ruby\n\n"
+
+# Install latest stable version of Ruby
+execute "rbenv install --skip-existing $(rbenv install -l | grep -v - | tail -1)" "Latest stable Ruby"
+
+# Set the installed version as global
+execute "rbenv global $(rbenv install -l | grep -v - | tail -1)" "Set Ruby version as global"
+
+# Install common gems
+print_in_purple "\n   Installing Ruby Gems\n\n"
+
+# Reload rbenv
+eval "$(rbenv init -)"
+
+# Update RubyGems
+execute "gem update --system" "Update RubyGems"
+
+# Install Bundler
+execute "gem install bundler" "Bundler"
+
+# Install common gems
+execute "gem install rails" "Rails"
+execute "gem install sinatra" "Sinatra"
+execute "gem install rspec" "RSpec"
+execute "gem install rubocop" "RuboCop"
+execute "gem install pry" "Pry"
+execute "gem install byebug" "Byebug"
+execute "gem install solargraph" "Solargraph"
+execute "gem install jekyll" "Jekyll"
+
+# Create modular configuration
+create_ruby_config
+
+# Check if oh-my-zsh.zsh is already sourcing the modular configs
+if ! grep -q "source \"\$HOME/.jarvistoolset/zsh_configs/ruby.zsh\"" "$HOME/.zshrc"; then
+    # Add a line to source the Ruby config in .zshrc if oh-my-zsh.zsh isn't handling it
+    cat >> "$HOME/.zshrc" << 'EOL'
+# Load Ruby configuration
+source "$HOME/.jarvistoolset/zsh_configs/ruby.zsh"
+EOL
+    print_result $? "Added Ruby configuration to .zshrc"
+fi
+
+print_in_green "\n  Ruby development environment setup complete!\n"
 
 # Install MySQL and necessary dependencies
 print_in_purple "\n   Installing MySQL and dependencies\n\n"
@@ -206,34 +402,6 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
-EOL
-
-# Add Ruby helper functions to shell
-cat >> "$HOME/.zshrc" << 'EOL'
-
-# Ruby development functions
-mkrepo() {
-    if [[ -n "$1" ]]; then
-        mkdir "$1"
-        cd "$1"
-        git init
-        rbenv local 3.3.0
-        echo "3.3.0" > .ruby-version
-        cp "$HOME/.gemfile_template" Gemfile
-        bundle install
-        git add .
-        git commit -m "Initial commit"
-    else
-        echo "Please provide a project name"
-    fi
-}
-
-# Bundler aliases
-alias b="bundle"
-alias be="bundle exec"
-alias bi="bundle install"
-alias bu="bundle update"
-alias bx="bundle exec"
 EOL
 
 print_result $? "Ruby development environment"

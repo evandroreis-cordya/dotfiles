@@ -1,36 +1,36 @@
 # Zsh configuration file
 # Load all shell configurations
-for file in ~/.dotfiles/scripts/shell/aliases/*; do
+for file in ~/.jarvistoolset/scripts/shell/aliases/*; do
     if [[ -f "$file" ]]; then
         source "$file"
     fi
 done
 
 # Load zsh-specific configurations
-source ~/.dotfiles/scripts/shell/zsh_exports
-source ~/.dotfiles/scripts/shell/zsh_functions
-source ~/.dotfiles/scripts/shell/zsh_options
-source ~/.dotfiles/scripts/shell/zsh_prompt
+source ~/.jarvistoolset/scripts/shell/zsh_exports
+source ~/.jarvistoolset/scripts/shell/zsh_functions
+source ~/.jarvistoolset/scripts/shell/zsh_options
+source ~/.jarvistoolset/scripts/shell/zsh_prompt
 
 # Load colors
-source ~/.dotfiles/scripts/shell/colors/macos/zsh_colors
+source ~/.jarvistoolset/scripts/shell/colors/macos/zsh_colors
 
 # Load autocomplete
-fpath=(~/.dotfiles/scripts/shell/autocomplete/macos $fpath)
+fpath=(~/.jarvistoolset/scripts/shell/autocomplete/macos $fpath)
 
 # Initialize autocomplete
 autoload -Uz compinit
 compinit
 
 # Load other configurations
-source ~/.dotfiles/scripts/shell/curlrc
+source ~/.jarvistoolset/scripts/shell/curlrc
 
 # Load keybindings
-if [[ -f ~/.dotfiles/scripts/shell/zsh_keybindings ]]; then
-  source ~/.dotfiles/scripts/shell/zsh_keybindings
+if [[ -f ~/.jarvistoolset/scripts/shell/zsh_keybindings ]]; then
+  source ~/.jarvistoolset/scripts/shell/zsh_keybindings
 fi
 
 # Load zsh_logout
-if [[ -f ~/.dotfiles/scripts/shell/zsh_logout ]]; then
-  source ~/.dotfiles/scripts/shell/zsh_logout
+if [[ -f ~/.jarvistoolset/scripts/shell/zsh_logout ]]; then
+  source ~/.jarvistoolset/scripts/shell/zsh_logout
 fi

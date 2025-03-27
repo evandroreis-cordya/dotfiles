@@ -86,55 +86,127 @@ fi
 # Configure GPG Agent
 print_in_purple "\n   GPG Configuration\n\n"
 
-# Create GPG config directory
-if [[ -d ~/.gnupg ]]; then
-    print_success "GPG config directory already exists"
-else
-    mkdir -p ~/.gnupg &> /dev/null
-    print_result $? "Create GPG config directory"
-fi
+# Create modular configuration file for GPG
+create_gpg_config() {
+    local config_dir="$HOME/.jarvistoolset/zsh_configs"
+    local config_file="$config_dir/gpg.zsh"
+    
+    # Create directory if it doesn't exist
+    mkdir -p "$config_dir"
+    
+    # Create GPG configuration file
+    cat > "$config_file" << 'EOL'
+#!/bin/zsh
+#
+# GPG configuration for zsh
+# This file contains all GPG-related configurations
+#
 
-# Set secure permissions for GPG directory
-chmod 700 ~/.gnupg &> /dev/null
-print_result $? "Set secure permissions for GPG directory"
+# Set GPG TTY
+export GPG_TTY=$(tty)
 
-# Configure GPG Agent
-cat > ~/.gnupg/gpg-agent.conf << EOL
-default-cache-ttl 3600
-max-cache-ttl 7200
-pinentry-program $(brew --prefix)/bin/pinentry-mac
+# GPG aliases
+alias gpg-list="gpg --list-keys"
+alias gpg-list-secret="gpg --list-secret-keys"
+alias gpg-refresh="gpg --refresh-keys"
+
+# GPG functions
+gpg-export() {
+    if [ $# -ne 1 ]; then
+        echo "Usage: gpg-export <key-id>"
+        return 1
+    fi
+    
+    local key_id=$1
+    gpg --armor --export "$key_id"
+}
+
+gpg-export-secret() {
+    if [ $# -ne 1 ]; then
+        echo "Usage: gpg-export-secret <key-id>"
+        return 1
+    fi
+    
+    local key_id=$1
+    gpg --armor --export-secret-key "$key_id"
+}
+
+gpg-import() {
+    if [ $# -ne 1 ]; then
+        echo "Usage: gpg-import <key-file>"
+        return 1
+    fi
+    
+    local key_file=$1
+    gpg --import "$key_file"
+}
 EOL
-print_result $? "Configure GPG agent"
-
-# Set secure permissions for GPG agent config
-chmod 600 ~/.gnupg/gpg-agent.conf &> /dev/null
-print_result $? "Set secure permissions for GPG agent config"
+    
+    print_result $? "Created GPG configuration file"
+}
 
 # Configure GPG
-cat > ~/.gnupg/gpg.conf << EOL
-use-agent
-no-emit-version
-no-comments
-keyid-format LONG
-with-fingerprint
+configure_gpg() {
+    print_info "Configuring GPG..."
+    
+    # Create GPG configuration directory
+    mkdir -p "$HOME/.gnupg"
+    
+    # Set proper permissions
+    chmod 700 "$HOME/.gnupg"
+    
+    # Create GPG agent configuration
+    cat > "$HOME/.gnupg/gpg-agent.conf" << EOL
+default-cache-ttl 3600
+max-cache-ttl 86400
+pinentry-program /usr/local/bin/pinentry-mac
 EOL
-print_result $? "Configure GPG"
+    
+    # Create GPG configuration
+    cat > "$HOME/.gnupg/gpg.conf" << EOL
+use-agent
+personal-cipher-preferences AES256 AES192 AES
+personal-digest-preferences SHA512 SHA384 SHA256
+personal-compress-preferences ZLIB BZIP2 ZIP Uncompressed
+default-preference-list SHA512 SHA384 SHA256 AES256 AES192 AES ZLIB BZIP2 ZIP Uncompressed
+cert-digest-algo SHA512
+s2k-digest-algo SHA512
+s2k-cipher-algo AES256
+charset utf-8
+fixed-list-mode
+no-comments
+no-emit-version
+keyid-format 0xlong
+list-options show-uid-validity
+verify-options show-uid-validity
+with-fingerprint
+require-cross-certification
+no-symkey-cache
+throw-keyids
+EOL
+    
+    print_result $? "GPG configuration"
+}
 
-# Set secure permissions for GPG config
-chmod 600 ~/.gnupg/gpg.conf &> /dev/null
-print_result $? "Set secure permissions for GPG config"
+# Create modular configuration
+create_gpg_config
+
+# Configure GPG
+configure_gpg
+
+# Check if oh-my-zsh.zsh is already sourcing the modular configs
+if ! grep -q "source \"\$HOME/.jarvistoolset/zsh_configs/gpg.zsh\"" "$HOME/.zshrc"; then
+    # Add a line to source the GPG config in .zshrc if oh-my-zsh.zsh isn't handling it
+    cat >> "$HOME/.zshrc" << 'EOL'
+# Load GPG configuration
+source "$HOME/.jarvistoolset/zsh_configs/gpg.zsh"
+EOL
+    print_result $? "Added GPG configuration to .zshrc"
+fi
 
 # Restart GPG Agent
 gpgconf --kill gpg-agent &> /dev/null
 print_result $? "Restart GPG agent"
-
-# Add GPG configuration to shell
-if grep -q "GPG_TTY" ~/.zshrc; then
-    print_success "GPG_TTY already in .zshrc"
-else
-    echo 'export GPG_TTY=$(tty)' >> ~/.zshrc
-    print_result $? "Add GPG_TTY to .zshrc"
-fi
 
 # Configure Git to use GPG signing
 git config --global commit.gpgsign true &> /dev/null

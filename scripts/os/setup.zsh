@@ -7,7 +7,7 @@ source "${SCRIPT_DIR}/utils.zsh"
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # Repository configuration
-typeset -r GITHUB_REPOSITORY="evandropaes/jarvistoolset"
+typeset -r GITHUB_REPOSITORY="arvosai/jarvistoolset"
 typeset -r JARVIS_ORIGIN="git@github.com:$GITHUB_REPOSITORY.git"
 
 # Default configuration
@@ -17,7 +17,13 @@ typeset skipQuestions=false
 HOSTNAME=${1:-$(hostname)}
 USERNAME=${2:-$(whoami)}
 EMAIL=${3:-"evandro.reis@arvos.ai"}
-DIRECTORY=${4:-"$HOME"}
+DIRECTORY=${4:-"$HOME/.jarvistoolset"}
+
+# Export variables for use in other scripts
+export HOSTNAME
+export USERNAME
+export EMAIL
+export DIRECTORY
 
 # Script groups for installation
 # Ensure we're using zsh associative arrays properly
@@ -110,14 +116,12 @@ install_homebrew() {
 
 install_figlet() {
     if ! (( $+commands[figlet] )); then
-        print_in_purple "\n >> Installing figlet for banner display\n\n"
+        # Install Homebrew if not already installed (silently)
+        install_homebrew > /dev/null 2>&1
         
-        # Install Homebrew if not already installed
-        install_homebrew
-        
-        # Install figlet using Homebrew
-        brew install figlet
-        print_result $? "figlet"
+        # Install figlet using Homebrew (silently)
+        brew install figlet > /dev/null 2>&1
+        # print_result $? "figlet"
     fi
     
     return 0
@@ -182,7 +186,7 @@ select_script_groups() {
             SELECTED_GROUPS[$group]="false"
         done
         
-        print_in_purple " >> Available groups to install\n\n"
+        print_in_purple "\n >> Available groups to install\n\n"
 
         for group in ${(k)SCRIPT_GROUPS}; do
             local group_answer=""
@@ -197,12 +201,12 @@ select_script_groups() {
         done
         
         # Summary of selected groups
-        print_in_purple "\n\n >> Installation Summary\n\n"
+        print_in_purple "\n >> Installation Summary\n\n"
         for group in ${(k)SCRIPT_GROUPS}; do
             if [[ "${SELECTED_GROUPS[$group]}" == "true" ]]; then
                 print_in_green "Will install: ${SCRIPT_GROUPS[$group]}\n"
             else
-                print_in_red "Will skip: ${SCRIPT_GROUPS[$group]}\n"
+                print_in_red   "Will skip...: ${SCRIPT_GROUPS[$group]}\n"
             fi
         done
         

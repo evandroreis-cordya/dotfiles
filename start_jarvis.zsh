@@ -6,8 +6,10 @@ clear
 # Script to start Jarvis Toolset
 # This script calls the Jarvis Toolset setup script with default arguments
 
+# Set the Jarvis directory (can be overridden by environment variable)
+JARVIS_DIR="${JARVIS_DIR:-"$HOME/.jarvistoolset"}"
+
 # Get the absolute path to the Jarvis Toolset directory
-JARVIS_DIR="/Users/evandroreis/.jarvistoolset"
 UTILS_SCRIPT="${JARVIS_DIR}/scripts/os/utils.zsh"
 MACOS_UTILS_SCRIPT="${JARVIS_DIR}/scripts/os/install/macos/utils.zsh"
 
@@ -95,7 +97,7 @@ fi
 HOSTNAME=${1:-$(hostname)}
 USERNAME=${2:-$(whoami)}
 EMAIL=${3:-"evandro.reis@arvos.ai"}
-DIRECTORY=${4:-"$HOME"}
+DIRECTORY=${4:-"$HOME/.jarvistoolset"}
 
 # Path to the setup script
 SETUP_SCRIPT="${JARVIS_DIR}/scripts/os/setup.zsh"

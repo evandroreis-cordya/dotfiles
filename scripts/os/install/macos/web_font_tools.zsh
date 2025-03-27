@@ -7,20 +7,15 @@ SCRIPT_DIR=${0:a:h} \
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-print_in_purple "\n   Web Font Tools\n\n"
+print_in_purple "\n   Installing fonts\n\n"
 
-brew_install "Web Font Tools: TTF/OTF → WOFF (Zopfli)" "sfnt2woff-zopfli" "bramstein/webfonttools"
-brew_install "Web Font Tools: TTF/OTF → WOFF" "sfnt2woff" "bramstein/webfonttools"
-brew_install "Web Font Tools: WOFF2" "woff2" "bramstein/webfonttools"
+print_in_yellow "\n   Installing .TTF fonts\n"
+cp -R "$SCRIPT_DIR/fonts/*.ttf" /Library/Fonts
 
+print_in_yellow "\n   Installing .OTF fonts\n"
+cp -R "$SCRIPT_DIR/fonts/*.otf" /Library/Fonts
 
-print_in_purple "\n   Instalando fonts\n\n"
+print_in_yellow "\n   Installing .WOFF fonts\n"
+cp -R "$SCRIPT_DIR/fonts/*.woff" /Library/Fonts
 
-print_in_yellow "\n   Instalando .TTF fonts\n"
-cp -R ./fonts/*.ttf /Library/Fonts
-
-print_in_yellow "\n   Instalando .OTF fonts\n"
-cp -R ./fonts/*.otf /Library/Fonts
-
-print_in_yellow "\n   Instalando .WOFF fonts\n"
-cp -R ./fonts/*.woff /Library/Fonts
+print_in_green "\n   Fonts installation complete!\n"

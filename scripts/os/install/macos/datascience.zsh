@@ -34,13 +34,24 @@ pip_install_in_env "Scikit-learn" "scikit-learn"
 
 # Machine Learning packages
 pip_install_in_env "TensorFlow" "tensorflow"
-pip_install_in_env "PyTorch" "torch torchvision torchaudio"
+# Fix PyTorch installation for macOS - use the official installation command
+print_in_yellow "Installing PyTorch for macOS...\n"
+if [[ "$(uname -m)" == "arm64" ]]; then
+    # For Apple Silicon (M1/M2/M3)
+    PYENV_VERSION=$DATASCIENCE_ENV pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+    print_result $? "PyTorch (Apple Silicon)"
+else
+    # For Intel Macs
+    PYENV_VERSION=$DATASCIENCE_ENV pip install torch torchvision torchaudio
+    print_result $? "PyTorch (Intel)"
+fi
 pip_install_in_env "Keras" "keras"
 pip_install_in_env "XGBoost" "xgboost"
 pip_install_in_env "LightGBM" "lightgbm"
 
 # Create activation script for the data science environment
-ACTIVATE_SCRIPT="$HOME/.jarvistoolset/scripts/activate_datascience.sh"
+DIRECTORY="${SCRIPT_DIR}/../../.."
+ACTIVATE_SCRIPT="${DIRECTORY}/scripts/activate_datascience.sh"
 mkdir -p "$(dirname "$ACTIVATE_SCRIPT")"
 
 cat > "$ACTIVATE_SCRIPT" << EOL
@@ -67,4 +78,4 @@ chmod +x "$ACTIVATE_SCRIPT"
 print_result $? "Creating Data Science activation script"
 
 print_in_yellow "\n  To activate the Data Science environment, run:\n"
-print_in_yellow "  source ~/.jarvistoolset/scripts/activate_datascience.sh\n"
+print_in_yellow "  source ${DIRECTORY}/scripts/activate_datascience.sh\n"

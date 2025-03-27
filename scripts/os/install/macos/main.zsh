@@ -9,14 +9,21 @@ source "${SCRIPT_DIR}/utils.zsh"
 
 print_in_purple "\n >> Starting macOS setup\n\n"
 
+# Create zsh_configs directory for modular configurations
+mkdir -p "$HOME/.jarvistoolset/zsh_configs"
+print_in_green "Created modular configuration directory at $HOME/.jarvistoolset/zsh_configs\n"
+
 # System setup scripts
 if [[ "${SELECTED_GROUPS[system]}" == "true" ]]; then
     print_in_purple "\n >> Installing System Setup\n\n"
     source "${SCRIPT_DIR}/xcode.zsh"
     source "${SCRIPT_DIR}/homebrew.zsh"
+    source "${SCRIPT_DIR}/oh_my_zsh.zsh"
     # #source "${SCRIPT_DIR}/bash.zsh"
     # source "${SCRIPT_DIR}/tmux.zsh"
     # source "${SCRIPT_DIR}/vim.zsh"
+else
+    print_in_red "\n >> Skipping System Setup\n\n"
 fi
 
 # Development environments
@@ -31,6 +38,7 @@ if [[ "${SELECTED_GROUPS[dev_langs]}" == "true" ]]; then
     source "${SCRIPT_DIR}/rust.zsh"
     source "${SCRIPT_DIR}/swift.zsh"
     source "${SCRIPT_DIR}/php.zsh"
+    source "${SCRIPT_DIR}/cpp.zsh"
 else
     print_in_red "\n >> Skipping Development Languages\n\n"
 fi
@@ -39,6 +47,15 @@ fi
 if [[ "${SELECTED_GROUPS[data_science]}" == "true" ]]; then
     print_in_purple "\n >> Installing Data Science Environment\n\n"
     source "${SCRIPT_DIR}/datascience.zsh"
+    
+    # Activate the Data Science environment if the activation script exists
+    ACTIVATE_SCRIPT="${DIRECTORY}/scripts/activate_datascience.sh"
+    if [[ -f "$ACTIVATE_SCRIPT" ]]; then
+        print_in_purple "\n >> Activating Data Science Environment\n\n"
+        print_in_yellow "  To use the Data Science environment with all installed packages, run:\n"
+        print_in_green "  source $ACTIVATE_SCRIPT\n"
+        print_in_yellow "  This will activate the Python virtual environment with Jupyter, Pandas, TensorFlow, and other data science packages.\n"
+    fi
 else
     print_in_red "\n >> Skipping Data Science Environment\n\n"
 fi
@@ -51,6 +68,7 @@ if [[ "${SELECTED_GROUPS[dev_tools]}" == "true" ]]; then
     source "${SCRIPT_DIR}/docker.zsh"
     source "${SCRIPT_DIR}/git.zsh"
     source "${SCRIPT_DIR}/gpg.zsh"
+    source "${SCRIPT_DIR}/security.zsh"
     source "${SCRIPT_DIR}/jetbrains.zsh"
     source "${SCRIPT_DIR}/visualstudiocode.zsh"
     source "${SCRIPT_DIR}/yarn.zsh"
@@ -109,6 +127,7 @@ if [[ "${SELECTED_GROUPS[ai_tools]}" == "true" ]]; then
     print_in_purple "\n >> Installing AI and Productivity Tools\n\n"
     source "${SCRIPT_DIR}/ai_tools.zsh"
     source "${SCRIPT_DIR}/ai_desktop_tools.zsh"
+    source "${SCRIPT_DIR}/ai_bookmarks.zsh"
     source "${SCRIPT_DIR}/amazon_ai_tools.zsh"
     source "${SCRIPT_DIR}/anthropic_tools.zsh"
     source "${SCRIPT_DIR}/autonomous_agents.zsh"
@@ -139,23 +158,25 @@ else
     print_in_red "\n >> Skipping App Store and System Tools\n\n"
 fi
 
-# Activate the Data Science environment if the activation script exists
-if [[ "${SELECTED_GROUPS[data_science]}" == "true" ]]; then
-    ACTIVATE_SCRIPT="$HOME/.jarvistoolset/scripts/activate_datascience.sh"
-    if [[ -f "$ACTIVATE_SCRIPT" ]]; then
-        print_in_purple "\n >> Activating Data Science Environment\n\n"
-        print_in_yellow "  To use the Data Science environment with all installed packages, run:\n"
-        print_in_green "  source $ACTIVATE_SCRIPT\n"
-        print_in_yellow "  This will activate the Python virtual environment with Jupyter, Pandas, TensorFlow, and other data science packages.\n"
-    fi
-else
-    print_in_red "\n >> Skipping Data Science Environment\n\n"
-fi
-
 # Always run cleanup
 source "${SCRIPT_DIR}/cleanup.zsh"
 
 print_in_purple "\n >> macOS setup completed!\n\n"
+
+# Load modular configurations
+print_in_purple "\n >> Setting up modular configurations\n\n"
+if ! grep -q "# Load modular configurations from jarvistoolset" "$HOME/.zshrc"; then
+    cat >> "$HOME/.zshrc" << 'EOL'
+
+# Load modular configurations from jarvistoolset
+for config_file in "$HOME/.jarvistoolset/zsh_configs/"*.zsh; do
+    if [ -f "$config_file" ]; then
+        source "$config_file"
+    fi
+done
+EOL
+    print_in_green "Added modular configuration loader to .zshrc\n"
+fi
 
 # Ask user if they want to configure macOS preferences
 print_in_purple "\n >> Configure macOS Preferences\n\n"
@@ -165,132 +186,13 @@ vared -p $'' configure_preferences
 
 if [[ "$configure_preferences" =~ ^[Yy]$ ]]; then
     # Path to the preferences script
-    PREFERENCES_SCRIPT="$HOME/.jarvistoolset/scripts/os/preferences/macos/main.zsh"
+    PREFERENCES_SCRIPT="${DIRECTORY}/scripts/os/preferences/macos/main.zsh"
     
     if [[ -f "$PREFERENCES_SCRIPT" && -x "$PREFERENCES_SCRIPT" ]]; then
-        print_in_yellow "\nSelect which preference categories to configure:\n"
-        
-        # Define preference categories
-        typeset -A PREF_CATEGORIES
-        PREF_CATEGORIES=(
-            "accessibility" "Accessibility settings"
-            "app_store" "App Store settings"
-            "bluetooth" "Bluetooth settings"
-            "chrome" "Chrome browser settings"
-            "dashboard" "Dashboard settings"
-            "date_time" "Date and time settings"
-            "dock" "Dock settings"
-            "energy" "Energy and battery settings"
-            "finder" "Finder settings"
-            "firefox" "Firefox browser settings"
-            "icloud" "iCloud settings"
-            "keyboard" "Keyboard settings"
-            "language" "Language settings"
-            "mail" "Mail app settings"
-            "mission_control" "Mission Control settings"
-            "mouse" "Mouse settings"
-            "network" "Network settings"
-            "notifications" "Notification settings"
-            "safari" "Safari browser settings"
-            "screen" "Screen and display settings"
-            "security" "Security and privacy settings"
-            "sharing" "Sharing settings"
-            "siri" "Siri settings"
-            "software_update" "Software update settings"
-            "sound" "Sound settings"
-            "spotlight" "Spotlight settings"
-            "system" "System settings"
-            "terminal" "Terminal settings"
-            "textedit" "TextEdit settings"
-            "time_machine" "Time Machine settings"
-            "trackpad" "Trackpad settings"
-            "ui" "UI and UX settings"
-        )
-        
-        # Create array to store selected categories
-        typeset -A SELECTED_PREFS
-        
-        # Initialize all to false
-        for category in ${(k)PREF_CATEGORIES}; do
-            SELECTED_PREFS[$category]="false"
-        done
-        
-        # Option for all categories
-        print_in_yellow "0) All categories\n"
-        
-        # Display menu options
-        i=1
-        for category in ${(k)PREF_CATEGORIES}; do
-            print_in_yellow "$i) ${PREF_CATEGORIES[$category]}\n"
-            i=$((i+1))
-        done
-        
-        # Add option for custom selection
-        print_in_yellow "$i) Custom selection\n"
-        custom_option=$i
-        
-        # Get user selection
-        print_in_yellow "\nEnter your choice (0-$i): "
-        choice=""
-        vared -p $'' choice
-        
-        # Process user selection
-        if [[ "$choice" == "0" ]]; then
-            # Select all categories
-            for category in ${(k)PREF_CATEGORIES}; do
-                SELECTED_PREFS[$category]="true"
-            done
-            print_in_green "All preference categories selected.\n"
-        elif [[ "$choice" == "$custom_option" ]]; then
-            # Custom selection
-            print_in_yellow "\nSelect preference categories (enter y/n for each):\n"
-            
-            for category in ${(k)PREF_CATEGORIES}; do
-                print_in_yellow "Configure ${PREF_CATEGORIES[$category]}? (y/n): "
-                category_choice=""
-                vared -p $'' category_choice
-                
-                if [[ "$category_choice" =~ ^[Yy]$ ]]; then
-                    SELECTED_PREFS[$category]="true"
-                fi
-            done
-        elif [[ "$choice" =~ ^[0-9]+$ ]] && (( choice >= 1 && choice < custom_option )); then
-            # Single category selected
-            i=1
-            for category in ${(k)PREF_CATEGORIES}; do
-                if [[ "$i" == "$choice" ]]; then
-                    SELECTED_PREFS[$category]="true"
-                    print_in_green "${PREF_CATEGORIES[$category]} selected.\n"
-                    break
-                fi
-                i=$((i+1))
-            done
-        else
-            print_in_red "Invalid choice. No preferences will be configured.\n"
-            exit 1
-        fi
-        
-        # Convert selected preferences to a comma-separated list
-        SELECTED_CATEGORIES=""
-        for category in ${(k)SELECTED_PREFS}; do
-            if [[ "${SELECTED_PREFS[$category]}" == "true" ]]; then
-                if [[ -z "$SELECTED_CATEGORIES" ]]; then
-                    SELECTED_CATEGORIES="$category"
-                else
-                    SELECTED_CATEGORIES="$SELECTED_CATEGORIES,$category"
-                fi
-            fi
-        done
-        
-        # Run the preferences script with selected categories
-        if [[ -n "$SELECTED_CATEGORIES" ]]; then
-            print_in_yellow "\nConfiguring selected preferences...\n"
-            "$PREFERENCES_SCRIPT" "" "" "" "$SELECTED_CATEGORIES"
-        else
-            print_in_yellow "No preferences selected. Skipping configuration.\n"
-        fi
+        # Run the preferences script
+        "$PREFERENCES_SCRIPT"
     else
-        print_in_red "Preferences script not found or not executable: $PREFERENCES_SCRIPT\n"
+        print_error "Preferences script not found or not executable: $PREFERENCES_SCRIPT"
     fi
 else
     print_in_yellow "Skipping preferences configuration.\n"

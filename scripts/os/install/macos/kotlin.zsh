@@ -1,105 +1,97 @@
 #!/usr/bin/env zsh
 
-# Get the directory of the current script
-SCRIPT_DIR=${0:a:h}
-source "${SCRIPT_DIR}/../../utils.zsh"
-source "${SCRIPT_DIR}/utils.zsh"
+cd "$(dirname "${BASH_SOURCE[0]}")" \
+    && source "../../utils.zsh" \
+    && source "./utils.zsh"
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-print_in_purple "\n   Kotlin Development Tools\n\n"
-
-# Install SDKMAN if not already installed
-if [[ ! -s "$HOME/.sdkman/bin/sdkman-init.sh" ]]; then
-    print_in_purple "\n   Installing SDKMAN\n\n"
-    
-    # Install SDKMAN with error handling
-    curl -s "https://get.sdkman.io" | bash &> /dev/null
-    if [[ $? -eq 0 && -s "$HOME/.sdkman/bin/sdkman-init.sh" ]]; then
-        print_success "SDKMAN"
-        # Source SDKMAN to make it available in this script
-        source "$HOME/.sdkman/bin/sdkman-init.sh"
-    else
-        print_error "SDKMAN installation failed"
-        exit 1
-    fi
-else
-    print_success "SDKMAN (already installed)"
-    # Source SDKMAN to make it available in this script
-    source "$HOME/.sdkman/bin/sdkman-init.sh"
-fi
-
-# Verify sdk command is available
-if ! command -v sdk &> /dev/null; then
-    print_error "SDKMAN 'sdk' command not found. Please check your SDKMAN installation."
-    exit 1
-fi
+print_in_purple "\n   Kotlin\n\n"
 
 # Install Kotlin
-print_in_purple "\n   Installing Kotlin\n\n"
-yes | sdk install kotlin &> /dev/null
-print_result $? "Kotlin"
+brew_install "Kotlin" "kotlin"
 
-# Install build tools
-print_in_purple "\n   Installing Build Tools\n\n"
+# Create modular configuration file for Kotlin
+create_kotlin_config() {
+    local config_dir="$HOME/.jarvistoolset/zsh_configs"
+    local config_file="$config_dir/kotlin.zsh"
+    
+    # Create directory if it doesn't exist
+    mkdir -p "$config_dir"
+    
+    # Create Kotlin configuration file
+    cat > "$config_file" << 'EOL'
+#!/bin/zsh
+#
+# Kotlin configuration for zsh
+# This file contains all Kotlin-related configurations
+#
 
-# Install Gradle
-yes | sdk install gradle &> /dev/null
-print_result $? "Gradle"
+# Kotlin environment variables
+export KOTLIN_HOME="$(brew --prefix kotlin)"
+export PATH="$KOTLIN_HOME/bin:$PATH"
 
-# Install Maven
-yes | sdk install maven &> /dev/null
-print_result $? "Maven"
+# Kotlin aliases
+alias kt="kotlin"
+alias ktc="kotlinc"
+alias ktjvm="kotlinc-jvm"
+alias ktjs="kotlinc-js"
+alias ktrun="kotlin -classpath ."
 
-# Install IntelliJ IDEA if not already installed
-print_in_purple "\n   Installing IntelliJ IDEA\n\n"
-if brew list --cask | grep -q "intellij-idea"; then
-    print_success "IntelliJ IDEA (already installed)"
-else
-    brew install --cask intellij-idea &> /dev/null
-    print_result $? "IntelliJ IDEA"
-fi
+# Kotlin project creation function
+new-kotlin() {
+    if [ $# -lt 1 ]; then
+        echo "Usage: new-kotlin <project-name> [--gradle|--maven]"
+        return 1
+    fi
+    
+    local project_name=$1
+    local project_type=${2:-"--gradle"}
+    
+    # Create project directory
+    mkdir -p "$project_name"
+    cd "$project_name" || return
+    
+    # Create basic project structure
+    mkdir -p src/main/kotlin/com/example/$project_name
+    mkdir -p src/test/kotlin/com/example/$project_name
+    
+    # Create main application file
+    cat > "src/main/kotlin/com/example/$project_name/App.kt" << EOF
+package com.example.$project_name
 
-# Install development tools
-print_in_purple "\n   Installing Development Tools\n\n"
-
-# Install Kotlin Language Server
-if brew list | grep -q "kotlin-language-server"; then
-    print_success "Kotlin Language Server (already installed)"
-else
-    brew install kotlin-language-server &> /dev/null
-    print_result $? "Kotlin Language Server"
-fi
-
-# Install ktlint
-print_in_purple "\n   Installing Kotlin Linter\n\n"
-
-# Check if ktlint is already installed
-if command -v ktlint &> /dev/null; then
-    print_success "ktlint (already installed)"
-else
-    brew install ktlint &> /dev/null
-    print_result $? "ktlint"
-fi
-
-# Create a Kotlin project template
-print_in_purple "\n   Creating Kotlin Project Template\n\n"
-mkdir -p "$HOME/.kotlin_project_template/src/main/kotlin/com/example/app"
-mkdir -p "$HOME/.kotlin_project_template/src/test/kotlin/com/example/app"
-
-# Create a sample Main.kt file
-cat > "$HOME/.kotlin_project_template/src/main/kotlin/com/example/app/Main.kt" << 'EOL'
-package com.example.app
+class App {
+    fun greeting(): String {
+        return "Hello, World!"
+    }
+}
 
 fun main() {
-    println("Hello, Kotlin World!")
+    println(App().greeting())
 }
-EOL
+EOF
+    
+    # Create test file
+    cat > "src/test/kotlin/com/example/$project_name/AppTest.kt" << EOF
+package com.example.$project_name
 
-# Create a sample build.gradle.kts file
-cat > "$HOME/.kotlin_project_template/build.gradle.kts" << 'EOL'
+import kotlin.test.Test
+import kotlin.test.assertEquals
+
+class AppTest {
+    @Test
+    fun testGreeting() {
+        val app = App()
+        assertEquals("Hello, World!", app.greeting())
+    }
+}
+EOF
+    
+    if [[ "$project_type" == "--gradle" ]]; then
+        # Create Gradle build files
+        cat > "build.gradle.kts" << EOF
 plugins {
-    kotlin("jvm") version "1.9.0"
+    kotlin("jvm") version "1.9.20"
     application
 }
 
@@ -111,73 +103,224 @@ repositories {
 }
 
 dependencies {
+    implementation(kotlin("stdlib"))
     testImplementation(kotlin("test"))
+}
+
+application {
+    mainClass.set("com.example.$project_name.AppKt")
 }
 
 tasks.test {
     useJUnitPlatform()
 }
+EOF
+        
+        # Create Gradle wrapper
+        if command -v gradle >/dev/null 2>&1; then
+            gradle wrapper
+        else
+            echo "Gradle not found. Install it with 'brew install gradle' to generate the wrapper."
+        fi
+        
+        # Create settings.gradle.kts
+        cat > "settings.gradle.kts" << EOF
+rootProject.name = "$project_name"
+EOF
+        
+    elif [[ "$project_type" == "--maven" ]]; then
+        # Create Maven POM file
+        cat > "pom.xml" << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-kotlin {
-    jvmToolchain(17)
-}
+    <groupId>com.example</groupId>
+    <artifactId>$project_name</artifactId>
+    <version>1.0-SNAPSHOT</version>
 
-application {
-    mainClass.set("com.example.app.MainKt")
-}
-EOL
+    <properties>
+        <kotlin.version>1.9.20</kotlin.version>
+        <kotlin.code.style>official</kotlin.code.style>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
-# Create a sample settings.gradle.kts file
-cat > "$HOME/.kotlin_project_template/settings.gradle.kts" << 'EOL'
-rootProject.name = "kotlin-app"
-EOL
+    <dependencies>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib</artifactId>
+            <version>\${kotlin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-test</artifactId>
+            <version>\${kotlin.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
-print_success "Kotlin project template"
+    <build>
+        <sourceDirectory>src/main/kotlin</sourceDirectory>
+        <testSourceDirectory>src/test/kotlin</testSourceDirectory>
+        <plugins>
+            <plugin>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-maven-plugin</artifactId>
+                <version>\${kotlin.version}</version>
+                <executions>
+                    <execution>
+                        <id>compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>test-compile</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>test-compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>com.example.$project_name.AppKt</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+EOF
+    fi
+    
+    # Create README.md
+    cat > "README.md" << EOF
+# $project_name
 
-# Add Kotlin helper functions to shell
-if ! grep -q 'new-kotlin' "$HOME/.zshrc"; then
-    print_in_purple "\n   Adding Kotlin Helper Functions\n\n"
-    cat >> "$HOME/.zshrc" << 'EOL'
+A Kotlin project.
 
-# Kotlin development functions
-new-kotlin() {
-    if [[ -n "$1" ]]; then
-        mkdir -p "$1"
-        cp -r "$HOME/.kotlin_project_template/"* "$1/"
-        cd "$1"
-        # Replace placeholder with actual project name
-        sed -i '' "s/com.example/$1/g" build.gradle.kts
-        sed -i '' "s/kotlin-app/$1/g" settings.gradle.kts
-        mkdir -p "src/main/kotlin/${1//.//}"
-        mkdir -p "src/test/kotlin/${1//.//}"
-        mv src/main/kotlin/com/example/app/Main.kt "src/main/kotlin/${1//.//}/"
-        sed -i '' "s/package com.example.app/package $1/g" "src/main/kotlin/${1//.//}/Main.kt"
-        sed -i '' "s/com.example.app.MainKt/$1.MainKt/g" build.gradle.kts
-        rm -rf src/main/kotlin/com
-        rm -rf src/test/kotlin/com
+## Building
+
+\`\`\`bash
+# For Gradle
+./gradlew build
+
+# For Maven
+mvn package
+\`\`\`
+
+## Running
+
+\`\`\`bash
+# For Gradle
+./gradlew run
+
+# For Maven
+mvn exec:java -Dexec.mainClass="com.example.$project_name.AppKt"
+\`\`\`
+
+## Testing
+
+\`\`\`bash
+# For Gradle
+./gradlew test
+
+# For Maven
+mvn test
+\`\`\`
+EOF
+    
+    # Create .gitignore
+    cat > ".gitignore" << EOF
+# Gradle
+.gradle/
+build/
+gradle-app.setting
+!gradle-wrapper.jar
+.gradletasknamecache
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# VS Code
+.vscode/
+.settings/
+.classpath
+.project
+
+# Mac
+.DS_Store
+EOF
+    
+    # Initialize git repository if git is available
+    if command -v git >/dev/null 2>&1; then
         git init
-        echo "build/" > .gitignore
-        echo ".gradle/" >> .gitignore
-        echo ".idea/" >> .gitignore
-        echo "*.iml" >> .gitignore
         git add .
         git commit -m "Initial commit"
-        echo "Kotlin project $1 created successfully!"
-    else
-        echo "Please provide a project name (e.g., com.example.myapp)"
     fi
+    
+    echo "Kotlin project '$project_name' created successfully!"
+}
+EOL
+    
+    print_result $? "Created Kotlin configuration file"
 }
 
-# Kotlin aliases
-alias ktc="kotlinc"
-alias ktrun="kotlin"
-alias ktcj="kotlinc-jvm"
-alias gw="./gradlew"
-alias gwb="./gradlew build"
-alias gwt="./gradlew test"
-alias gwr="./gradlew run"
+# Install Kotlin tools
+print_in_purple "\n   Installing Kotlin Tools\n\n"
+
+# Install Gradle
+brew_install "Gradle" "gradle"
+
+# Install IntelliJ IDEA Community Edition if not already installed
+if ! brew list --cask | grep -q "intellij-idea-ce"; then
+    print_info "Installing IntelliJ IDEA Community Edition..."
+    brew install --cask intellij-idea-ce
+    print_result $? "IntelliJ IDEA Community Edition"
+else
+    print_success "IntelliJ IDEA Community Edition (already installed)"
+fi
+
+# Create modular configuration
+create_kotlin_config
+
+# Check if oh-my-zsh.zsh is already sourcing the modular configs
+if ! grep -q "source \"\$HOME/.jarvistoolset/zsh_configs/kotlin.zsh\"" "$HOME/.zshrc"; then
+    # Add a line to source the Kotlin config in .zshrc if oh-my-zsh.zsh isn't handling it
+    cat >> "$HOME/.zshrc" << 'EOL'
+# Load Kotlin configuration
+source "$HOME/.jarvistoolset/zsh_configs/kotlin.zsh"
 EOL
-    print_success "Kotlin helper functions"
+    print_result $? "Added Kotlin configuration to .zshrc"
 fi
 
 print_in_green "\n  Kotlin development environment setup complete!\n"

@@ -24,9 +24,7 @@ create_symlinks() {
         "git/gitattributes"
         "git/gitconfig"
         "git/gitignore"
-        "tmux/tmux.conf"
-        "vim/vim"
-        "vim/vimrc"
+
     )
 
     local i=""

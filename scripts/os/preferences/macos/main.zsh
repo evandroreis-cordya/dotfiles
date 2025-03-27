@@ -2,13 +2,165 @@
 
 # Get the directory of the current script
 SCRIPT_DIR=${0:a:h}
+PREFS_DIR="$SCRIPT_DIR"
+
+# Source the utility functions
 source "${SCRIPT_DIR}/../../utils.zsh"
 
-# Default values
+# Define the directory structure for preference scripts
+PREFERENCE_SCRIPTS_DIR="$PREFS_DIR"
+
+# Parse arguments
 HOSTNAME="$1"
 USERNAME="$2"
 EMAIL="$3"
-SELECTED_CATEGORIES="$4"  # Comma-separated list of categories to run
+SELECTED_CATEGORIES="$4"
+
+# Use DIRECTORY from environment if available, otherwise default
+DIRECTORY=${DIRECTORY:-"$HOME/.jarvistoolset"}
+
+# Print header
+print_in_purple "\n >> macOS Preferences Configuration\n\n"
+
+# Define preference categories
+typeset -A PREF_CATEGORIES
+PREF_CATEGORIES=(
+    "accessibility" "Accessibility settings"
+    "app_store" "App Store settings"
+    "bluetooth" "Bluetooth settings"
+    "chrome" "Chrome browser settings"
+    "dashboard" "Dashboard settings"
+    "date_time" "Date and time settings"
+    "dock" "Dock settings"
+    "energy" "Energy and battery settings"
+    "finder" "Finder settings"
+    "firefox" "Firefox browser settings"
+    "icloud" "iCloud settings"
+    "keyboard" "Keyboard settings"
+    "language" "Language settings"
+    "mail" "Mail app settings"
+    "mission_control" "Mission Control settings"
+    "mouse" "Mouse settings"
+    "network" "Network settings"
+    "notifications" "Notification settings"
+    "safari" "Safari browser settings"
+    "screen" "Screen and display settings"
+    "security" "Security and privacy settings"
+    "sharing" "Sharing settings"
+    "siri" "Siri settings"
+    "software_update" "Software update settings"
+    "sound" "Sound settings"
+    "spotlight" "Spotlight settings"
+    "system" "System settings"
+    "terminal" "Terminal settings"
+    "textedit" "TextEdit settings"
+    "time_machine" "Time Machine settings"
+    "trackpad" "Trackpad settings"
+    "ui" "UI and UX settings"
+)
+
+# Ask user how they want to configure preferences
+print_in_yellow "\nHow would you like to configure preferences?\n"
+print_in_yellow "0) Configure all preferences\n"
+print_in_yellow "1) Select specific categories\n"
+print_in_yellow "2) Skip all preferences\n\n"
+
+# Get user selection
+choice=""
+vared -p $'Enter your choice (0-2): ' choice
+
+# Create array to store selected categories
+typeset -A SELECTED_PREFS
+
+# Initialize all to false
+for category in ${(k)PREF_CATEGORIES}; do
+    SELECTED_PREFS[$category]="false"
+done
+
+# Process user selection
+if [[ "$choice" == "0" ]]; then
+    # Select all categories
+    for category in ${(k)PREF_CATEGORIES}; do
+        SELECTED_PREFS[$category]="true"
+    done
+    print_in_green "\nAll preference categories selected\n"
+elif [[ "$choice" == "1" ]]; then
+    # Custom selection
+    print_in_yellow "\nSelect preference categories (enter y/n for each):\n"
+    
+    for category in ${(k)PREF_CATEGORIES}; do
+        category_choice=""
+        vared -p $'Configure ${PREF_CATEGORIES[$category]}? (y/n): ' category_choice
+        
+        if [[ "$category_choice" =~ ^[Yy]$ ]]; then
+            SELECTED_PREFS[$category]="true"
+        fi
+    done
+elif [[ "$choice" == "2" ]]; then
+    print_in_yellow "\nSkipping all preferences\n"
+    exit 0
+else
+    print_in_red "\nInvalid choice. No preferences will be configured.\n"
+    exit 1
+fi
+
+# Convert selected preferences to a comma-separated list if not already provided
+if [[ -z "$SELECTED_CATEGORIES" ]]; then
+    SELECTED_CATEGORIES=""
+    for category in ${(k)SELECTED_PREFS}; do
+        if [[ "${SELECTED_PREFS[$category]}" == "true" ]]; then
+            if [[ -z "$SELECTED_CATEGORIES" ]]; then
+                SELECTED_CATEGORIES="$category"
+            else
+                SELECTED_CATEGORIES="$SELECTED_CATEGORIES,$category"
+            fi
+        fi
+    done
+fi
+
+# If no categories were selected, exit
+if [[ -z "$SELECTED_CATEGORIES" ]]; then
+    print_in_yellow "\nNo preferences selected. Skipping configuration.\n"
+    exit 0
+fi
+
+# Convert comma-separated list back to array for processing
+IFS=',' read -rA CATEGORY_ARRAY <<< "$SELECTED_CATEGORIES"
+
+# Function to run a preference script if it exists
+run_preference_script() {
+    local script="$1"
+    if [[ -f "$script" && -x "$script" ]]; then
+        print_in_yellow "Running $(basename "$script")...\n"
+        "$script"
+    else
+        print_in_red "Script not found or not executable: $script\n"
+    fi
+}
+
+# Process each preference category
+print_in_purple "\n >> Configuring selected preferences\n\n"
+
+# System Preferences
+for category in ${(k)PREF_CATEGORIES}; do
+    script="$PREFERENCE_SCRIPTS_DIR/${category}.zsh"
+    
+    # Check if this category was selected
+    if [[ " ${CATEGORY_ARRAY[@]} " =~ " $category " || "$SELECTED_CATEGORIES" == "all" ]]; then
+        run_preference_script "$script"
+    else
+        script_name=$(basename "$script")
+        print_in_red "Skipping $script_name (not selected)\n"
+    fi
+done
+
+print_in_purple "\n >> System preferences configuration completed\n\n"
+
+# Application Preferences
+# Add application preferences scripts here if needed
+
+print_in_purple "\n >> All selected preferences have been configured\n\n"
+print_in_yellow "Note: Some changes may require a system restart to take effect.\n"
 
 # Minimum supported macOS version
 MINIMUM_MACOS_VERSION="14.0.0"  # macOS Sonoma
@@ -32,7 +184,7 @@ check_macos_compatibility() {
 }
 
 # Function to run a preference script with error handling
-run_preference_script() {
+run_preference_script_with_error_handling() {
     local script="$1"
     local script_name=$(basename "$script")
     
@@ -56,105 +208,11 @@ run_preference_script() {
     fi
 }
 
-# Function to check if a category is selected
-is_category_selected() {
-    local category="$1"
-    
-    # If no categories specified, run all
-    if [[ -z "$SELECTED_CATEGORIES" ]]; then
-        return 0
-    fi
-    
-    # Check if category is in the comma-separated list
-    if [[ "$SELECTED_CATEGORIES" == "all" ]]; then
-        return 0
-    fi
-    
-    if [[ "$SELECTED_CATEGORIES" == *"$category"* ]]; then
-        local IFS=','
-        for selected in $SELECTED_CATEGORIES; do
-            if [[ "$selected" == "$category" ]]; then
-                return 0
-            fi
-        done
-    fi
-    
-    return 1
-}
-
-print_in_yellow "\n\n"
-print_in_yellow "   ------------------------------------------------------\n"
-print_in_yellow "   Configuring system and application preferences\n"
-print_in_yellow "   ------------------------------------------------------\n\n"
-
-# Check macOS compatibility before proceeding
-if ! check_macos_compatibility; then
-    print_in_red "\nAborting preferences configuration due to incompatible macOS version.\n"
-    exit 1
-fi
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-# Close any open System Preferences panes to prevent
-# overriding the preferences that are being changed.
-if [[ -f "./close_system_preferences_panes.applescript" ]]; then
-    print_in_yellow "Closing any open System Settings panes...\n"
-    ./close_system_preferences_panes.applescript
-else
-    print_warning "close_system_preferences_panes.applescript not found"
-fi
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-print_in_purple "\n >> Applying Selected System Preferences\n\n"
-
-# Define all available preference scripts with their categories
-typeset -A PREFERENCE_SCRIPTS
-PREFERENCE_SCRIPTS=(
-    "./accessibility.zsh" "Accessibility"
-    "./app_store.zsh" "App Store"
-    "./bluetooth.zsh" "Bluetooth"
-    "./chrome.zsh" "Chrome"
-    "./dashboard.zsh" "Dashboard"
-    "./date_time.zsh" "Date and Time"
-    "./dock.zsh" "Dock"
-    "./energy.zsh" "Energy"
-    "./finder.zsh" "Finder"
-    "./firefox.zsh" "Firefox"
-    "./icloud.zsh" "iCloud"
-    "./keyboard.zsh" "Keyboard"
-    "./language.zsh" "Language"
-    "./language_and_region.zsh" "Language and Region"
-    "./mail.zsh" "Mail"
-    "./maps.zsh" "Maps"
-    "./messages.zsh" "Messages"
-    "./mission_control.zsh" "Mission Control"
-    "./mouse.zsh" "Mouse"
-    "./music.zsh" "Music"
-    "./network.zsh" "Network"
-    "./notifications.zsh" "Notifications"
-    "./photos.zsh" "Photos"
-    "./safari.zsh" "Safari"
-    "./screen.zsh" "Screen"
-    "./security.zsh" "Security"
-    "./sharing.zsh" "Sharing"
-    "./siri.zsh" "Siri"
-    "./software_update.zsh" "Software Update"
-    "./sound.zsh" "Sound"
-    "./spotlight.zsh" "Spotlight"
-    "./system.zsh" "System"
-    "./terminal.zsh" "Terminal"
-    "./textedit.zsh" "TextEdit"
-    "./time_machine.zsh" "Time Machine"
-    "./trackpad.zsh" "Trackpad"
-    "./ui.zsh" "UI"
-)
-
 # Special handling for UI and UX script with hostname parameter
-if [[ -f "./ui_and_ux.zsh" && -x "./ui_and_ux.zsh" ]]; then
+if [[ -f "$PREFERENCE_SCRIPTS_DIR/ui_and_ux.zsh" && -x "$PREFERENCE_SCRIPTS_DIR/ui_and_ux.zsh" ]]; then
     if is_category_selected "UI"; then
         print_in_yellow "Running ui_and_ux.zsh with hostname parameter...\n"
-        ./ui_and_ux.zsh "$HOSTNAME"
+        "$PREFERENCE_SCRIPTS_DIR/ui_and_ux.zsh" "$HOSTNAME"
         print_success "ui_and_ux.zsh completed"
     else
         print_in_yellow "Skipping ui_and_ux.zsh (not selected)\n"
@@ -162,25 +220,82 @@ if [[ -f "./ui_and_ux.zsh" && -x "./ui_and_ux.zsh" ]]; then
 fi
 
 # Run users_groups script if selected
-if [[ -f "./users_groups.zsh" && -x "./users_groups.zsh" ]]; then
+if [[ -f "$PREFERENCE_SCRIPTS_DIR/users_groups.zsh" && -x "$PREFERENCE_SCRIPTS_DIR/users_groups.zsh" ]]; then
     if is_category_selected "System"; then
         print_in_yellow "Running users_groups.zsh...\n"
-        ./users_groups.zsh
+        "$PREFERENCE_SCRIPTS_DIR/users_groups.zsh"
         print_success "users_groups.zsh completed"
     else
         print_in_yellow "Skipping users_groups.zsh (not selected)\n"
     fi
 fi
 
+# Check macOS compatibility before proceeding
+if ! check_macos_compatibility; then
+    print_in_red "\nAborting preferences configuration due to incompatible macOS version.\n"
+    exit 1
+fi
+
+# Close any open System Preferences panes to prevent
+# overriding the preferences that are being changed.
+if [[ -f "$PREFERENCE_SCRIPTS_DIR/close_system_preferences_panes.applescript" ]]; then
+    print_in_yellow "Closing any open System Settings panes...\n"
+    "$PREFERENCE_SCRIPTS_DIR/close_system_preferences_panes.applescript"
+else
+    print_warning "close_system_preferences_panes.applescript not found"
+fi
+
+# Define all available preference scripts with their categories
+typeset -A PREFERENCE_SCRIPTS
+PREFERENCE_SCRIPTS=(
+    "$PREFERENCE_SCRIPTS_DIR/accessibility.zsh" "Accessibility"
+    "$PREFERENCE_SCRIPTS_DIR/app_store.zsh" "App Store"
+    "$PREFERENCE_SCRIPTS_DIR/bluetooth.zsh" "Bluetooth"
+    "$PREFERENCE_SCRIPTS_DIR/chrome.zsh" "Chrome"
+    "$PREFERENCE_SCRIPTS_DIR/dashboard.zsh" "Dashboard"
+    "$PREFERENCE_SCRIPTS_DIR/date_time.zsh" "Date and Time"
+    "$PREFERENCE_SCRIPTS_DIR/dock.zsh" "Dock"
+    "$PREFERENCE_SCRIPTS_DIR/energy.zsh" "Energy"
+    "$PREFERENCE_SCRIPTS_DIR/finder.zsh" "Finder"
+    "$PREFERENCE_SCRIPTS_DIR/firefox.zsh" "Firefox"
+    "$PREFERENCE_SCRIPTS_DIR/icloud.zsh" "iCloud"
+    "$PREFERENCE_SCRIPTS_DIR/keyboard.zsh" "Keyboard"
+    "$PREFERENCE_SCRIPTS_DIR/language.zsh" "Language"
+    "$PREFERENCE_SCRIPTS_DIR/language_and_region.zsh" "Language and Region"
+    "$PREFERENCE_SCRIPTS_DIR/mail.zsh" "Mail"
+    "$PREFERENCE_SCRIPTS_DIR/maps.zsh" "Maps"
+    "$PREFERENCE_SCRIPTS_DIR/messages.zsh" "Messages"
+    "$PREFERENCE_SCRIPTS_DIR/mission_control.zsh" "Mission Control"
+    "$PREFERENCE_SCRIPTS_DIR/mouse.zsh" "Mouse"
+    "$PREFERENCE_SCRIPTS_DIR/music.zsh" "Music"
+    "$PREFERENCE_SCRIPTS_DIR/network.zsh" "Network"
+    "$PREFERENCE_SCRIPTS_DIR/notifications.zsh" "Notifications"
+    "$PREFERENCE_SCRIPTS_DIR/photos.zsh" "Photos"
+    "$PREFERENCE_SCRIPTS_DIR/safari.zsh" "Safari"
+    "$PREFERENCE_SCRIPTS_DIR/screen.zsh" "Screen"
+    "$PREFERENCE_SCRIPTS_DIR/security.zsh" "Security"
+    "$PREFERENCE_SCRIPTS_DIR/sharing.zsh" "Sharing"
+    "$PREFERENCE_SCRIPTS_DIR/siri.zsh" "Siri"
+    "$PREFERENCE_SCRIPTS_DIR/software_update.zsh" "Software Update"
+    "$PREFERENCE_SCRIPTS_DIR/sound.zsh" "Sound"
+    "$PREFERENCE_SCRIPTS_DIR/spotlight.zsh" "Spotlight"
+    "$PREFERENCE_SCRIPTS_DIR/system.zsh" "System"
+    "$PREFERENCE_SCRIPTS_DIR/terminal.zsh" "Terminal"
+    "$PREFERENCE_SCRIPTS_DIR/textedit.zsh" "TextEdit"
+    "$PREFERENCE_SCRIPTS_DIR/time_machine.zsh" "Time Machine"
+    "$PREFERENCE_SCRIPTS_DIR/trackpad.zsh" "Trackpad"
+    "$PREFERENCE_SCRIPTS_DIR/ui.zsh" "UI"
+)
+
 # Run selected preference scripts
 for script in ${(k)PREFERENCE_SCRIPTS}; do
     category="${PREFERENCE_SCRIPTS[$script]}"
     
     if is_category_selected "$category"; then
-        run_preference_script "$script"
+        run_preference_script_with_error_handling "$script"
     else
         script_name=$(basename "$script")
-        print_in_yellow "Skipping $script_name (not selected)\n"
+        print_in_red "Skipping $script_name (not selected)\n"
     fi
 done
 

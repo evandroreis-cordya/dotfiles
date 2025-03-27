@@ -33,7 +33,7 @@ create_directories() {
         "$HOME/Backups"        # General backups
         "$HOME/Backups/Apps" \
         "$HOME/Backups/Configs" \
-        "$HOME/Backups/jarvistoolset" # jarvistoolset backups
+        "$HOME/Backups/.jarvistoolset" # jarvistoolset backups
         
         # Application directories
         "$HOME/.config/nvim"   # Neovim configuration

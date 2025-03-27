@@ -28,12 +28,28 @@ install_homebrew() {
         
         # Add Homebrew to PATH for Apple Silicon Macs
         if [[ "$(uname -m)" == "arm64" ]]; then
-            echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> "$HOME/.zprofile"
-            eval "$(/opt/homebrew/bin/brew shellenv)"
+            # Apple Silicon
+            if ! grep -q 'eval "$(/opt/homebrew/bin/brew shellenv)"' "$HOME/.zprofile"; then
+                echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> "$HOME/.zprofile"
+                eval "$(/opt/homebrew/bin/brew shellenv)"
+            fi
+        else
+            # Intel
+            if ! grep -q 'eval "$(/usr/local/bin/brew shellenv)"' "$HOME/.zprofile"; then
+                echo 'eval "$(/usr/local/bin/brew shellenv)"' >> "$HOME/.zprofile"
+                eval "$(/usr/local/bin/brew shellenv)"
+            fi
         fi
+        
+        print_result $? "Homebrew installation"
+    else
+        print_success "Homebrew is already installed"
+        
+        # Update Homebrew
+        print_info "Updating Homebrew..."
+        brew update
+        print_result $? "Homebrew update"
     fi
-
-    print_result $? "Homebrew"
 }
 
 configure_homebrew() {
@@ -84,6 +100,46 @@ setup_homebrew_environment() {
     print_result $? "Homebrew (environment setup)"
 }
 
+create_homebrew_config() {
+    local config_dir="$HOME/.jarvistoolset/zsh_configs"
+    local config_file="$config_dir/homebrew.zsh"
+    
+    # Create directory if it doesn't exist
+    mkdir -p "$config_dir"
+    
+    # Create Homebrew configuration file
+    cat > "$config_file" << 'EOL'
+#!/bin/zsh
+#
+# Homebrew configuration for zsh
+# This file contains all Homebrew-related configurations
+#
+
+# Homebrew environment setup
+if [[ "$(uname -m)" == "arm64" ]]; then
+    # Apple Silicon
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+else
+    # Intel
+    eval "$(/usr/local/bin/brew shellenv)"
+fi
+
+# Homebrew aliases
+alias brewup="brew update && brew upgrade && brew cleanup"
+alias brewls="brew list"
+alias brewi="brew install"
+alias brewci="brew install --cask"
+alias brewrm="brew uninstall"
+alias brewsr="brew search"
+alias brewinfo="brew info"
+alias brewdeps="brew deps --tree --installed"
+alias brewdoc="brew doctor"
+alias brewout="brew outdated"
+EOL
+    
+    print_result $? "Created Homebrew configuration file"
+}
+
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 main() {
@@ -92,6 +148,21 @@ main() {
     install_homebrew
     setup_homebrew_environment
     configure_homebrew
+    
+    # Create modular configuration
+    create_homebrew_config
+
+    # Check if oh-my-zsh.zsh is already sourcing the modular configs
+    if ! grep -q "source \"\$HOME/.jarvistoolset/zsh_configs/homebrew.zsh\"" "$HOME/.zshrc"; then
+        # Add a line to source the Homebrew config in .zshrc if oh-my-zsh.zsh isn't handling it
+        cat >> "$HOME/.zshrc" << 'EOL'
+# Load Homebrew configuration
+source "$HOME/.jarvistoolset/zsh_configs/homebrew.zsh"
+EOL
+        print_result $? "Added Homebrew configuration to .zshrc"
+    fi
+
+    print_in_green "\n  Homebrew installed and configured!\n"
 }
 
 main
