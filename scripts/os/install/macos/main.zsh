@@ -31,12 +31,16 @@ if [[ "${SELECTED_GROUPS[dev_langs]}" == "true" ]]; then
     source "${SCRIPT_DIR}/rust.zsh"
     source "${SCRIPT_DIR}/swift.zsh"
     source "${SCRIPT_DIR}/php.zsh"
+else
+    print_in_red "\n >> Skipping Development Languages\n\n"
 fi
 
 # Data Science environment
 if [[ "${SELECTED_GROUPS[data_science]}" == "true" ]]; then
     print_in_purple "\n >> Installing Data Science Environment\n\n"
     source "${SCRIPT_DIR}/datascience.zsh"
+else
+    print_in_red "\n >> Skipping Data Science Environment\n\n"
 fi
 
 # Development tools
@@ -50,6 +54,8 @@ if [[ "${SELECTED_GROUPS[dev_tools]}" == "true" ]]; then
     source "${SCRIPT_DIR}/jetbrains.zsh"
     source "${SCRIPT_DIR}/visualstudiocode.zsh"
     source "${SCRIPT_DIR}/yarn.zsh"
+else
+    print_in_red "\n >> Skipping Development Tools\n\n"
 fi
 
 # Web and frontend tools
@@ -58,6 +64,8 @@ if [[ "${SELECTED_GROUPS[web_tools]}" == "true" ]]; then
     source "${SCRIPT_DIR}/frontend_tools.zsh"
     source "${SCRIPT_DIR}/backend_tools.zsh"
     source "${SCRIPT_DIR}/web_font_tools.zsh"
+else
+    print_in_red "\n >> Skipping Web and Frontend Tools\n\n"
 fi
 
 # Daily tools and utilities
@@ -72,6 +80,8 @@ if [[ "${SELECTED_GROUPS[daily_tools]}" == "true" ]]; then
     source "${SCRIPT_DIR}/misc_tools.zsh"
     source "${SCRIPT_DIR}/office.zsh"
     source "${SCRIPT_DIR}/apps.zsh"
+else
+    print_in_red "\n >> Skipping Daily Tools and Utilities\n\n"
 fi
 
 # Media and creative tools
@@ -80,6 +90,8 @@ if [[ "${SELECTED_GROUPS[media_tools]}" == "true" ]]; then
     source "${SCRIPT_DIR}/video_tools.zsh"
     source "${SCRIPT_DIR}/image_tools.zsh"
     source "${SCRIPT_DIR}/creative_tools.zsh"
+else
+    print_in_red "\n >> Skipping Media and Creative Tools\n\n"
 fi
 
 # Cloud and DevOps tools
@@ -88,6 +100,8 @@ if [[ "${SELECTED_GROUPS[cloud_tools]}" == "true" ]]; then
     source "${SCRIPT_DIR}/cloud_tools.zsh"
     source "${SCRIPT_DIR}/security_tools.zsh"
     source "${SCRIPT_DIR}/vercel_tools.zsh"
+else
+    print_in_red "\n >> Skipping Cloud and DevOps Tools\n\n"
 fi
 
 # AI and productivity tools
@@ -112,6 +126,8 @@ if [[ "${SELECTED_GROUPS[ai_tools]}" == "true" ]]; then
     source "${SCRIPT_DIR}/nvidia_tools.zsh"
     source "${SCRIPT_DIR}/openai_tools.zsh"
     source "${SCRIPT_DIR}/oracle_ai_tools.zsh"
+else
+    print_in_red "\n >> Skipping AI and Productivity Tools\n\n"
 fi
 
 # App Store and system tools
@@ -119,6 +135,8 @@ if [[ "${SELECTED_GROUPS[app_store]}" == "true" ]]; then
     print_in_purple "\n >> Installing App Store and System Tools\n\n"
     source "${SCRIPT_DIR}/app_store.zsh"
     source "${SCRIPT_DIR}/mas.zsh"
+else
+    print_in_red "\n >> Skipping App Store and System Tools\n\n"
 fi
 
 # Activate the Data Science environment if the activation script exists
@@ -130,6 +148,8 @@ if [[ "${SELECTED_GROUPS[data_science]}" == "true" ]]; then
         print_in_green "  source $ACTIVATE_SCRIPT\n"
         print_in_yellow "  This will activate the Python virtual environment with Jupyter, Pandas, TensorFlow, and other data science packages.\n"
     fi
+else
+    print_in_red "\n >> Skipping Data Science Environment\n\n"
 fi
 
 # Always run cleanup
@@ -140,7 +160,8 @@ print_in_purple "\n >> macOS setup completed!\n\n"
 # Ask user if they want to configure macOS preferences
 print_in_purple "\n >> Configure macOS Preferences\n\n"
 print_in_yellow "Would you like to configure macOS preferences now? (y/n): "
-read -r configure_preferences
+configure_preferences=""
+vared -p $'' configure_preferences
 
 if [[ "$configure_preferences" =~ ^[Yy]$ ]]; then
     # Path to the preferences script
@@ -210,7 +231,8 @@ if [[ "$configure_preferences" =~ ^[Yy]$ ]]; then
         
         # Get user selection
         print_in_yellow "\nEnter your choice (0-$i): "
-        read -r choice
+        choice=""
+        vared -p $'' choice
         
         # Process user selection
         if [[ "$choice" == "0" ]]; then
@@ -225,7 +247,8 @@ if [[ "$configure_preferences" =~ ^[Yy]$ ]]; then
             
             for category in ${(k)PREF_CATEGORIES}; do
                 print_in_yellow "Configure ${PREF_CATEGORIES[$category]}? (y/n): "
-                read -r category_choice
+                category_choice=""
+                vared -p $'' category_choice
                 
                 if [[ "$category_choice" =~ ^[Yy]$ ]]; then
                     SELECTED_PREFS[$category]="true"
