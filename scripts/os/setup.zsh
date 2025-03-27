@@ -173,6 +173,7 @@ select_script_groups() {
     print_in_yellow "1) Install complete toolset (all groups)\n"
     print_in_yellow "2) Select specific groups to install\n"
     
+    # Use zsh's special read syntax with a prompt
     read -r "answer?Enter your choice (1/2): "
     
     if [[ "$answer" == "2" ]]; then
@@ -184,9 +185,8 @@ select_script_groups() {
         # Display interactive menu for each group
         for group in ${(k)SCRIPT_GROUPS}; do
             local group_answer
-            print_in_yellow "\nInstall ${SCRIPT_GROUPS[$group]}? (y/n): "
-            read -r -s group_answer
-            echo
+            # Use zsh's special read syntax with a prompt
+            read -r "group_answer?Install ${SCRIPT_GROUPS[$group]}? (y/n): "
             
             if [[ "$group_answer" =~ ^[Yy]$ ]]; then
                 SELECTED_GROUPS[$group]="true"
@@ -207,14 +207,60 @@ select_script_groups() {
         done
         
         # Confirmation
-        print_in_yellow "\nProceed with installation? (y/n): "
-        read -r answer
+        read -r "answer?Proceed with installation? (y/n): "
         if [[ ! "$answer" =~ ^[Yy]$ ]]; then
             print_in_red "Installation cancelled by user."
             exit 0
         fi
     else
         print_in_green "Installing complete toolset (all groups)\n"
+    fi
+}
+
+# Function to update configuration
+update_configuration() {
+    local update_config
+    
+    # Use zsh's special read syntax with a prompt
+    read -r "update_config?Would you like to update this configuration? (y/n): "
+    
+    if [[ "$update_config" =~ ^[Yy]$ ]]; then
+        print_in_yellow "\nEnter new values (or press Enter to keep current value):\n"
+        
+        # Update hostname
+        read -r "new_hostname?Hostname [$HOSTNAME]: "
+        if [[ -n "$new_hostname" ]]; then
+            HOSTNAME="$new_hostname"
+        fi
+        
+        # Update username
+        read -r "new_username?Username [$USERNAME]: "
+        if [[ -n "$new_username" ]]; then
+            USERNAME="$new_username"
+        fi
+        
+        # Update email
+        read -r "new_email?Email [$EMAIL]: "
+        if [[ -n "$new_email" ]]; then
+            EMAIL="$new_email"
+        fi
+        
+        # Update directory
+        read -r "new_directory?Directory [$DIRECTORY]: "
+        if [[ -n "$new_directory" ]]; then
+            DIRECTORY="$new_directory"
+        fi
+        
+        # Display updated configuration
+        print_in_green "\n >> Updated configuration:\n"
+        print_in_green "---------------------------------------------------------------\n"
+        print_in_green "Hostname: $HOSTNAME\n"
+        print_in_green "Username : $USERNAME\n"
+        print_in_green "Email    : $EMAIL\n"
+        print_in_green "Directory: $DIRECTORY\n"
+        print_in_green "---------------------------------------------------------------\n"
+    else
+        print_in_yellow "Continuing with current configuration.\n"
     fi
 }
 
@@ -269,6 +315,9 @@ main() {
     print_in_green "Email    : $EMAIL\n"
     print_in_green "Directory: $DIRECTORY\n"
     print_in_green "---------------------------------------------------------------\n"
+    
+    # Ask if user wants to update configuration
+    update_configuration
     
     # Ensure the script is run on macOS
     verify_os || exit 1
