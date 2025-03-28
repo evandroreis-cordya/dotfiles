@@ -3,6 +3,8 @@
 # Get the directory of the current script
 SCRIPT_DIR=${0:a:h}
 source "${SCRIPT_DIR}/utils.zsh"
+# Source logging script if available
+source "${SCRIPT_DIR}/logging.zsh" 2>/dev/null || true
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -39,32 +41,77 @@ create_directories() {
         "$HOME/.config/nvim"   # Neovim configuration
         "$HOME/.config/git"    # Git configuration
         "$HOME/.config/zsh"    # Zsh configuration
+        
+        # Jarvistoolset logs directory
+        "$HOME/.jarvistoolset/logs" # Installation logs
     )
 
     print_in_purple "\n >> Creating directories\n\n"
+    
+    # Log the directory creation process
+    if type log_info &>/dev/null; then
+        log_info "Creating directories"
+    fi
 
     # Create directories with proper permissions
     for dir in $DIRECTORIES; do
-        if mkdir -p "$dir"; then
-            print_success "Created directory: $dir\"
+        if mkdir -p "$dir" &>/dev/null; then
+            print_success "Created directory: $dir"
+            
+            # Log directory creation
+            if type log_info &>/dev/null; then
+                log_success "Created directory: $dir"
+            fi
+            
             # Set restrictive permissions for sensitive directories
             case "$dir" in
                 */.ssh|*/.gnupg)
-                    chmod 700 "$dir"
+                    chmod 700 "$dir" &>/dev/null
+                    
+                    # Log permission setting
+                    if type log_info &>/dev/null; then
+                        log_info "Set permissions 700 for sensitive directory: $dir"
+                    fi
                     ;;
                 *)
-                    chmod 755 "$dir"
+                    chmod 755 "$dir" &>/dev/null
+                    
+                    # Log permission setting
+                    if type log_info &>/dev/null; then
+                        log_info "Set permissions 755 for directory: $dir"
+                    fi
                     ;;
             esac
+        else
+            print_error "Failed to create directory: $dir"
+            
+            # Log directory creation failure
+            if type log_error &>/dev/null; then
+                log_error "Failed to create directory: $dir"
+            fi
         fi
     done
+    
+    # Log completion
+    if type log_info &>/dev/null; then
+        log_success "Directory creation completed"
+    fi
 }
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 main() {
+    # Log main function start
+    if type log_info &>/dev/null; then
+        log_info "Starting directory creation process"
+    fi
 
     create_directories
+    
+    # Log main function completion
+    if type log_info &>/dev/null; then
+        log_success "Directory creation process completed"
+    fi
 }
 
 main

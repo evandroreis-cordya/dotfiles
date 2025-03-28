@@ -10,28 +10,26 @@ source "${SCRIPT_DIR}/utils.zsh"
 
 login_to_app_store() {
 
-
-    ask "Entre com seu Apple ID: " && printf "\n"
-
-    execute "mas signin '$(get_answer)'"
+    execute "mas signin '$USERNAME'"
 
 }
 
 install_mas() {
 
-    print_in_purple "\n   Instalando o MAS\n\n"
+    print_in_purple "\n   >>> Installing Mac App Store CLI\n\n"
     brew_install "Mac App Store CLI" "mas"
 
 }
 
 upgrade_mas_apps() {
 
-    execute "mas upgrade" "Atualizando Apps"
+    print_in_purple "\n   >>> Updating Apps from App Store\n\n"
+    execute "mas upgrade" "Updating Apps"
 }
 
 install_mas_apps() {
 
-    print_in_purple "\n   >>> Instalando Apps da App Store\n\n"
+    print_in_purple "\n   >>> Installing Apps from App Store\n\n"
 
     execute "mas install 414209656	" "Better Rename 9  (9.52)"
     execute "mas install 1286725949	" "Cappuccino­ (10.0.12)"
@@ -60,7 +58,7 @@ install_mas_apps() {
 
 main() {
 
-    print_in_purple "\n >> Instalando apps da Mac App Store\n\n"
+    print_in_purple "\n >> Installing apps from Mac App Store\n\n"
 
     install_mas
     login_to_app_store

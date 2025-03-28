@@ -3,6 +3,8 @@
 # Get the directory of the current script
 SCRIPT_DIR=${0:a:h}
 source "${SCRIPT_DIR}/../../utils.zsh"
+# Source logging script if available
+source "${SCRIPT_DIR}/../../logging.zsh" 2>/dev/null || true
 
 # Add trap to handle broken pipe errors
 trap '' PIPE
@@ -18,7 +20,11 @@ brew_cleanup() {
     #
     # https://github.com/Homebrew/brew/blob/master/docs/FAQ.md#how-do-i-uninstall-old-versions-of-a-formula
 
-    execute "brew cleanup" "Homebrew (cleanup)"
+    if type execute_with_log &>/dev/null; then
+        execute_with_log "brew cleanup" "Cleaning up Homebrew"
+    else
+        execute "brew cleanup" "Homebrew (cleanup)"
+    fi
 }
 
 brew_install() {
@@ -26,30 +32,60 @@ brew_install() {
     local -r FORMULA="$2"
     local -r INSTALL_FLAGS="${3:-}"  # Optional flags like --cask
 
+    # Log the installation attempt
+    if type log_info &>/dev/null; then
+        log_info "Installing $FORMULA_READABLE_NAME ($FORMULA)"
+    fi
+
     # Check if Homebrew is installed
     if ! command -v brew &>/dev/null; then
         print_error "$FORMULA_READABLE_NAME (Homebrew is not installed)"
+        if type log_error &>/dev/null; then
+            log_error "Failed to install $FORMULA_READABLE_NAME: Homebrew is not installed"
+        fi
         return 1
     fi
 
     # Install or upgrade formula
     if brew list "$FORMULA" &> /dev/null; then
         print_success "$FORMULA_READABLE_NAME (already installed)"
+        if type log_info &>/dev/null; then
+            log_info "$FORMULA_READABLE_NAME ($FORMULA) is already installed"
+        fi
     else
-        echo "$FORMULA_READABLE_NAME" >/dev/null
         if [[ -n "$INSTALL_FLAGS" ]]; then
-            if brew install "$FORMULA" $INSTALL_FLAGS &>/dev/null; then
-                print_success "$FORMULA_READABLE_NAME"
+            if type execute_with_log &>/dev/null; then
+                execute_with_log "brew install $FORMULA $INSTALL_FLAGS" "Installing $FORMULA_READABLE_NAME"
             else
-                print_error "$FORMULA_READABLE_NAME"
-                return 1
+                if brew install "$FORMULA" $INSTALL_FLAGS &>/dev/null; then
+                    print_success "$FORMULA_READABLE_NAME"
+                    if type log_success &>/dev/null; then
+                        log_success "Successfully installed $FORMULA_READABLE_NAME ($FORMULA)"
+                    fi
+                else
+                    print_error "$FORMULA_READABLE_NAME"
+                    if type log_error &>/dev/null; then
+                        log_error "Failed to install $FORMULA_READABLE_NAME ($FORMULA)"
+                    fi
+                    return 1
+                fi
             fi
         else
-            if brew install "$FORMULA" &>/dev/null; then
-                print_success "$FORMULA_READABLE_NAME"
+            if type execute_with_log &>/dev/null; then
+                execute_with_log "brew install $FORMULA" "Installing $FORMULA_READABLE_NAME"
             else
-                print_error "$FORMULA_READABLE_NAME"
-                return 1
+                if brew install "$FORMULA" &>/dev/null; then
+                    print_success "$FORMULA_READABLE_NAME"
+                    if type log_success &>/dev/null; then
+                        log_success "Successfully installed $FORMULA_READABLE_NAME ($FORMULA)"
+                    fi
+                else
+                    print_error "$FORMULA_READABLE_NAME"
+                    if type log_error &>/dev/null; then
+                        log_error "Failed to install $FORMULA_READABLE_NAME ($FORMULA)"
+                    fi
+                    return 1
+                fi
             fi
         fi
     fi
@@ -67,21 +103,90 @@ brew_prefix() {
 }
 
 brew_tap() {
-    brew tap "$1" &> /dev/null
+    if type log_info &>/dev/null; then
+        log_info "Tapping Homebrew repository: $1"
+        log_command "brew tap $1" "Tapping $1"
+    else
+        brew tap "$1" &> /dev/null
+    fi
 }
 
 brew_update() {
     # Initialize Homebrew directories if needed
     if ! is_dir "$(brew --repo)"; then
-        execute "mkdir -p $(brew --repo)" "Creating Homebrew directories"
+        if type execute_with_log &>/dev/null; then
+            execute_with_log "mkdir -p $(brew --repo)" "Creating Homebrew directories"
+        else
+            execute "mkdir -p $(brew --repo)" "Creating Homebrew directories"
+        fi
     fi
 
-    execute "brew update" "Homebrew (update)"
+    if type execute_with_log &>/dev/null; then
+        execute_with_log "brew update" "Updating Homebrew"
+    else
+        execute "brew update" "Homebrew (update)"
+    fi
 }
 
 brew_upgrade() {
-    execute "brew upgrade" "Homebrew (upgrade)"
-    execute "brew upgrade --cask" "Homebrew Casks (upgrade)"
+    if type execute_with_log &>/dev/null; then
+        execute_with_log "brew upgrade" "Upgrading Homebrew packages"
+        execute_with_log "brew upgrade --cask" "Upgrading Homebrew casks"
+    else
+        execute "brew upgrade" "Homebrew (upgrade)"
+        execute "brew upgrade --cask" "Homebrew Casks (upgrade)"
+    fi
+}
+
+brew_doctor() {
+    if type execute_with_log &>/dev/null; then
+        execute_with_log "brew doctor" "Checking Homebrew for issues"
+    else
+        execute "brew doctor" "Check Homebrew for issues"
+    fi
+}
+
+brew_missing() {
+    if type execute_with_log &>/dev/null; then
+        execute_with_log "brew missing" "Checking for missing dependencies"
+    else
+        execute "brew missing" "Check for missing dependencies"
+    fi
+}
+
+brew_autoremove() {
+    if type execute_with_log &>/dev/null; then
+        execute_with_log "brew autoremove" "Removing unused dependencies"
+    else
+        execute "brew autoremove" "Remove unused dependencies"
+    fi
+}
+
+brew_list_leaves() {
+    # List installed formulae that are not dependencies of another installed formula
+    if type execute_with_log &>/dev/null; then
+        execute_with_log "brew leaves" "Listing top-level formulae"
+    else
+        execute "brew leaves" "List top-level formulae"
+    fi
+}
+
+brew_list_casks() {
+    if type execute_with_log &>/dev/null; then
+        execute_with_log "brew list --cask" "Listing installed casks"
+    else
+        execute "brew list --cask" "List installed casks"
+    fi
+}
+
+brew_outdated() {
+    if type execute_with_log &>/dev/null; then
+        execute_with_log "brew outdated" "Checking for outdated formulae"
+        execute_with_log "brew outdated --cask" "Checking for outdated casks"
+    else
+        execute "brew outdated" "Check for outdated formulae"
+        execute "brew outdated --cask" "Check for outdated casks"
+    fi
 }
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -93,9 +198,17 @@ brew_cask_install() {
     local -r DESCRIPTION="${2:-Installing $APP_NAME}"
     local -r OPTIONAL="${3:-false}"
     
+    # Log the installation attempt
+    if type log_info &>/dev/null; then
+        log_info "Installing cask: $APP_NAME ($DESCRIPTION)"
+    fi
+    
     # Check if Homebrew is installed
     if ! command -v brew &>/dev/null; then
         print_error "$APP_NAME (Homebrew is not installed)"
+        if type log_error &>/dev/null; then
+            log_error "Failed to install $APP_NAME: Homebrew is not installed"
+        fi
         return 1
     fi
     
@@ -104,52 +217,49 @@ brew_cask_install() {
         # Install or upgrade cask
         if brew list --cask "$APP_NAME" &>/dev/null; then
             print_success "$APP_NAME (already installed)"
+            if type log_info &>/dev/null; then
+                log_info "$APP_NAME is already installed"
+            fi
         else
-            # Use direct command execution instead of execute function
-            echo "$DESCRIPTION" >/dev/null
-            if brew install --cask "$APP_NAME" &>/dev/null; then
-                print_success "$DESCRIPTION"
+            # Use execute_with_log if available
+            if type execute_with_log &>/dev/null; then
+                execute_with_log "brew install --cask $APP_NAME" "$DESCRIPTION"
             else
-                print_error "$DESCRIPTION"
-                return 1
+                # Use direct command execution
+                brew install --cask "$APP_NAME" &>/dev/null
+                local exit_code=$?
+                print_result $exit_code "$DESCRIPTION"
+                
+                # Log the result
+                if type log_info &>/dev/null; then
+                    if [ $exit_code -eq 0 ]; then
+                        log_success "Successfully installed cask: $APP_NAME"
+                    else
+                        log_error "Failed to install cask: $APP_NAME (exit code $exit_code)"
+                    fi
+                fi
+                
+                if [ $exit_code -ne 0 ]; then
+                    return 1
+                fi
             fi
         fi
     else
         # If the cask doesn't exist but it's optional, just print a message
         if [[ "$OPTIONAL" == "true" ]]; then
             print_warning "$APP_NAME (cask not available, skipping)"
+            if type log_warning &>/dev/null; then
+                log_warning "$APP_NAME cask is not available, skipping"
+            fi
             return 0
         else
             print_error "$APP_NAME (cask not available)"
+            if type log_error &>/dev/null; then
+                log_error "$APP_NAME cask is not available"
+            fi
             return 1
         fi
     fi
-}
-
-brew_doctor() {
-    execute "brew doctor" "Check Homebrew for issues"
-}
-
-brew_missing() {
-    execute "brew missing" "Check for missing dependencies"
-}
-
-brew_autoremove() {
-    execute "brew autoremove" "Remove unused dependencies"
-}
-
-brew_list_leaves() {
-    # List installed formulae that are not dependencies of another installed formula
-    execute "brew leaves" "List top-level formulae"
-}
-
-brew_list_casks() {
-    execute "brew list --cask" "List installed casks"
-}
-
-brew_outdated() {
-    execute "brew outdated" "Check for outdated formulae"
-    execute "brew outdated --cask" "Check for outdated casks"
 }
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -197,7 +307,7 @@ execute_original() {
 }
 
 # Override the execute function from the parent utils.zsh
-# to ensure sudo is active when needed
+# to ensure sudo is active when needed and integrate with logging
 execute() {
     local -r CMDS="$1"
     local -r MSG="${2:-$1}"
@@ -207,22 +317,69 @@ execute() {
         ensure_sudo_active
     fi
     
-    # Call the execute_original function
-    execute_original "$CMDS" "$MSG"
+    # If logging is available, use it
+    if type log_command &>/dev/null; then
+        log_command "$CMDS" "$MSG"
+        return $?
+    # Otherwise fall back to the original execute_original function
+    elif type execute_original &>/dev/null; then
+        execute_original "$CMDS" "$MSG"
+        return $?
+    # Last resort: direct execution with basic output handling
+    else
+        local -r TMP_FILE="$(mktemp /tmp/XXXXX)"
+        local exitCode=0
+        
+        # Execute commands with proper error handling for broken pipes
+        { eval "$CMDS" 2>"$TMP_FILE" || exitCode=$?; } 2>/dev/null
+        
+        print_result $exitCode "$MSG" 2>/dev/null
+        
+        if [ $exitCode -ne 0 ]; then
+            print_error_stream < "$TMP_FILE" 2>/dev/null
+        fi
+        
+        rm -rf "$TMP_FILE"
+        return $exitCode
+    fi
 }
 
 run_command() {
-    local -r CMD="$1"
-    local -r MSG="${2:-$1}"
+    local -r COMMAND="$1"
+    local -r DESCRIPTION="${2:-$1}"
     
-    # Check if this is a sudo command and ensure sudo is active
-    if [[ "$CMD" == sudo* ]]; then
-        ensure_sudo_active
+    # If logging is available, use it
+    if type log_command &>/dev/null; then
+        log_info "Running command: $DESCRIPTION"
+        log_command "$COMMAND" "$DESCRIPTION"
+        return $?
+    else
+        # Check if this is a sudo command and ensure sudo is active
+        if [[ "$COMMAND" == sudo* ]]; then
+            ensure_sudo_active
+        fi
+        
+        # Execute the command
+        local output
+        local exit_code
+        
+        output=$(eval "$COMMAND" 2>&1) || exit_code=$?
+        
+        if [ -z "$exit_code" ]; then
+            exit_code=0
+        fi
+        
+        print_result $exit_code "$DESCRIPTION"
+        
+        if [ $exit_code -ne 0 ]; then
+            print_error "Command failed: $COMMAND"
+            if [ -n "$output" ]; then
+                print_error_stream <<< "$output"
+            fi
+        fi
+        
+        return $exit_code
     fi
-    
-    # Execute the command
-    eval "$CMD" &> /dev/null
-    print_result $? "$MSG"
 }
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -230,58 +387,102 @@ run_command() {
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 pip_install() {
-    local -r PACKAGE_READABLE_NAME="$1"
-    local -r PACKAGE="$2"
-    local -r INSTALL_FLAGS="${3:-}"  # Optional flags
-
+    local -r PACKAGE="$1"
+    local -r PACKAGE_READABLE_NAME="${2:-$PACKAGE}"
+    local -r INSTALL_FLAGS="${3:-}"
+    
+    # Log the installation attempt
+    if type log_info &>/dev/null; then
+        log_info "Installing Python package: $PACKAGE_READABLE_NAME ($PACKAGE)"
+    fi
+    
     # Check if pip is installed
-    if ! command -v pip3 &>/dev/null; then
-        print_error "$PACKAGE_READABLE_NAME (pip3 is not installed)" 2>/dev/null
+    if ! command -v pip &>/dev/null; then
+        print_error "$PACKAGE_READABLE_NAME (pip is not installed)"
+        if type log_error &>/dev/null; then
+            log_error "Failed to install $PACKAGE_READABLE_NAME: pip is not installed"
+        fi
         return 1
     fi
-
+    
     # Check if package is already installed
-    if pip3 list 2>/dev/null | grep -q "^$PACKAGE " 2>/dev/null; then
-        print_success "$PACKAGE_READABLE_NAME (already installed)" 2>/dev/null
+    if pip list | grep -q "^$PACKAGE "; then
+        print_success "$PACKAGE_READABLE_NAME (already installed)"
+        if type log_info &>/dev/null; then
+            log_info "$PACKAGE_READABLE_NAME ($PACKAGE) is already installed"
+        fi
+        return 0
+    fi
+    
+    # Install the package
+    if type execute_with_log &>/dev/null; then
+        execute_with_log "pip install $PACKAGE $INSTALL_FLAGS" "Installing $PACKAGE_READABLE_NAME"
     else
-        if [[ -n "$INSTALL_FLAGS" ]]; then
-            # Use pip directly without execute to avoid command not found errors
-            if pip3 install "$PACKAGE" $INSTALL_FLAGS --break-system-packages &>/dev/null; then
-                print_success "$PACKAGE_READABLE_NAME"
+        # Use direct command execution
+        pip install "$PACKAGE" $INSTALL_FLAGS &>/dev/null
+        local exit_code=$?
+        print_result $exit_code "$PACKAGE_READABLE_NAME"
+        
+        # Log the result
+        if type log_info &>/dev/null; then
+            if [ $exit_code -eq 0 ]; then
+                log_success "Successfully installed Python package: $PACKAGE_READABLE_NAME ($PACKAGE)"
             else
-                print_error "$PACKAGE_READABLE_NAME"
-                return 1
-            fi
-        else
-            # Use pip directly without execute to avoid command not found errors
-            if pip3 install "$PACKAGE" --break-system-packages &>/dev/null; then
-                print_success "$PACKAGE_READABLE_NAME"
-            else
-                print_error "$PACKAGE_READABLE_NAME"
-                return 1
+                log_error "Failed to install Python package: $PACKAGE_READABLE_NAME ($PACKAGE) (exit code $exit_code)"
             fi
         fi
+        
+        return $exit_code
     fi
 }
 
 pipx_install() {
-    local -r PACKAGE_READABLE_NAME="$1"
-    local -r PACKAGE="$2"
-    local -r INSTALL_FLAGS="${3:-}"  # Optional flags
-
+    local -r PACKAGE="$1"
+    local -r PACKAGE_READABLE_NAME="${2:-$PACKAGE}"
+    local -r INSTALL_FLAGS="${3:-}"
+    
+    # Log the installation attempt
+    if type log_info &>/dev/null; then
+        log_info "Installing Python package with pipx: $PACKAGE_READABLE_NAME ($PACKAGE)"
+    fi
+    
     # Check if pipx is installed
-    if ! cmd_exists "pipx"; then
+    if ! command -v pipx &>/dev/null; then
         print_error "$PACKAGE_READABLE_NAME (pipx is not installed)"
+        if type log_error &>/dev/null; then
+            log_error "Failed to install $PACKAGE_READABLE_NAME: pipx is not installed"
+        fi
         return 1
     fi
-
+    
     # Check if package is already installed
     if pipx list | grep -q "$PACKAGE"; then
         print_success "$PACKAGE_READABLE_NAME (already installed)"
+        if type log_info &>/dev/null; then
+            log_info "$PACKAGE_READABLE_NAME ($PACKAGE) is already installed via pipx"
+        fi
+        return 0
+    fi
+    
+    # Install the package
+    if type execute_with_log &>/dev/null; then
+        execute_with_log "pipx install $PACKAGE $INSTALL_FLAGS" "Installing $PACKAGE_READABLE_NAME with pipx"
     else
-        # Use direct command execution instead of the execute function
-        pipx install "$PACKAGE" $INSTALL_FLAGS &> /dev/null
-        print_result $? "$PACKAGE_READABLE_NAME"
+        # Use direct command execution
+        pipx install "$PACKAGE" $INSTALL_FLAGS &>/dev/null
+        local exit_code=$?
+        print_result $exit_code "$PACKAGE_READABLE_NAME"
+        
+        # Log the result
+        if type log_info &>/dev/null; then
+            if [ $exit_code -eq 0 ]; then
+                log_success "Successfully installed Python package with pipx: $PACKAGE_READABLE_NAME ($PACKAGE)"
+            else
+                log_error "Failed to install Python package with pipx: $PACKAGE_READABLE_NAME ($PACKAGE) (exit code $exit_code)"
+            fi
+        fi
+        
+        return $exit_code
     fi
 }
 
@@ -290,23 +491,52 @@ pipx_install() {
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 npm_install() {
-    local -r PACKAGE_READABLE_NAME="$1"
-    local -r PACKAGE="$2"
-    local -r INSTALL_FLAGS="${3:-}"  # Optional flags
-
+    local -r PACKAGE="$1"
+    local -r PACKAGE_READABLE_NAME="${2:-$PACKAGE}"
+    local -r INSTALL_FLAGS="${3:-}"
+    
+    # Log the installation attempt
+    if type log_info &>/dev/null; then
+        log_info "Installing npm package: $PACKAGE_READABLE_NAME ($PACKAGE)"
+    fi
+    
     # Check if npm is installed
-    if ! cmd_exists "npm"; then
+    if ! command -v npm &>/dev/null; then
         print_error "$PACKAGE_READABLE_NAME (npm is not installed)"
+        if type log_error &>/dev/null; then
+            log_error "Failed to install $PACKAGE_READABLE_NAME: npm is not installed"
+        fi
         return 1
     fi
-
-    # Check if package is already installed globally
+    
+    # Check if package is already installed
     if npm list -g --depth=0 | grep -q "$PACKAGE@"; then
         print_success "$PACKAGE_READABLE_NAME (already installed)"
+        if type log_info &>/dev/null; then
+            log_info "$PACKAGE_READABLE_NAME ($PACKAGE) is already installed via npm"
+        fi
+        return 0
+    fi
+    
+    # Install the package
+    if type execute_with_log &>/dev/null; then
+        execute_with_log "npm install -g $PACKAGE $INSTALL_FLAGS" "Installing $PACKAGE_READABLE_NAME with npm"
     else
-        # Use direct command execution instead of the execute function
-        npm install "$PACKAGE" $INSTALL_FLAGS &> /dev/null
-        print_result $? "$PACKAGE_READABLE_NAME"
+        # Use direct command execution
+        npm install -g "$PACKAGE" $INSTALL_FLAGS &>/dev/null
+        local exit_code=$?
+        print_result $exit_code "$PACKAGE_READABLE_NAME"
+        
+        # Log the result
+        if type log_info &>/dev/null; then
+            if [ $exit_code -eq 0 ]; then
+                log_success "Successfully installed npm package: $PACKAGE_READABLE_NAME ($PACKAGE)"
+            else
+                log_error "Failed to install npm package: $PACKAGE_READABLE_NAME ($PACKAGE) (exit code $exit_code)"
+            fi
+        fi
+        
+        return $exit_code
     fi
 }
 
@@ -375,7 +605,7 @@ gem_install() {
     if gem list | grep -q "^$PACKAGE_NAME "; then
         print_success "$PACKAGE_LABEL (already installed)"
     else
-        # Use direct command execution instead of the execute function
+        # Use direct command execution instead of execute function
         gem install $PACKAGE_NAME $EXTRA_ARGS &> /dev/null
         print_result $? "$PACKAGE_LABEL"
     fi
@@ -398,14 +628,14 @@ rbenv_install() {
     if rbenv versions | grep -q "$RUBY_VERSION"; then
         print_success "Ruby $RUBY_VERSION (already installed)"
     else
-        # Use direct command execution instead of the execute function
+        # Use direct command execution instead of execute function
         rbenv install "$RUBY_VERSION" &> /dev/null
         print_result $? "Ruby $RUBY_VERSION"
     fi
     
     # Set as global if requested
     if [[ "$SET_GLOBAL" == "true" ]]; then
-        # Use direct command execution instead of the execute function
+        # Use direct command execution instead of execute function
         rbenv global "$RUBY_VERSION" &> /dev/null
         print_result $? "Setting Ruby $RUBY_VERSION as global"
     fi
@@ -600,7 +830,7 @@ nvm_install() {
     
     print_in_purple "\n   Installing NVM\n\n"
     
-    # Use direct command execution instead of the execute function
+    # Use direct command execution instead of execute function
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/$NVM_VERSION/install.sh | bash &> /dev/null
     print_result $? "NVM"
     
@@ -638,14 +868,14 @@ node_install() {
     if nvm ls "$NODE_VERSION" &> /dev/null; then
         print_success "Node.js $NODE_VERSION (already installed)"
     else
-        # Use direct command execution instead of the execute function
+        # Use direct command execution instead of execute function
         nvm install "$NODE_VERSION" &> /dev/null
         print_result $? "Node.js $NODE_VERSION"
     fi
     
     # Set as default if requested
     if [[ "$2" == "default" ]]; then
-        # Use direct command execution instead of the execute function
+        # Use direct command execution instead of execute function
         nvm alias default "$NODE_VERSION" &> /dev/null
         print_result $? "Setting Node.js $NODE_VERSION as default"
     fi
@@ -727,14 +957,14 @@ rbenv_install() {
     if rbenv versions | grep -q "$RUBY_VERSION"; then
         print_success "Ruby $RUBY_VERSION (already installed)"
     else
-        # Use direct command execution instead of the execute function
+        # Use direct command execution instead of execute function
         rbenv install "$RUBY_VERSION" &> /dev/null
         print_result $? "Ruby $RUBY_VERSION"
     fi
     
     # Set as global if requested
     if [[ "$SET_GLOBAL" == "true" ]]; then
-        # Use direct command execution instead of the execute function
+        # Use direct command execution instead of execute function
         rbenv global "$RUBY_VERSION" &> /dev/null
         print_result $? "Setting Ruby $RUBY_VERSION as global"
     fi

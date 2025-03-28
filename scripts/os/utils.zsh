@@ -1,4 +1,6 @@
 #!/usr/bin/env zsh
+# Prevent function definitions from being printed
+set +x
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # | User Input Functions                                                 |
@@ -30,6 +32,11 @@ ask_for_sudo() {
     SUDO_REQUESTED=true
     
     print_in_yellow "Please enter your password. It will be cached for all installation tasks.\n"
+    
+    # Log the sudo request
+    if type log_info &>/dev/null; then
+        log_info "Requesting sudo privileges"
+    fi
     
     # Ask for the administrator password upfront
     sudo -v &> /dev/null
@@ -122,9 +129,58 @@ execute_original() {
     return $exitCode
 }
 
-# Alias for backward compatibility
+# Execute a command with logging
 execute() {
-    execute_original "$@"
+    local -r CMDS="$1"
+    local -r MSG="${2:-$1}"
+    local -r TMP_FILE="$(mktemp /tmp/XXXXX)"
+
+    local exitCode=0
+    local cmdsPID=""
+
+    # If the current process is ended,
+    # also end all its subprocesses.
+    set_trap "EXIT" "kill_all_subprocesses"
+
+    # Check if this is a sudo command and ensure sudo is active
+    if [[ "$CMDS" == sudo* ]]; then
+        sudo_is_active
+    fi
+
+    # Log the command execution
+    if type log_info &>/dev/null; then
+        log_info "Executing: $MSG"
+    fi
+
+    # Execute commands and capture output
+    local output=""
+    output=$(eval "$CMDS" 2>&1)
+    exitCode=$?
+
+    # Log the command output
+    if type log_info &>/dev/null; then
+        if [ $exitCode -eq 0 ]; then
+            # Success is logged by print_result -> print_success
+            if [[ -n "$output" ]]; then
+                log_message "Command output: $output" "OUTPUT"
+            fi
+        else
+            # Error is logged by print_result -> print_error
+            if [[ -n "$output" ]]; then
+                log_message "Command error output: $output" "ERROR_OUTPUT"
+            fi
+        fi
+    fi
+
+    # Print result
+    print_result $exitCode "$MSG"
+    
+    # Show error output if command failed
+    if [ $exitCode -ne 0 ] && [[ -n "$output" ]]; then
+        print_error_stream <<< "$output"
+    fi
+
+    return $exitCode
 }
 
 kill_all_subprocesses() {
@@ -276,49 +332,84 @@ print_in_color() {
 
 print_in_green() {
     print_in_color "$1" 2
+    # Log success message if log_success is available
+    if type log_success &>/dev/null; then
+        log_success "${1//\n/}"
+    fi
 }
 
 print_in_purple() {
     print_in_color "$1" 5
+    # Log info message if log_info is available
+    if type log_info &>/dev/null; then
+        log_info "${1//\n/}"
+    fi
 }
 
 print_in_red() {
     print_in_color "$1" 1
+    # Log error message if log_error is available
+    if type log_error &>/dev/null; then
+        log_error "${1//\n/}"
+    fi
 }
 
 print_in_yellow() {
     print_in_color "$1" 3
+    # Log info message if log_info is available
+    if type log_info &>/dev/null; then
+        log_info "${1//\n/}"
+    fi
 }
 
 print_question() {
-    print_in_yellow "  [?] $1"
+    print_in_yellow "   [?] $1"
+    # Log question if log_info is available
+    if type log_info &>/dev/null; then
+        log_info "Question: $1"
+    fi
 }
 
 print_error() {
-    print_in_red "  [✖] $1 $2\n"
+    print_in_red "   [✗] $1 $2\n"
+    # Log error if log_error is available
+    if type log_error &>/dev/null; then
+        log_error "$1 $2"
+    fi
 }
 
 print_error_stream() {
     while read -r line; do
         print_error "↳ ERROR: $line"
+        # Error stream is already logged by print_error
     done
 }
 
 print_success() {
-    print_in_green "  [✔] $1\n"
+    print_in_green "   [✓] $1\n"
+    # Log success if log_success is available
+    if type log_success &>/dev/null; then
+        log_success "$1"
+    fi
 }
 
 print_warning() {
-    print_in_yellow "  [!] $1\n"
+    print_in_yellow "   [!] $1\n"
+    # Log warning if log_warning is available
+    if type log_warning &>/dev/null; then
+        log_warning "$1"
+    fi
 }
 
 print_result() {
     if [ "$1" -eq 0 ]; then
         print_success "$2"
+        # Success is already logged by print_success
     else
         print_error "$2"
+        # Error is already logged by print_error
     fi
-
+    
     return "$1"
 }
 
@@ -347,7 +438,7 @@ show_spinner() {
         # Fix for zsh substring syntax
         local idx=$((i % NUMBER_OR_FRAMES))
         local frame=${FRAMES:$idx:1}
-        frameText="  [$frame] $MSG"
+        frameText="   [$frame] $MSG"
 
         printf "%s" "$frameText"
         sleep 0.2

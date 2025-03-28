@@ -3,7 +3,7 @@
 # Get the directory of the current script
 SCRIPT_DIR=${0:a:h}
 source "${SCRIPT_DIR}/../../utils.zsh"
-source "${SCRIPT_DIR}/utils.zsh"
+source "${SCRIPT_DIR}/utils.zsh" 2>/dev/null || true  # Source local utils if available
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -20,13 +20,18 @@ get_homebrew_git_config_file_path() {
 }
 
 install_homebrew() {
-    if ! command -v brew &> /dev/null; then
-        print_in_purple "\n   Installing Homebrew\n\n"
+    print_in_purple "\n   Installing Homebrew\n\n"
+    
+    if ! cmd_exists "brew"; then
+        # Log the Homebrew installation
+        if type log_info &>/dev/null; then
+            log_info "Installing Homebrew"
+        fi
         
-        # Install Homebrew using the official script
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        # Install Homebrew
+        printf "\n" | /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" > /dev/null 2>&1
         
-        # Add Homebrew to PATH for Apple Silicon Macs
+        # Configure Homebrew paths based on architecture
         if [[ "$(uname -m)" == "arm64" ]]; then
             # Apple Silicon
             if ! grep -q 'eval "$(/opt/homebrew/bin/brew shellenv)"' "$HOME/.zprofile"; then
@@ -42,36 +47,83 @@ install_homebrew() {
         fi
         
         print_result $? "Homebrew installation"
+        
+        # Log the result
+        if type log_info &>/dev/null; then
+            if [ $? -eq 0 ]; then
+                log_success "Homebrew installed successfully"
+            else
+                log_error "Failed to install Homebrew"
+            fi
+        fi
     else
         print_success "Homebrew is already installed"
         
+        # Log that Homebrew is already installed
+        if type log_info &>/dev/null; then
+            log_info "Homebrew is already installed"
+        fi
+        
         # Update Homebrew
-        print_info "Updating Homebrew..."
-        brew update
-        print_result $? "Homebrew update"
+        print_in_yellow "==> Updating Homebrew...\n"
+        
+        # Log the update
+        if type log_info &>/dev/null; then
+            log_info "Updating Homebrew"
+        fi
+        
+        # Execute brew update with logging
+        if type execute_with_log &>/dev/null; then
+            execute_with_log "brew update" "Updating Homebrew"
+        else
+            brew update > /dev/null 2>&1
+            print_result $? "Homebrew update"
+        fi
     fi
 }
 
 configure_homebrew() {
     print_in_purple "\n   Configuring Homebrew\n\n"
+    
+    # Log the configuration
+    if type log_info &>/dev/null; then
+        log_info "Configuring Homebrew"
+    fi
 
     # Opt-out of Homebrew's analytics
-    brew analytics off &> /dev/null
+    if type execute_with_log &>/dev/null; then
+        execute_with_log "brew analytics off" "Disabling Homebrew analytics"
+    else
+        brew analytics off &> /dev/null
+    fi
 
     # Note: The following taps have been deprecated as their contents
     # have been migrated to the main Homebrew repositories
     # No need to tap them explicitly anymore
 
     # Update Homebrew recipes
-    brew update &> /dev/null
+    if type execute_with_log &>/dev/null; then
+        execute_with_log "brew update" "Updating Homebrew recipes"
+    else
+        brew update &> /dev/null
+        print_result $? "Homebrew recipes update"
+    fi
 
     # Upgrade any already-installed formulae
-    brew upgrade &> /dev/null
+    if type execute_with_log &>/dev/null; then
+        execute_with_log "brew upgrade" "Upgrading Homebrew formulae"
+    else
+        brew upgrade &> /dev/null
+        print_result $? "Homebrew formulae upgrade"
+    fi
 
     # Remove outdated versions from the cellar
-    brew cleanup &> /dev/null
-
-    print_result $? "Homebrew (configuration)"
+    if type execute_with_log &>/dev/null; then
+        execute_with_log "brew cleanup" "Cleaning up Homebrew"
+    else
+        brew cleanup &> /dev/null
+        print_result $? "Homebrew cleanup"
+    fi
 }
 
 setup_homebrew_environment() {
@@ -143,7 +195,12 @@ EOL
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 main() {
-    print_in_purple "\n >> Installing and configuring Homebrew\n\n"
+    print_in_purple "\n • Homebrew\n\n"
+    
+    # Log the main Homebrew setup
+    if type log_info &>/dev/null; then
+        log_info "Starting Homebrew setup"
+    fi
 
     install_homebrew
     setup_homebrew_environment
@@ -163,6 +220,11 @@ EOL
     fi
 
     print_in_green "\n  Homebrew installed and configured!\n"
+    
+    # Log completion
+    if type log_info &>/dev/null; then
+        log_success "Homebrew setup completed"
+    fi
 }
 
 main

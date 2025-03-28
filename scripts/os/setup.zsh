@@ -3,6 +3,8 @@
 # Get the directory of the current script
 SCRIPT_DIR=${0:a:h}
 source "${SCRIPT_DIR}/utils.zsh"
+# Source logging script if available
+source "${SCRIPT_DIR}/logging.zsh" 2>/dev/null || true
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -24,6 +26,15 @@ export HOSTNAME
 export USERNAME
 export EMAIL
 export DIRECTORY
+
+# Log configuration
+if type log_info &>/dev/null; then
+    log_info "Setup configuration:"
+    log_info "  Hostname: $HOSTNAME"
+    log_info "  Username: $USERNAME"
+    log_info "  Email: $EMAIL"
+    log_info "  Directory: $DIRECTORY"
+fi
 
 # Script groups for installation
 # Ensure we're using zsh associative arrays properly
@@ -55,18 +66,34 @@ download() {
     local url="$1"
     local output="$2"
 
+    if type log_info &>/dev/null; then
+        log_info "Downloading: $url to $output"
+    fi
+
     if (( $+commands[curl] )); then
-        curl -LsSo "$output" "$url" &> /dev/null
-        #     │││└─ write output to file
-        #     ││└─ show error messages
-        #     │└─ don't show the progress meter
-        #     └─ follow redirects
+        if type execute_with_log &>/dev/null; then
+            execute_with_log "curl -LsSo \"$output\" \"$url\"" "Downloading $url"
+        else
+            curl -LsSo "$output" "$url" &> /dev/null
+            #     │││└─ write output to file
+            #     ││└─ show error messages
+            #     │└─ don't show the progress meter
+            #     └─ follow redirects
+        fi
         return $?
     elif (( $+commands[wget] )); then
-        wget -qO "$output" "$url" &> /dev/null
-        #     │└─ write output to file
-        #     └─ don't show output
+        if type execute_with_log &>/dev/null; then
+            execute_with_log "wget -qO \"$output\" \"$url\"" "Downloading $url"
+        else
+            wget -qO "$output" "$url" &> /dev/null
+            #     │└─ write output to file
+            #     └─ don't show output
+        fi
         return $?
+    fi
+    
+    if type log_error &>/dev/null; then
+        log_error "Neither curl nor wget is available for downloading"
     fi
     return 1
 }
@@ -87,10 +114,20 @@ verify_os() {
     local os_name=""
     os_name="$(get_os)"
 
+    if type log_info &>/dev/null; then
+        log_info "Verifying operating system: $os_name"
+    fi
+
     if [[ "$os_name" = "macos" ]]; then
+        if type log_success &>/dev/null; then
+            log_success "Operating system verified: macOS"
+        fi
         return 0
     else
         printf "Sorry, this script is intended only for macOS.\n"
+        if type log_error &>/dev/null; then
+            log_error "Operating system verification failed: $os_name is not supported"
+        fi
         return 1
     fi
 }
@@ -99,16 +136,42 @@ install_homebrew() {
     if ! (( $+commands[brew] )); then
         print_in_purple "\n >> Installing Homebrew\n\n"
         
+        if type log_info &>/dev/null; then
+            log_info "Installing Homebrew"
+        fi
+        
         # Install Homebrew using the official script
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        if type execute_with_log &>/dev/null; then
+            execute_with_log "/bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\"" "Installing Homebrew"
+        else
+            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" &> /dev/null
+        fi
         
         # Add Homebrew to PATH for Apple Silicon Macs
         if [[ "$(uname -m)" = "arm64" ]]; then
-            echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> "$HOME/.zprofile"
-            eval "$(/opt/homebrew/bin/brew shellenv)"
+            if ! grep -q 'eval "$(/opt/homebrew/bin/brew shellenv)"' "$HOME/.zprofile"; then
+                echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> "$HOME/.zprofile"
+                eval "$(/opt/homebrew/bin/brew shellenv)"
+                
+                if type log_info &>/dev/null; then
+                    log_info "Added Homebrew to PATH for Apple Silicon Mac"
+                fi
+            fi
         fi
         
         print_result $? "Homebrew"
+        
+        if type log_info &>/dev/null; then
+            if [ $? -eq 0 ]; then
+                log_success "Homebrew installed successfully"
+            else
+                log_error "Failed to install Homebrew"
+            fi
+        fi
+    else
+        if type log_info &>/dev/null; then
+            log_info "Homebrew is already installed"
+        fi
     fi
     
     return 0
@@ -116,12 +179,31 @@ install_homebrew() {
 
 install_figlet() {
     if ! (( $+commands[figlet] )); then
+        if type log_info &>/dev/null; then
+            log_info "Installing figlet"
+        fi
+        
         # Install Homebrew if not already installed (silently)
         install_homebrew > /dev/null 2>&1
         
         # Install figlet using Homebrew (silently)
-        brew install figlet > /dev/null 2>&1
-        # print_result $? "figlet"
+        if type execute_with_log &>/dev/null; then
+            execute_with_log "brew install figlet" "Installing figlet"
+        else
+            brew install figlet > /dev/null 2>&1
+        fi
+        
+        if type log_info &>/dev/null; then
+            if (( $+commands[figlet] )); then
+                log_success "figlet installed successfully"
+            else
+                log_error "Failed to install figlet"
+            fi
+        fi
+    else
+        if type log_info &>/dev/null; then
+            log_info "figlet is already installed"
+        fi
     fi
     
     return 0
@@ -131,11 +213,20 @@ install_git() {
     if ! (( $+commands[git] )); then
         print_in_purple "\n >> Installing Git\n\n"
         
+        if type log_info &>/dev/null; then
+            log_info "Installing Git"
+        fi
+        
         # Install Homebrew if not already installed
         install_homebrew
         
         # Install Git using Homebrew
-        brew install git
+        if type execute_with_log &>/dev/null; then
+            execute_with_log "brew install git" "Installing Git"
+        else
+            brew install git &> /dev/null
+        fi
+        
         print_result $? "Git"
         
         # Make Git available in the current shell session
@@ -148,9 +239,19 @@ install_git() {
         # Verify Git is now available
         if (( $+commands[git] )); then
             print_success "Git is now available"
+            if type log_success &>/dev/null; then
+                log_success "Git installed and available in PATH"
+            fi
         else
             print_error "Git installation failed or Git is not in PATH"
+            if type log_error &>/dev/null; then
+                log_error "Git installation failed or Git is not in PATH"
+            fi
             exit 1
+        fi
+    else
+        if type log_info &>/dev/null; then
+            log_info "Git is already installed"
         fi
     fi
     
@@ -162,9 +263,17 @@ display_banner() {
         print_in_yellow "$(figlet -f ogre -c 'Jarvis Toolset')\n"
         print_in_yellow "Welcome to ARVOS.AI Jarvis Toolset 25H1 Edition, the complete Mac OS tools and apps installer for AI and Vibe Coders!\n"
         print_in_yellow "Copyright (c) 2025 ARVOS.AI. All rights reserved.\n"
+        
+        if type log_info &>/dev/null; then
+            log_info "Displayed Jarvis Toolset banner with figlet"
+        fi
     else
         print_in_yellow "\n >> Welcome to ARVOS.AI Jarvis Toolset 25H1 Edition, the complete Mac OS tools and apps installer for AI and Vibe Coders!\n"
         print_in_yellow "Copyright (c) 2025 ARVOS.AI. All rights reserved.\n"
+        
+        if type log_info &>/dev/null; then
+            log_info "Displayed Jarvis Toolset banner (figlet not available)"
+        fi
     fi
 }
 
