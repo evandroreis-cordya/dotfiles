@@ -1,4 +1,12 @@
-#!/bin/zsh
+#!/usr/bin/env zsh
+
+# Get the directory of the current script
+SCRIPT_DIR=${0:a:h}
+source "${SCRIPT_DIR}/../../../utils.zsh"
+source "${SCRIPT_DIR}/../../utils.zsh" 2>/dev/null || true  # Source local utils if available
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 
 # Creative and 3D Tools Installation Script
 # This script installs popular creative and 3D design tools for macOS

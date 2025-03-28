@@ -451,8 +451,19 @@ main() {
     # Install Git if not already installed
     install_git
 
+    # Initialize SELECTED_GROUPS as a global associative array
+    typeset -gA SELECTED_GROUPS
+    # Default: all groups are selected
+    for group in ${(k)SCRIPT_GROUPS}; do
+        SELECTED_GROUPS[$group]="true"
+    done
+    
     # Interactive menu to select script groups
     select_script_groups
+    
+    # Export the SELECTED_GROUPS associative array
+    # This needs to be done before sourcing any scripts that use it
+    export SELECTED_GROUPS
 
     # Create directories
     source "${SCRIPT_DIR}/create_directories.zsh"
@@ -460,12 +471,8 @@ main() {
     # Create local config files
     source "${SCRIPT_DIR}/create_local_config_files.zsh"
 
-    # Use typeset -A to ensure the associative array is properly exported
-    typeset -Ax SELECTED_GROUPS
-    export SELECTED_GROUPS
-
     # Install everything
-    source "${SCRIPT_DIR}/install/main.zsh" \
+    source "${SCRIPT_DIR}/install/macos/main.zsh" \
         "$HOSTNAME" \
         "$USERNAME" \
         "$EMAIL" \

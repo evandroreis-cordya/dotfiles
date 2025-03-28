@@ -401,6 +401,14 @@ print_warning() {
     fi
 }
 
+print_info() {
+    print_in_purple "   [i] $1\n"
+    # Log info if log_info is available
+    if type log_info &>/dev/null; then
+        log_info "$1"
+    fi
+}
+
 print_result() {
     if [ "$1" -eq 0 ]; then
         print_success "$2"

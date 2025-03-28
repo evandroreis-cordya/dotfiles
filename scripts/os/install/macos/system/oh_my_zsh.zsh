@@ -6,8 +6,10 @@
 # It also installs popular plugins and themes
 #
 
-# Source utils
-source "${DIRECTORY}/scripts/os/utils.zsh"
+# Get the directory of the current script
+SCRIPT_DIR=${0:a:h}
+source "${SCRIPT_DIR}/../../../utils.zsh"
+source "${SCRIPT_DIR}/../utils.zsh" 2>/dev/null || true  # Source local utils if available
 
 # Check if Oh My Zsh is already installed
 check_oh_my_zsh_installed() {

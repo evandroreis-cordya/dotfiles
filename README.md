@@ -28,6 +28,17 @@ cd ~/.jarvistoolset
 ./start_jarvis.zsh
 ```
 
+## Recent Updates (March 2025)
+
+The following improvements have been made to the Jarvis Toolset:
+
+- **Fixed Script Paths**: Corrected path references in all installation scripts to ensure proper sourcing of utility files
+- **Enhanced Error Handling**: Added `nullglob` option to handle cases where glob patterns don't match any files
+- **Improved Logging**: Added comprehensive logging throughout the installation process
+- **Script Organization**: Restructured the installation scripts for better maintainability
+- **Email Configuration**: Fixed email variable handling in setup scripts
+- **Cleanup and Validation**: Added proper cleanup and validation scripts to ensure successful installations
+
 ## Core Files
 
 Review the code and remove anything you find unnecessary. The main files you should review are:
@@ -407,15 +418,35 @@ The jarvistoolset includes a comprehensive set of installation scripts organized
 |-------|-------------|
 | `preferences.zsh` | Configures macOS system preferences for optimal development experience |
 
-## Contributing
+## Troubleshooting
 
-Contributions to the Jarvis Toolset are welcome! Please follow these guidelines:
+If you encounter issues during the installation process, here are some common solutions:
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+### Path-related Errors
+
+If you see errors like `no such file or directory: .../utils.zsh`, it may be due to incorrect path references. The recent update should have fixed these issues, but if they persist:
+
+1. Check that the script is correctly sourcing utility files with the right relative paths
+2. Ensure all scripts have the proper `SCRIPT_DIR` variable defined
+3. Verify that the directory structure matches what the scripts expect
+
+### Installation Failures
+
+If specific tools fail to install:
+
+1. Check the logs in `~/.jarvistoolset/logs/` for detailed error information
+2. Try running the specific installation script manually to see more detailed output
+3. Ensure you have proper internet connectivity and sufficient disk space
+
+### Configuration Issues
+
+If tools install but don't work properly:
+
+1. Check that the configuration files were created correctly in your home directory
+2. Verify that the `.zshrc` file is properly sourcing the modular configurations
+3. Try running `source ~/.zshrc` to reload your shell configuration
+
+For additional help, please open an issue on the GitHub repository.
 
 ## License
 
@@ -426,3 +457,13 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 * [Victor Cavalcante](https://github.com/vcavalcante/) for the inspiration and guidance
 * [Cătălin Mariș](https://github.com/alrra) for the scripts and enhancements
 * All the open-source projects that make this toolset possible
+
+## Contributing
+
+Contributions to the Jarvis Toolset are welcome! Please follow these guidelines:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
