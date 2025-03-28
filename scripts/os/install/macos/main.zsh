@@ -5,6 +5,9 @@ SCRIPT_DIR=${0:a:h}
 source "${SCRIPT_DIR}/../../utils.zsh"
 source "${SCRIPT_DIR}/utils.zsh"
 
+# Enable nullglob to handle the case where there are no matches for a glob pattern
+setopt nullglob
+
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 print_in_purple "\n >> Starting macOS setup\n\n"
@@ -15,106 +18,169 @@ print_success "Created modular configuration directory at $HOME/.jarvistoolset/z
 
 # System setup scripts
 if [[ "${SELECTED_GROUPS[system]}" == "true" ]]; then
+    log_info "Installing System Setup"
     print_in_purple "\n >> Installing System Setup\n\n"
-    source "${SCRIPT_DIR}/xcode.zsh"
-    source "${SCRIPT_DIR}/homebrew.zsh"
-    source "${SCRIPT_DIR}/oh_my_zsh.zsh"
-
+    
+    # Source all scripts in the system directory
+    for script in "${SCRIPT_DIR}/system"/*.zsh; do
+        if [ -f "$script" ]; then
+            log_info "Sourcing script: $script"
+            source "$script"
+        fi
+    done
+    log_success "System Setup installation complete"
 else
+    log_info "Skipping System Setup"
     print_in_red "\n >> Skipping System Setup\n\n"
 fi
 
-# Development environments
+# Development languages
 if [[ "${SELECTED_GROUPS[dev_langs]}" == "true" ]]; then
     print_in_purple "\n >> Installing Development Languages\n\n"
-    source "${SCRIPT_DIR}/python.zsh"
-    source "${SCRIPT_DIR}/node.zsh"
-    source "${SCRIPT_DIR}/ruby.zsh"
-    source "${SCRIPT_DIR}/go.zsh"
-    source "${SCRIPT_DIR}/rust.zsh"
-    source "${SCRIPT_DIR}/java.zsh"
-    source "${SCRIPT_DIR}/kotlin.zsh"
-    source "${SCRIPT_DIR}/swift.zsh"
-    source "${SCRIPT_DIR}/php.zsh"
-    source "${SCRIPT_DIR}/cpp.zsh"
+    
+    # Source all scripts in the dev_langs directory
+    for script in "${SCRIPT_DIR}/dev_langs"/*.zsh; do
+        if [ -f "$script" ]; then
+            source "$script"
+        fi
+    done
 else
     print_in_red "\n >> Skipping Development Languages\n\n"
 fi
 
-# AI and ML tools
-if [[ "${SELECTED_GROUPS[ai_ml]}" == "true" ]]; then
-    print_in_purple "\n >> Installing AI and ML Tools\n\n"
-    source "${SCRIPT_DIR}/ai_ml.zsh"
+# Data Science Environment
+if [[ "${SELECTED_GROUPS[data_science]}" == "true" ]]; then
+    print_in_purple "\n >> Installing Data Science Environment\n\n"
+    
+    # Source all scripts in the data_science directory
+    for script in "${SCRIPT_DIR}/data_science"/*.zsh; do
+        if [ -f "$script" ]; then
+            source "$script"
+        fi
+    done
 else
-    print_in_red "\n >> Skipping AI and ML Tools\n\n"
+    print_in_red "\n >> Skipping Data Science Environment\n\n"
 fi
 
-# Development tools
+# AI and ML Tools
+if [[ "${SELECTED_GROUPS[ai_tools]}" == "true" ]]; then
+    print_in_purple "\n >> Installing AI and Productivity Tools\n\n"
+    
+    # Source all scripts in the ai_tools directory
+    for script in "${SCRIPT_DIR}/ai_tools"/*.zsh; do
+        if [ -f "$script" ]; then
+            source "$script"
+        fi
+    done
+else
+    print_in_red "\n >> Skipping AI and Productivity Tools\n\n"
+fi
+
+# Development Tools
 if [[ "${SELECTED_GROUPS[dev_tools]}" == "true" ]]; then
     print_in_purple "\n >> Installing Development Tools\n\n"
-    source "${SCRIPT_DIR}/git.zsh"
-    source "${SCRIPT_DIR}/docker.zsh"
-    source "${SCRIPT_DIR}/vscode.zsh"
-    source "${SCRIPT_DIR}/jetbrains.zsh"
-    source "${SCRIPT_DIR}/sublime.zsh"
-    source "${SCRIPT_DIR}/atom.zsh"
-    source "${SCRIPT_DIR}/yarn.zsh"
     
+    # Source all scripts in the dev_tools directory
+    for script in "${SCRIPT_DIR}/dev_tools"/*.zsh; do
+        if [ -f "$script" ]; then
+            source "$script"
+        fi
+    done
 else
     print_in_red "\n >> Skipping Development Tools\n\n"
 fi
 
-# Productivity tools
-if [[ "${SELECTED_GROUPS[productivity]}" == "true" ]]; then
-    print_in_purple "\n >> Installing Productivity Tools\n\n"
-    source "${SCRIPT_DIR}/productivity.zsh"
+# Web and Frontend Tools
+if [[ "${SELECTED_GROUPS[web_tools]}" == "true" ]]; then
+    print_in_purple "\n >> Installing Web and Frontend Tools\n\n"
+    
+    # Source all scripts in the web_tools directory
+    for script in "${SCRIPT_DIR}/web_tools"/*.zsh; do
+        if [ -f "$script" ]; then
+            source "$script"
+        fi
+    done
 else
-    print_in_red "\n >> Skipping Productivity Tools\n\n"
+    print_in_red "\n >> Skipping Web and Frontend Tools\n\n"
 fi
 
-# Communication tools
-if [[ "${SELECTED_GROUPS[communication]}" == "true" ]]; then
-    print_in_purple "\n >> Installing Communication Tools\n\n"
-    source "${SCRIPT_DIR}/communication.zsh"
+# Daily Tools and Utilities
+if [[ "${SELECTED_GROUPS[daily_tools]}" == "true" ]]; then
+    print_in_purple "\n >> Installing Daily Tools and Utilities\n\n"
+    
+    # Source all scripts in the daily_tools directory
+    for script in "${SCRIPT_DIR}/daily_tools"/*.zsh; do
+        if [ -f "$script" ]; then
+            source "$script"
+        fi
+    done
 else
-    print_in_red "\n >> Skipping Communication Tools\n\n"
+    print_in_red "\n >> Skipping Daily Tools and Utilities\n\n"
 fi
 
-# Browsers
-if [[ "${SELECTED_GROUPS[browsers]}" == "true" ]]; then
-    print_in_purple "\n >> Installing Browsers\n\n"
-    source "${SCRIPT_DIR}/browsers.zsh"
+# Media and Creative Tools
+if [[ "${SELECTED_GROUPS[media_tools]}" == "true" ]]; then
+    print_in_purple "\n >> Installing Media and Creative Tools\n\n"
+    
+    # Source all scripts in the media_tools directory
+    for script in "${SCRIPT_DIR}/media_tools"/*.zsh; do
+        if [ -f "$script" ]; then
+            source "$script"
+        fi
+    done
 else
-    print_in_red "\n >> Skipping Browsers\n\n"
+    print_in_red "\n >> Skipping Media and Creative Tools\n\n"
 fi
 
-# Media tools
-if [[ "${SELECTED_GROUPS[media]}" == "true" ]]; then
-    print_in_purple "\n >> Installing Media Tools\n\n"
-    source "${SCRIPT_DIR}/media.zsh"
+# Creative and 3D Design Tools
+if [[ "${SELECTED_GROUPS[creative_tools]}" == "true" ]]; then
+    log_info "Installing Creative and 3D Design Tools"
+    print_in_purple "\n >> Installing Creative and 3D Design Tools\n\n"
+    
+    # Source all scripts in the creative_tools directory
+    for script in "${SCRIPT_DIR}/creative_tools"/*.zsh; do
+        if [ -f "$script" ]; then
+            log_info "Sourcing script: $script"
+            source "$script"
+        fi
+    done
+    log_success "Creative and 3D Design Tools installation complete"
 else
-    print_in_red "\n >> Skipping Media Tools\n\n"
+    log_info "Skipping Creative and 3D Design Tools installation"
+    print_in_red "\n >> Skipping Creative and 3D Design Tools\n\n"
 fi
 
-# Utilities
-if [[ "${SELECTED_GROUPS[utilities]}" == "true" ]]; then
-    print_in_purple "\n >> Installing Utilities\n\n"
-    source "${SCRIPT_DIR}/utilities.zsh"
+# Cloud and DevOps Tools
+if [[ "${SELECTED_GROUPS[cloud_tools]}" == "true" ]]; then
+    print_in_purple "\n >> Installing Cloud and DevOps Tools\n\n"
+    
+    # Source all scripts in the cloud_tools directory
+    for script in "${SCRIPT_DIR}/cloud_tools"/*.zsh; do
+        if [ -f "$script" ]; then
+            source "$script"
+        fi
+    done
 else
-    print_in_red "\n >> Skipping Utilities\n\n"
+    print_in_red "\n >> Skipping Cloud and DevOps Tools\n\n"
 fi
 
-# macOS preferences
-if [[ "${SELECTED_GROUPS[macos_prefs]}" == "true" ]]; then
-    print_in_purple "\n >> Setting macOS Preferences\n\n"
-    source "${SCRIPT_DIR}/preferences.zsh"
+# App Store and System Tools
+if [[ "${SELECTED_GROUPS[app_store]}" == "true" ]]; then
+    print_in_purple "\n >> Installing App Store and System Tools\n\n"
+    
+    # Source all scripts in the app_store directory
+    for script in "${SCRIPT_DIR}/app_store"/*.zsh; do
+        if [ -f "$script" ]; then
+            source "$script"
+        fi
+    done
 else
-    print_in_red "\n >> Skipping macOS Preferences\n\n"
+    print_in_red "\n >> Skipping App Store and System Tools\n\n"
 fi
 
-# Run validation script to ensure all selected tools are properly installed
-print_in_purple "\n   Validating Installations\n\n"
-source "${SCRIPT_DIR}/validate_installations.zsh"
+# Run cleanup and validation
+print_in_purple "\n >> Running cleanup and validation\n\n"
+source "${SCRIPT_DIR}/utils/cleanup.zsh"
+source "${SCRIPT_DIR}/utils/validate_installations.zsh"
 
-print_in_purple "\n >> macOS setup completed\n\n"
-print_in_purple "\n   Installation Complete!\n\n"
+print_in_green "\n >> macOS setup completed!\n\n"

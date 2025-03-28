@@ -40,15 +40,16 @@ fi
 # Ensure we're using zsh associative arrays properly
 typeset -A SCRIPT_GROUPS
 SCRIPT_GROUPS=(
-    "system" "System Setup (xcode, homebrew)"
-    "dev_langs" "Development Languages (python, node, ruby, go, java, kotlin, rust, swift, php)"
+    "system" "System Setup (xcode, homebrew, oh-my-zsh)"
+    "dev_langs" "Development Languages (python, node, ruby, go, java, kotlin, rust, swift, php, cpp)"
     "data_science" "Data Science Environment"
-    "dev_tools" "Development Tools (devtools, databasetools, docker, git, gpg, jetbrains, vscode, yarn)"
+    "dev_tools" "Development Tools (git, docker, vscode, jetbrains, yarn)"
     "web_tools" "Web and Frontend Tools"
-    "daily_tools" "Daily Tools and Utilities (browsers, compression, misc, office, apps)"
+    "daily_tools" "Daily Tools and Utilities (browsers, compression, misc, office)"
     "media_tools" "Media and Creative Tools"
+    "creative_tools" "Creative and 3D Design Tools (blender, maya, zbrush, unity, unreal)"
     "cloud_tools" "Cloud and DevOps Tools"
-    "ai_tools" "AI and Productivity Tools"
+    "ai_tools" "AI and Productivity Tools (including Anthropic Libraries and MCP Servers/Clients)"
     "app_store" "App Store and System Tools"
 )
 
@@ -393,6 +394,9 @@ update_configuration() {
 main() {
     # Ensure that the following actions
     # are made relative to this file's path.
+    
+    clear
+    
     cd "$(dirname "${BASH_SOURCE[0]}")" \
         || exit 1
 
@@ -432,7 +436,7 @@ main() {
     # Display information about what's happening
     print_in_green "\n >> Starting Jarvis Toolset with the following configuration:\n"
     print_in_green "---------------------------------------------------------------\n"
-    print_in_green "Hostname: $HOSTNAME\n"
+    print_in_green "Hostname : $HOSTNAME\n"
     print_in_green "Username : $USERNAME\n"
     print_in_green "Email    : $EMAIL\n"
     print_in_green "Directory: $DIRECTORY\n"

@@ -8,6 +8,10 @@ print_in_purple "\n   Anthropic Tools\n\n"
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+# Ensure pip is up to date
+execute "pip3 install --upgrade pip" \
+    "Upgrading pip to latest version"
+
 # Core Anthropic SDK and Client
 execute "pip3 install anthropic" \
     "Installing Anthropic Python SDK"
@@ -43,6 +47,16 @@ execute "pip3 install anthropic-mcp-security" \
 
 execute "pip3 install anthropic-mcp-validator" \
     "Installing Anthropic MCP Validator"
+
+# MCP Extensions and Plugins
+execute "pip3 install anthropic-mcp-extensions" \
+    "Installing Anthropic MCP Extensions"
+
+execute "pip3 install anthropic-mcp-plugins" \
+    "Installing Anthropic MCP Plugins"
+
+execute "pip3 install anthropic-mcp-dashboard" \
+    "Installing Anthropic MCP Dashboard"
 
 # Claude Integration
 execute "pip3 install claude-api" \
@@ -99,3 +113,14 @@ execute "pip3 install anthropic-auth" \
 
 execute "pip3 install anthropic-vault" \
     "Installing Anthropic Vault"
+
+# Create configuration file for Anthropic
+mkdir -p "$HOME/.jarvistoolset/zsh_configs"
+cp "$SCRIPT_DIR/../../../../zsh_configs/anthropic.zsh" "$HOME/.jarvistoolset/zsh_configs/" 2>/dev/null || true
+
+# Print setup instructions
+print_in_green "\n   Anthropic Tools Installation Complete!\n\n"
+print_in_yellow "   To configure your Anthropic API key, add the following to your environment:\n"
+print_in_yellow "   export ANTHROPIC_API_KEY='your-api-key'\n\n"
+print_in_yellow "   To start using MCP Server, run:\n"
+print_in_yellow "   mcp-start\n\n"
