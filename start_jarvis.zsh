@@ -70,19 +70,19 @@ if ! type log_info >/dev/null 2>&1; then
     init_logging() {
         # Create timestamp in format YYYY-MM-DD-HHMMSS
         local timestamp=$(date "+%Y-%m-%d-%H%M%S")
-        
+
         # Create log filename
         CURRENT_LOG_FILE="${LOGS_DIR}/jarvistoolset-${timestamp}.log"
-        
+
         # Ensure logs directory exists again (double-check)
         mkdir -p "$(dirname "$CURRENT_LOG_FILE")" 2>/dev/null
-        
+
         # Create empty log file
         touch "$CURRENT_LOG_FILE"
-        
+
         # Print log file location
         echo -e "\n >> Logging initialized\n\n   Log file: $CURRENT_LOG_FILE\n"
-        
+
         # Add header to log file
         {
             echo "========================================================"
@@ -100,17 +100,17 @@ if ! type log_info >/dev/null 2>&1; then
         local message="$1"
         local level="${2:-INFO}"
         local timestamp=$(date "+%Y-%m-%d %H:%M:%S")
-        
+
         # Initialize logging if not already done
         if [[ -z "$CURRENT_LOG_FILE" || ! -f "$CURRENT_LOG_FILE" ]]; then
             init_logging
         fi
-        
+
         # Ensure logs directory exists again (triple-check)
         if [[ ! -d "$(dirname "$CURRENT_LOG_FILE")" ]]; then
             mkdir -p "$(dirname "$CURRENT_LOG_FILE")" 2>/dev/null
         fi
-        
+
         echo "[${timestamp}] [${level}] ${message}" >> "$CURRENT_LOG_FILE"
     }
 
@@ -182,7 +182,7 @@ if ! type log_info >/dev/null 2>&1; then
             } >> "$CURRENT_LOG_FILE"
         fi
     }
-    
+
     # If log_system_info doesn't exist, define a simple version
     if ! type log_system_info >/dev/null 2>&1; then
         log_system_info() {
@@ -206,47 +206,47 @@ log_info "Starting Jarvis Toolset"
 if [[ "$1" == "/help" ]]; then
     # Path to README.md - using absolute path to avoid directory resolution issues
     README_PATH="${JARVIS_DIR}/README.md"
-    
+
     # Verify README.md exists at the specified path
     if [[ ! -f "$README_PATH" ]]; then
         print_error "README.md not found at $README_PATH"
         log_error "README.md not found at $README_PATH"
-        
+
         # Finalize logging
         finalize_logging
-        
+
         exit 1
     fi
-    
+
     # Check if glow is installed and install it if needed
     if ! command -v "glow" &>/dev/null; then
         # Only show error messages, not status updates
         log_info "Installing glow for displaying markdown files"
-        
+
         # Check if Homebrew is installed, install it if needed
         if ! command -v "brew" &>/dev/null; then
             log_info "Homebrew is not installed. Installing Homebrew first"
             execute_with_log "/bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\"" "Installing Homebrew"
         fi
-        
+
         # Install glow
         execute_with_log "brew install glow" "Installing Glow Markdown Viewer"
     fi
-    
+
     # Display README.md using glow
     log_info "Displaying README.md with glow"
     glow -p "$README_PATH"
-    
+
     # Finalize logging
     finalize_logging
-    
+
     exit 0
 fi
 
 # Default values for user information
 HOSTNAME=${1:-$(hostname)}
 USERNAME=${2:-$(whoami)}
-EMAIL=${3:-"evandro.reis@arvos.ai"}
+EMAIL=${3:-"evandro.reis@cordya.ai"}
 DIRECTORY=${4:-"$HOME/.jarvistoolset"}
 
 # Log configuration (silently)
@@ -264,10 +264,10 @@ SETUP_SCRIPT="${JARVIS_DIR}/scripts/os/setup.zsh"
 if [[ ! -f "$SETUP_SCRIPT" ]]; then
     print_error "Setup script not found at $SETUP_SCRIPT"
     log_error "Setup script not found at $SETUP_SCRIPT"
-    
+
     # Finalize logging
     finalize_logging
-    
+
     exit 1
 fi
 
@@ -297,10 +297,10 @@ log_info "Changing to directory: $SETUP_DIR"
 if ! cd "$SETUP_DIR" 2>/dev/null; then
     print_error "Failed to change to directory: $SETUP_DIR"
     log_error "Failed to change to directory: $SETUP_DIR"
-    
+
     # Finalize logging
     finalize_logging
-    
+
     exit 1
 fi
 

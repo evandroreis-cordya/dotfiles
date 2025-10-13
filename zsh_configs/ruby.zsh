@@ -21,11 +21,13 @@ alias gem-update="gem update --system"
 alias bundle-update="bundle update"
 alias bundle-install="bundle install"
 alias bundle-exec="bundle exec"
+alias b="bundle"
 alias be="bundle exec"
 alias bi="bundle install"
+alias bl="bundle list"
+alias bp="bundle package"
 alias bu="bundle update"
 alias bx="bundle exec"
-alias b="bundle"
 
 # Ruby development functions
 mkrepo() {
@@ -50,19 +52,19 @@ new-ruby() {
         echo "Usage: new-ruby <project-name>"
         return 1
     fi
-    
+
     local project_name=$1
-    
+
     # Create project directory
     mkdir -p "$project_name"
     cd "$project_name" || return
-    
+
     # Initialize bundler
     bundle init
-    
+
     # Create basic project structure
     mkdir -p lib bin spec
-    
+
     # Create main lib file
     cat > "lib/${project_name}.rb" << EOF
 # Main module for ${project_name}
@@ -70,7 +72,7 @@ module $(echo "${project_name}" | sed -r 's/(^|_)([a-z])/\U\2/g')
   VERSION = '0.1.0'
 end
 EOF
-    
+
     # Create executable
     cat > "bin/${project_name}" << EOF
 #!/usr/bin/env ruby
@@ -80,7 +82,7 @@ require_relative '../lib/${project_name}'
 # Your code here
 EOF
     chmod +x "bin/${project_name}"
-    
+
     # Create spec helper
     cat > "spec/spec_helper.rb" << EOF
 require 'bundler/setup'
@@ -98,7 +100,7 @@ RSpec.configure do |config|
   end
 end
 EOF
-    
+
     # Create main spec file
     cat > "spec/${project_name}_spec.rb" << EOF
 require 'spec_helper'
@@ -109,7 +111,7 @@ RSpec.describe $(echo "${project_name}" | sed -r 's/(^|_)([a-z])/\U\2/g') do
   end
 end
 EOF
-    
+
     # Update Gemfile
     cat > "Gemfile" << EOF
 source "https://rubygems.org"
@@ -121,7 +123,7 @@ gem "rake", "~> 13.0"
 gem "rspec", "~> 3.0"
 gem "rubocop", "~> 1.21"
 EOF
-    
+
     # Create gemspec
     cat > "${project_name}.gemspec" << EOF
 # frozen_string_literal: true
@@ -154,7 +156,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 end
 EOF
-    
+
     # Create README
     cat > "README.md" << EOF
 # ${project_name}
@@ -182,7 +184,7 @@ After checking out the repo, run \`bin/setup\` to install dependencies. Then, ru
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
 EOF
-    
+
     # Create .gitignore
     cat > ".gitignore" << EOF
 /.bundle/
@@ -195,13 +197,13 @@ EOF
 /tmp/
 *.gem
 EOF
-    
+
     # Initialize git repository if git is available
     if command -v git >/dev/null 2>&1; then
         git init
         git add .
         git commit -m "Initial commit"
     fi
-    
+
     echo "Ruby project '${project_name}' created successfully!"
 }

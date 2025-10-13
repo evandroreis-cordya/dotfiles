@@ -15,6 +15,8 @@ alias st="swift test"
 alias sp="swift package"
 alias spi="swift package init"
 alias spu="swift package update"
+alias sxc="xcrun swift"
+alias sxcb="xcrun swiftc"
 alias swiftc="swiftc -O"
 
 # Swift development functions

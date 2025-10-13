@@ -6,8 +6,9 @@
 
 # Xcode environment variables
 export DEVELOPER_DIR="/Applications/Xcode.app/Contents/Developer"
-export PATH="$DEVELOPER_DIR/usr/bin:$PATH"
-export PATH="$DEVELOPER_DIR/Tools:$PATH"
+# Append Xcode paths so Homebrew tools take precedence
+export PATH="$PATH:$DEVELOPER_DIR/usr/bin"
+export PATH="$PATH:$DEVELOPER_DIR/Tools"
 
 # Xcode aliases
 alias xcb="xcodebuild"
@@ -25,25 +26,25 @@ xcnew() {
         echo "Usage: xcnew <project_name> <organization_identifier> [--swift | --objc]"
         return 1
     fi
-    
+
     local project_name=$1
     local org_identifier=$2
     local language="swift"
-    
+
     if [[ "$3" == "--objc" ]]; then
         language="objc"
     fi
-    
+
     mkdir -p "$project_name"
     cd "$project_name" || return
-    
+
     if [[ "$language" == "swift" ]]; then
         swift package init --type executable
         echo "Swift project '$project_name' created"
     else
         # Create basic Objective-C project structure
         mkdir -p "$project_name/Classes" "$project_name/Resources"
-        
+
         # Create main.m
         cat > "$project_name/main.m" << EOF
 #import <Foundation/Foundation.h>
@@ -57,7 +58,7 @@ int main(int argc, const char * argv[]) {
 EOF
         echo "Objective-C project '$project_name' created"
     fi
-    
+
     # Create a basic .gitignore for Xcode projects
     cat > ".gitignore" << EOF
 # Xcode
@@ -151,12 +152,12 @@ fastlane/test_output
 
 iOSInjectionProject/
 EOF
-    
+
     # Initialize git repository
     git init
     git add .
     git commit -m "Initial commit"
-    
+
     # Open in Xcode if available
     if [ -d "/Applications/Xcode.app" ]; then
         open -a Xcode .

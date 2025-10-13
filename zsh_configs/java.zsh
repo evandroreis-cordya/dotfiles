@@ -4,6 +4,121 @@
 # This file contains all Java-related configurations
 #
 
+# Java configuration
+setup_java() {
+    # Check if Java command is available
+    if command -v java &>/dev/null; then
+        # Java is already installed and in PATH
+        export JAVA_HOME=$(/usr/libexec/java_home 2>/dev/null || echo "$HOME/.jdk")
+        export PATH="$JAVA_HOME/bin:$PATH"
+        return 0
+    fi
+
+    # If we get here, Java is not in PATH, check if it's installed but not in PATH
+    if /usr/libexec/java_home &>/dev/null; then
+        # Java is installed but not in PATH
+        export JAVA_HOME=$(/usr/libexec/java_home)
+        export PATH="$JAVA_HOME/bin:$PATH"
+        return 0
+    fi
+
+    # If we get here, Java is not installed - attempt installation silently
+    local installation_success=false
+
+    # Check if Homebrew is installed
+    if command -v brew &>/dev/null; then
+        # Check if temurin is already installed via Homebrew
+        if brew list --cask | grep -q temurin &>/dev/null; then
+            # Temurin is installed but Java is not properly configured
+            export JAVA_HOME=$(/usr/libexec/java_home 2>/dev/null || echo "$HOME/.jdk")
+            export PATH="$JAVA_HOME/bin:$PATH"
+            installation_success=true
+        else
+            # Install temurin via Homebrew silently
+            brew install --cask temurin &>/dev/null
+
+            # Verify installation silently
+            if command -v java &>/dev/null || /usr/libexec/java_home &>/dev/null; then
+                installation_success=true
+            fi
+        fi
+    fi
+
+    # If Homebrew installation failed, try SDKMAN
+    if [ "$installation_success" = false ] && command -v sdk &>/dev/null; then
+        # If SDKMAN is available, use it to install Java silently
+        sdk install java &>/dev/null
+
+        # Verify installation silently
+        if command -v java &>/dev/null || /usr/libexec/java_home &>/dev/null; then
+            installation_success=true
+        fi
+    fi
+
+    # If all installation methods failed, don't show any error messages
+    if [ "$installation_success" = false ]; then
+        return 1
+    fi
+
+    # Set Java environment variables
+    export JAVA_HOME=$(/usr/libexec/java_home 2>/dev/null || echo "$HOME/.jdk")
+    export PATH="$JAVA_HOME/bin:$PATH"
+    return 0
+}
+
+# Maven configuration (from SDKMAN)
+setup_maven() {
+    if [ -d "$HOME/.sdkman/candidates/maven/current" ]; then
+        export M2_HOME="$HOME/.sdkman/candidates/maven/current"
+        export PATH="$M2_HOME/bin:$PATH"
+        return 0
+    elif command -v sdk &>/dev/null && setup_java; then
+        # Install Maven via SDKMAN silently
+        sdk install maven &>/dev/null
+
+        if [ -d "$HOME/.sdkman/candidates/maven/current" ]; then
+            export M2_HOME="$HOME/.sdkman/candidates/maven/current"
+            export PATH="$M2_HOME/bin:$PATH"
+            return 0
+        else
+            return 1
+        fi
+    else
+        return 1
+    fi
+}
+
+# Gradle configuration (from SDKMAN)
+setup_gradle() {
+    if [ -d "$HOME/.sdkman/candidates/gradle/current" ]; then
+        export GRADLE_HOME="$HOME/.sdkman/candidates/gradle/current"
+        export PATH="$GRADLE_HOME/bin:$PATH"
+        return 0
+    elif command -v sdk &>/dev/null && setup_java; then
+        # Install Gradle via SDKMAN silently
+        sdk install gradle &>/dev/null
+
+        if [ -d "$HOME/.sdkman/candidates/gradle/current" ]; then
+            export GRADLE_HOME="$HOME/.sdkman/candidates/gradle/current"
+            export PATH="$GRADLE_HOME/bin:$PATH"
+            return 0
+        else
+            return 1
+        fi
+    else
+        return 1
+    fi
+}
+
+# Setup Java environment
+setup_java
+
+# Setup Maven environment
+setup_maven
+
+# Setup Gradle environment
+setup_gradle
+
 # SDKMAN configuration
 export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
@@ -11,8 +126,15 @@ export SDKMAN_DIR="$HOME/.sdkman"
 # Java aliases
 alias j="java"
 alias jc="javac"
+alias jj="java -jar"
 alias jshell="jshell"
 alias mvn="mvn"
+alias mvnc="mvn clean"
+alias mvnp="mvn package"
+alias mvni="mvn install"
+alias mvnt="mvn test"
+alias mvnci="mvn clean install"
+alias mvncp="mvn clean package"
 alias mvnw="./mvnw"
 alias gradle="gradle"
 alias gradlew="./gradlew"
@@ -69,19 +191,19 @@ new-java() {
         echo "Usage: new-java <project-name> [--gradle|--maven]"
         return 1
     fi
-    
+
     local project_name=$1
     local build_tool=${2:-"--gradle"}
-    
+
     # Create project directory
     mkdir -p "$project_name"
     cd "$project_name" || return
-    
+
     # Create basic project structure
     mkdir -p src/main/java/com/example
     mkdir -p src/test/java/com/example
     mkdir -p src/main/resources
-    
+
     # Create main application file
     cat > "src/main/java/com/example/App.java" << EOF
 package com.example;
@@ -99,7 +221,7 @@ public class App {
     }
 }
 EOF
-    
+
     # Create test file
     cat > "src/test/java/com/example/AppTest.java" << EOF
 package com.example;
@@ -115,7 +237,7 @@ public class AppTest {
     }
 }
 EOF
-    
+
     if [[ "$build_tool" == "--gradle" ]]; then
         # Create build.gradle file
         cat > "build.gradle" << EOF
@@ -150,17 +272,17 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 EOF
-        
+
         # Create settings.gradle file
         cat > "settings.gradle" << EOF
 rootProject.name = '$project_name'
 EOF
-        
+
         # Create gradle wrapper
         if command -v gradle >/dev/null 2>&1; then
             gradle wrapper
         fi
-        
+
     elif [[ "$build_tool" == "--maven" ]]; then
         # Create pom.xml file
         cat > "pom.xml" << EOF
@@ -219,7 +341,7 @@ EOF
 </project>
 EOF
     fi
-    
+
     # Create README.md
     cat > "README.md" << EOF
 # $project_name
@@ -256,7 +378,7 @@ mvn exec:java -Dexec.mainClass="com.example.App"
 mvn test
 \`\`\`
 EOF
-    
+
     # Create .gitignore
     cat > ".gitignore" << EOF
 # Gradle
@@ -293,14 +415,14 @@ out/
 # Mac
 .DS_Store
 EOF
-    
+
     # Initialize git repository if git is available
     if command -v git >/dev/null 2>&1; then
         git init
         git add .
         git commit -m "Initial commit"
     fi
-    
+
     echo "Java project '$project_name' created successfully!"
 }
 

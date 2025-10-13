@@ -6,6 +6,7 @@
 	],
 	"settings": {
 		"editor.fontSize": 14,
-		"diffEditor.codeLens": true
+		"diffEditor.codeLens": true,
+		"vscode-corda.isCordaProject": false
 	}
 }

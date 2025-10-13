@@ -11,9 +11,14 @@ export PATH="$KOTLIN_HOME/bin:$PATH"
 # Kotlin aliases
 alias kt="kotlin"
 alias ktc="kotlinc"
+alias ktrun="kotlin"
+alias ktcj="kotlinc-jvm"
+alias ktj="kotlin -classpath"
+alias ktb="./gradlew build"
+alias ktr="./gradlew run"
+alias ktt="./gradlew test"
 alias ktjvm="kotlinc-jvm"
 alias ktjs="kotlinc-js"
-alias ktrun="kotlin -classpath ."
 
 # Kotlin project creation function
 new-kotlin() {
@@ -21,18 +26,18 @@ new-kotlin() {
         echo "Usage: new-kotlin <project-name> [--gradle|--maven]"
         return 1
     fi
-    
+
     local project_name=$1
     local project_type=${2:-"--gradle"}
-    
+
     # Create project directory
     mkdir -p "$project_name"
     cd "$project_name" || return
-    
+
     # Create basic project structure
     mkdir -p src/main/kotlin/com/example/$project_name
     mkdir -p src/test/kotlin/com/example/$project_name
-    
+
     # Create main application file
     cat > "src/main/kotlin/com/example/$project_name/App.kt" << EOF
 package com.example.$project_name
@@ -47,7 +52,7 @@ fun main() {
     println(App().greeting())
 }
 EOF
-    
+
     # Create test file
     cat > "src/test/kotlin/com/example/$project_name/AppTest.kt" << EOF
 package com.example.$project_name
@@ -63,7 +68,7 @@ class AppTest {
     }
 }
 EOF
-    
+
     if [[ "$project_type" == "--gradle" ]]; then
         # Create Gradle build files
         cat > "build.gradle.kts" << EOF
@@ -92,19 +97,19 @@ tasks.test {
     useJUnitPlatform()
 }
 EOF
-        
+
         # Create Gradle wrapper
         if command -v gradle >/dev/null 2>&1; then
             gradle wrapper
         else
             echo "Gradle not found. Install it with 'brew install gradle' to generate the wrapper."
         fi
-        
+
         # Create settings.gradle.kts
         cat > "settings.gradle.kts" << EOF
 rootProject.name = "$project_name"
 EOF
-        
+
     elif [[ "$project_type" == "--maven" ]]; then
         # Create Maven POM file
         cat > "pom.xml" << EOF
@@ -183,7 +188,7 @@ EOF
 </project>
 EOF
     fi
-    
+
     # Create README.md
     cat > "README.md" << EOF
 # $project_name
@@ -220,7 +225,7 @@ mvn exec:java -Dexec.mainClass="com.example.$project_name.AppKt"
 mvn test
 \`\`\`
 EOF
-    
+
     # Create .gitignore
     cat > ".gitignore" << EOF
 # Gradle
@@ -257,13 +262,13 @@ out/
 # Mac
 .DS_Store
 EOF
-    
+
     # Initialize git repository if git is available
     if command -v git >/dev/null 2>&1; then
         git init
         git add .
         git commit -m "Initial commit"
     fi
-    
+
     echo "Kotlin project '$project_name' created successfully!"
 }
