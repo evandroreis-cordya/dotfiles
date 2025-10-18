@@ -45,6 +45,8 @@ new-go() {
     # Initialize Go module
     go mod init "$module_name"
 
+    # Create basic directory structure
+    mkdir -p cmd pkg internal
     # Create main.go
     cat > main.go << EOF
 package main
