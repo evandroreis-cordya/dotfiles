@@ -41,7 +41,7 @@ fi
 
 # Create modular configuration file for C/C++
 create_cpp_config() {
-    local config_dir="$HOME/.jarvistoolset/zsh_configs"
+    local config_dir="$HOME/.jarvistoolset/macos/configs/shell/zsh_configs"
     local config_file="$config_dir/cpp.zsh"
     
     # Create directory if it doesn't exist
@@ -346,11 +346,11 @@ EOL
 create_cpp_config
 
 # Check if oh-my-zsh.zsh is already sourcing the modular configs
-if ! grep -q "source \"\$HOME/.jarvistoolset/zsh_configs/cpp.zsh\"" "$HOME/.zshrc"; then
+if ! grep -q "source \"\$HOME/.jarvistoolset/macos/configs/shell/zsh_configs/cpp.zsh\"" "$HOME/.zshrc"; then
     # Add a line to source the C/C++ config in .zshrc if oh-my-zsh.zsh isn't handling it
     cat >> "$HOME/.zshrc" << 'EOL'
 # Load C/C++ configuration
-source "$HOME/.jarvistoolset/zsh_configs/cpp.zsh"
+source "$HOME/.jarvistoolset/macos/configs/shell/zsh_configs/cpp.zsh"
 EOL
     print_result $? "Added C/C++ configuration to .zshrc"
 fi

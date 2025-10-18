@@ -33,7 +33,7 @@ brew_install "Vault" "vault"
 
 # Create modular configuration file for GPG
 create_gpg_config() {
-    local config_dir="$HOME/.jarvistoolset/zsh_configs"
+    local config_dir="$HOME/.jarvistoolset/macos/configs/shell/zsh_configs"
     local config_file="$config_dir/gpg.zsh"
     
     # Create directory if it doesn't exist
@@ -92,7 +92,7 @@ EOL
 
 # Create modular configuration file for IPFS
 create_ipfs_config() {
-    local config_dir="$HOME/.jarvistoolset/zsh_configs"
+    local config_dir="$HOME/.jarvistoolset/macos/configs/shell/zsh_configs"
     local config_file="$config_dir/ipfs.zsh"
     
     # Create directory if it doesn't exist

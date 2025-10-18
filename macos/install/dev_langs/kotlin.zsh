@@ -18,7 +18,7 @@ brew_install "Kotlin" "kotlin"
 
 # Create modular configuration file for Kotlin
 create_kotlin_config() {
-    local config_dir="$HOME/.jarvistoolset/zsh_configs"
+    local config_dir="$HOME/.jarvistoolset/macos/configs/shell/zsh_configs"
     local config_file="$config_dir/kotlin.zsh"
     
     # Create directory if it doesn't exist
@@ -322,11 +322,11 @@ fi
 create_kotlin_config
 
 # Check if oh-my-zsh.zsh is already sourcing the modular configs
-if ! grep -q "source \"\$HOME/.jarvistoolset/zsh_configs/kotlin.zsh\"" "$HOME/.zshrc"; then
+if ! grep -q "source \"\$HOME/.jarvistoolset/macos/configs/shell/zsh_configs/kotlin.zsh\"" "$HOME/.zshrc"; then
     # Add a line to source the Kotlin config in .zshrc if oh-my-zsh.zsh isn't handling it
     cat >> "$HOME/.zshrc" << 'EOL'
 # Load Kotlin configuration
-source "$HOME/.jarvistoolset/zsh_configs/kotlin.zsh"
+source "$HOME/.jarvistoolset/macos/configs/shell/zsh_configs/kotlin.zsh"
 EOL
     print_result $? "Added Kotlin configuration to .zshrc"
 fi

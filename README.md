@@ -238,7 +238,7 @@ Built-in alias conflict detection system:
 
 ### Configuration Files Structure
 
-All configuration files are stored in `$HOME/.jarvistoolset/zsh_configs/`:
+All configuration files are stored in `$HOME/.jarvistoolset/macos/configs/shell/zsh_configs/`:
 
 | File | Purpose | Load Order |
 |------|---------|------------|

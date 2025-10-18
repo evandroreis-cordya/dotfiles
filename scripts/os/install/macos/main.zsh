@@ -21,8 +21,8 @@ if type log_info &>/dev/null; then
 fi
 
 # Create zsh_configs directory for modular configurations
-mkdir -p "$HOME/.jarvistoolset/zsh_configs"
-print_success "Created modular configuration directory at $HOME/.jarvistoolset/zsh_configs\n"
+mkdir -p "$HOME/.jarvistoolset/macos/configs/shell/zsh_configs"
+print_success "Created modular configuration directory at $HOME/.jarvistoolset/macos/configs/shell/zsh_configs\n"
 
 SCRIPT_DIR_INSTALL_MACOS="$SCRIPT_DIR/install/macos"
 

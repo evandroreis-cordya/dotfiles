@@ -33,7 +33,7 @@ fi
 
 # Create modular configuration file for Node.js
 create_node_config() {
-    local config_dir="$HOME/.jarvistoolset/zsh_configs"
+    local config_dir="$HOME/.jarvistoolset/macos/configs/shell/zsh_configs"
     local config_file="$config_dir/node.zsh"
     
     # Create directory if it doesn't exist

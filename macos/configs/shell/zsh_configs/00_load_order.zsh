@@ -93,7 +93,7 @@ ZSH_CONFIG_ALIAS_CONFLICTS=(
 # Function to check if a config file should be loaded
 should_load_config() {
     local config_file="$1"
-    local config_path="$HOME/.jarvistoolset/zsh_configs/$config_file"
+    local config_path="$HOME/.jarvistoolset/macos/configs/shell/zsh_configs/$config_file"
 
     # Skip if file doesn't exist
     if [[ ! -f "$config_path" ]]; then
@@ -117,7 +117,7 @@ should_load_config() {
 
 # Function to load configurations in order
 load_configs_in_order() {
-    local config_dir="$HOME/.jarvistoolset/zsh_configs"
+    local config_dir="$HOME/.jarvistoolset/macos/configs/shell/zsh_configs"
 
     # Load files in the defined order
     for config_file in "${ZSH_CONFIG_LOAD_ORDER[@]}"; do

@@ -23,7 +23,7 @@ brew_install "pyenv-virtualenv" "pyenv-virtualenv"
 
 # Create modular configuration file for Python
 create_python_config() {
-    local config_dir="$HOME/.jarvistoolset/zsh_configs"
+    local config_dir="$HOME/.jarvistoolset/macos/configs/shell/zsh_configs"
     local config_file="$config_dir/python.zsh"
     
     # Create directory if it doesn't exist

@@ -16,7 +16,7 @@ brew_install "ruby-build" "ruby-build"
 
 # Create modular configuration file for Ruby
 create_ruby_config() {
-    local config_dir="$HOME/.jarvistoolset/zsh_configs"
+    local config_dir="$HOME/.jarvistoolset/macos/configs/shell/zsh_configs"
     local config_file="$config_dir/ruby.zsh"
     
     # Create directory if it doesn't exist
@@ -309,11 +309,11 @@ install_gem "jekyll" "Jekyll"
 create_ruby_config
 
 # Check if oh-my-zsh.zsh is already sourcing the modular configs
-if ! grep -q "source \"\$HOME/.jarvistoolset/zsh_configs/ruby.zsh\"" "$HOME/.zshrc"; then
+if ! grep -q "source \"\$HOME/.jarvistoolset/macos/configs/shell/zsh_configs/ruby.zsh\"" "$HOME/.zshrc"; then
     # Add a line to source the Ruby config in .zshrc if oh-my-zsh.zsh isn't handling it
     cat >> "$HOME/.zshrc" << 'EOL'
 # Load Ruby configuration
-source "$HOME/.jarvistoolset/zsh_configs/ruby.zsh"
+source "$HOME/.jarvistoolset/macos/configs/shell/zsh_configs/ruby.zsh"
 EOL
     print_result $? "Added Ruby configuration to .zshrc"
 fi

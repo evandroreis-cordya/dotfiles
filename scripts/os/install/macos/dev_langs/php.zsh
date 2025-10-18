@@ -95,7 +95,7 @@ chmod 666 /usr/local/var/log/php_errors.log
 
 # Create modular configuration file for PHP
 create_php_config() {
-    local config_dir="$HOME/.jarvistoolset/zsh_configs"
+    local config_dir="$HOME/.jarvistoolset/macos/configs/shell/zsh_configs"
     local config_file="$config_dir/php.zsh"
     
     # Create directory if it doesn't exist
@@ -305,11 +305,11 @@ EOL
 create_php_config
 
 # Check if oh-my-zsh.zsh is already sourcing the modular configs
-if ! grep -q "source \"\$HOME/.jarvistoolset/zsh_configs/php.zsh\"" "$HOME/.zshrc"; then
+if ! grep -q "source \"\$HOME/.jarvistoolset/macos/configs/shell/zsh_configs/php.zsh\"" "$HOME/.zshrc"; then
     # Add a line to source the PHP config in .zshrc if oh-my-zsh.zsh isn't handling it
     cat >> "$HOME/.zshrc" << 'EOL'
 # Load PHP configuration
-source "$HOME/.jarvistoolset/zsh_configs/php.zsh"
+source "$HOME/.jarvistoolset/macos/configs/shell/zsh_configs/php.zsh"
 EOL
     print_result $? "Added PHP configuration to .zshrc"
 fi

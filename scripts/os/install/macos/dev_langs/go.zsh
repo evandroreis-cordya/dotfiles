@@ -20,7 +20,7 @@ brew_install "Go" "go"
 
 # Create modular configuration file for Go
 create_go_config() {
-    local config_dir="$HOME/.jarvistoolset/zsh_configs"
+    local config_dir="$HOME/.jarvistoolset/macos/configs/shell/zsh_configs"
     local config_file="$config_dir/go.zsh"
     
     # Create directory if it doesn't exist

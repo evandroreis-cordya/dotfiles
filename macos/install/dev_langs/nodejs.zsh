@@ -117,7 +117,7 @@ install_npm_packages() {
 
 # Create modular configuration file for Node.js
 create_nodejs_config() {
-    local config_dir="$HOME/.jarvistoolset/zsh_configs"
+    local config_dir="$HOME/.jarvistoolset/macos/configs/shell/zsh_configs"
     local config_file="$config_dir/nodejs.zsh"
     
     # Create directory if it doesn't exist
@@ -595,11 +595,11 @@ main() {
     create_nodejs_config
     
     # Check if .zshrc is already sourcing the modular configs
-    if ! grep -q "source \"\$HOME/.jarvistoolset/zsh_configs/nodejs.zsh\"" "$HOME/.zshrc"; then
+    if ! grep -q "source \"\$HOME/.jarvistoolset/macos/configs/shell/zsh_configs/nodejs.zsh\"" "$HOME/.zshrc"; then
         # Add a line to source the Node.js config in .zshrc
         cat >> "$HOME/.zshrc" << 'EOL'
 # Load Node.js configuration
-source "$HOME/.jarvistoolset/zsh_configs/nodejs.zsh"
+source "$HOME/.jarvistoolset/macos/configs/shell/zsh_configs/nodejs.zsh"
 EOL
         print_result $? "Added Node.js configuration to .zshrc"
     fi

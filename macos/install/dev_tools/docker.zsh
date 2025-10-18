@@ -22,7 +22,7 @@ brew_install "Docker Desktop" "docker" "--cask"
 
 # Create modular configuration file for Docker
 create_docker_config() {
-    local config_dir="$HOME/.jarvistoolset/zsh_configs"
+    local config_dir="$HOME/.jarvistoolset/macos/configs/shell/zsh_configs"
     local config_file="$config_dir/docker.zsh"
     
     # Create directory if it doesn't exist
@@ -472,11 +472,11 @@ EOL
 create_docker_config
 
 # Check if oh-my-zsh.zsh is already sourcing the modular configs
-if ! grep -q "source \"\$HOME/.jarvistoolset/zsh_configs/docker.zsh\"" "$HOME/.zshrc"; then
+if ! grep -q "source \"\$HOME/.jarvistoolset/macos/configs/shell/zsh_configs/docker.zsh\"" "$HOME/.zshrc"; then
     # Add a line to source the Docker config in .zshrc if oh-my-zsh.zsh isn't handling it
     cat >> "$HOME/.zshrc" << 'EOL'
 # Load Docker configuration
-source "$HOME/.jarvistoolset/zsh_configs/docker.zsh"
+source "$HOME/.jarvistoolset/macos/configs/shell/zsh_configs/docker.zsh"
 EOL
     print_result $? "Added Docker configuration to .zshrc"
 fi

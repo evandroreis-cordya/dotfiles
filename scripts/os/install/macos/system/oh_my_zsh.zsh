@@ -516,7 +516,7 @@ source $ZSH/oh-my-zsh.sh
 #==============================================================================
 
 # Source all modular configuration files
-JARVIS_ZSH_CONFIGS="$HOME/.jarvistoolset/zsh_configs"
+JARVIS_ZSH_CONFIGS="$HOME/.jarvistoolset/macos/configs/shell/zsh_configs"
 
 # Source exports first
 if [[ -f "$JARVIS_ZSH_CONFIGS/exports.zsh" ]]; then
