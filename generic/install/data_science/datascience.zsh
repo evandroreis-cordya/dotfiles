@@ -6,7 +6,6 @@ source "${SCRIPT_DIR}/../../utils.zsh"
 source "${SCRIPT_DIR}/utils.zsh"
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
 print_in_purple "\n   Data Science Environment\n\n"
 
 # Create a dedicated virtual environment for data science packages
@@ -34,24 +33,24 @@ pip_install_in_env "Scikit-learn" "scikit-learn"
 
 # Machine Learning packages
 pip_install_in_env "TensorFlow" "tensorflow"
-# Fix PyTorch installation for macOS - use the official installation command
-print_in_yellow "Installing PyTorch for macOS...\n"
-if [[ "$(uname -m)" == "arm64" ]]; then
-    # For Apple Silicon (M1/M2/M3)
-    PYENV_VERSION=$DATASCIENCE_ENV pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
-    print_result $? "PyTorch (Apple Silicon)"
-else
-    # For Intel Macs
-    PYENV_VERSION=$DATASCIENCE_ENV pip install torch torchvision torchaudio
-    print_result $? "PyTorch (Intel)"
-fi
+# PyTorch installation - generic version
+print_in_yellow "Installing PyTorch...\n"
+PYENV_VERSION=$DATASCIENCE_ENV pip install torch torchvision torchaudio
+print_result $? "PyTorch"
 pip_install_in_env "Keras" "keras"
 pip_install_in_env "XGBoost" "xgboost"
 pip_install_in_env "LightGBM" "lightgbm"
 
 # Create activation script for the data science environment
 DIRECTORY="${SCRIPT_DIR}/../../.."
-ACTIVATE_SCRIPT="${DIRECTORY}/macos/scripts/activate_datascience.sh"
+# Detect OS and set appropriate path
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    ACTIVATE_SCRIPT="${DIRECTORY}/macos/scripts/activate_datascience.sh"
+elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    ACTIVATE_SCRIPT="${DIRECTORY}/linux/scripts/activate_datascience.sh"
+else
+    ACTIVATE_SCRIPT="${DIRECTORY}/generic/scripts/activate_datascience.sh"
+fi
 mkdir -p "$(dirname "$ACTIVATE_SCRIPT")"
 
 cat > "$ACTIVATE_SCRIPT" << EOL
@@ -78,4 +77,4 @@ chmod +x "$ACTIVATE_SCRIPT"
 print_result $? "Creating Data Science activation script"
 
 print_in_yellow "\n  To activate the Data Science environment, run:\n"
-print_in_yellow "  source ${DIRECTORY}/macos/scripts/activate_datascience.sh\n"
+print_in_yellow "  source ${ACTIVATE_SCRIPT}\n"
