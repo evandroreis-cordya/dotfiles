@@ -31,7 +31,7 @@
 # 7. Cloud/external services
 #    - gcloud.zsh
 #    - conda.zsh
-# 8. misc.zsh - Final initializations (iTerm2, Jina, etc.)
+# 8. misc.zsh - Final initializations (WezTerm, Jina, etc.)
 #
 # Files are automatically loaded by .zshrc but in a specific order
 # to prevent conflicts and ensure optimal performance.
@@ -74,7 +74,7 @@ ZSH_CONFIG_LOAD_ORDER=(
     "conda.zsh"          # Conda package manager
 
     # Miscellaneous (last)
-    "misc.zsh"           # iTerm2, Jina, Kiro, etc.
+    "misc.zsh"           # WezTerm, Jina, Kiro, etc.
 )
 
 # Known alias conflicts (for documentation and validation)

@@ -32,11 +32,11 @@ else
     print_result $? "Android Studio"
 fi
 
-if brew list --cask | grep -q "iterm2"; then
-    print_success "iTerm2 (already installed)"
+if brew list --cask | grep -q "wezterm"; then
+    print_success "WezTerm (already installed)"
 else
-    brew install --cask iterm2 &> /dev/null
-    print_result $? "iTerm2"
+    brew install --cask wezterm &> /dev/null
+    print_result $? "WezTerm"
 fi
 
 if brew list --cask | grep -q "docker"; then

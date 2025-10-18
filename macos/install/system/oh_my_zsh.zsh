@@ -24,39 +24,39 @@ check_oh_my_zsh_installed() {
 # Install Oh My Zsh
 install_oh_my_zsh() {
     print_info "Installing Oh My Zsh..."
-    
+
     # Backup existing .zshrc if it exists
     if [[ -f "$HOME/.zshrc" ]]; then
         print_info "Backing up existing .zshrc to .zshrc.backup"
         cp "$HOME/.zshrc" "$HOME/.zshrc.backup"
     fi
-    
+
     # Install Oh My Zsh silently
     export RUNZSH=no
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended > /dev/null 2>&1
-    
+
     print_result $? "Oh My Zsh"
 }
 
 # Install custom plugins
 install_custom_plugins() {
     print_info "Installing custom Oh My Zsh plugins..."
-    
+
     # Create custom plugins directory if it doesn't exist
     mkdir -p "$HOME/.oh-my-zsh/custom/plugins"
-    
+
     # Install zsh-syntax-highlighting
     if [[ ! -d "$HOME/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting" ]]; then
         git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$HOME/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting" --quiet
         print_result $? "zsh-syntax-highlighting plugin"
     fi
-    
+
     # Install zsh-autosuggestions
     if [[ ! -d "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions" ]]; then
         git clone https://github.com/zsh-users/zsh-autosuggestions.git "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions" --quiet
         print_result $? "zsh-autosuggestions plugin"
     fi
-    
+
     # Install zsh-completions
     if [[ ! -d "$HOME/.oh-my-zsh/custom/plugins/zsh-completions" ]]; then
         git clone https://github.com/zsh-users/zsh-completions.git "$HOME/.oh-my-zsh/custom/plugins/zsh-completions" --quiet
@@ -67,16 +67,16 @@ install_custom_plugins() {
 # Install custom themes
 install_custom_themes() {
     print_info "Installing custom Oh My Zsh themes..."
-    
+
     # Create custom themes directory if it doesn't exist
     mkdir -p "$HOME/.oh-my-zsh/custom/themes"
-    
+
     # Install Powerlevel10k theme
     if [[ ! -d "$HOME/.oh-my-zsh/custom/themes/powerlevel10k" ]]; then
         git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$HOME/.oh-my-zsh/custom/themes/powerlevel10k" --quiet
         print_result $? "Powerlevel10k theme"
     fi
-    
+
     # Create arvosai theme if it doesn't exist
     if [[ ! -f "$HOME/.oh-my-zsh/custom/themes/arvosai.zsh-theme" ]]; then
         cat > "$HOME/.oh-my-zsh/custom/themes/arvosai.zsh-theme" << 'EOL'
@@ -96,7 +96,7 @@ install_custom_themes() {
 #
 # In addition, I recommend the
 # [Solarized theme](https://github.com/altercation/solarized/) and, if you're
-# using it on Mac OS X, [iTerm 2](https://iterm2.com/) over Terminal.app -
+# using it on Mac OS X, [WezTerm](https://wezfurlong.org/wezterm/) over Terminal.app -
 # it has significantly better color fidelity.
 #
 # If using with "light" variant of the Solarized color schema, set
@@ -127,7 +127,7 @@ esac
 () {
   local LC_ALL="" LC_CTYPE="en_US.UTF-8"
   SEGMENT_SEPARATOR="%{%F{green} %}%{%f "
-  
+
   fortune | cowsay -t $1 -f eyes
 
   echo " "
@@ -142,7 +142,7 @@ prompt_segment() {
 
   [[ -n $1 ]] && bg="%K{$1}" || bg="%k"
   [[ -n $2 ]] && fg="%F{$2}" || fg="%f"
-  if [[ $CURRENT_BG != 'INIT' ]]; then 
+  if [[ $CURRENT_BG != 'INIT' ]]; then
     echo -n $SEGMENT_SEPARATOR
   else
     echo -n "%{$bg%}%{$fg%}"
@@ -214,7 +214,7 @@ prompt_git() {
     ref=$(command git symbolic-ref HEAD 2> /dev/null) || \
     ref="◈ $(command git describe --exact-match --tags HEAD 2> /dev/null)" || \
     ref="➦ $(command git rev-parse --short HEAD 2> /dev/null)"
-    
+
     if [[ -n $dirty ]]; then
       prompt_segment NONE yellow
     else
@@ -368,7 +368,7 @@ EOL
 # Configure Oh My Zsh
 configure_oh_my_zsh() {
     print_info "Configuring Oh My Zsh..."
-    
+
     # Create a new .zshrc file with our configuration
     cat > "$HOME/.zshrc" << 'EOL'
 # Path to your Oh My Zsh installation
@@ -424,14 +424,14 @@ COMPLETION_WAITING_DOTS="true"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
-    1password 
-    autoenv 
-    aws 
-    azure 
-    branch 
-    brew 
-    colored-man-pages 
-    colorize 
+    1password
+    autoenv
+    aws
+    azure
+    branch
+    brew
+    colored-man-pages
+    colorize
     command-not-found
     conda-env
     copyfile
@@ -461,7 +461,7 @@ plugins=(
     history-substring-search
     history
     ipfs
-    iterm2
+    wezterm
     jira
     keychain
     kubectl
@@ -530,7 +530,7 @@ if [[ -d "$JARVIS_ZSH_CONFIGS" ]]; then
   if [[ -f "$JARVIS_ZSH_CONFIGS/java.zsh" ]]; then
     source "$JARVIS_ZSH_CONFIGS/java.zsh"
   fi
-  
+
   # Then source all other configuration files
   for config_file in "$JARVIS_ZSH_CONFIGS"/*.zsh; do
     # Skip exports.zsh and java.zsh as they're already sourced
@@ -557,18 +557,18 @@ main() {
         print_error "This script should not be run with sudo or as root"
         exit 1
     fi
-    
+
     # Check if Oh My Zsh is already installed
     if check_oh_my_zsh_installed; then
         print_success "Oh My Zsh is already installed"
     else
         install_oh_my_zsh
     fi
-    
+
     # Install custom plugins and themes
     install_custom_plugins
     install_custom_themes
-    
+
     # Only configure if the user wants to
     if [[ "$1" == "--configure" ]]; then
         print_info "Configuring Oh My Zsh with default settings"
@@ -579,7 +579,7 @@ main() {
         print_info "Oh My Zsh installation complete"
         print_info "Use --configure flag to overwrite existing .zshrc"
     fi
-    
+
     return 0
 }
 

@@ -4,8 +4,8 @@
 # This file contains various initialization scripts and tools
 #
 
-# iTerm2 integration
-test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+# WezTerm integration
+test -e "${HOME}/.config/wezterm/wezterm.lua" && export WEZTERM_CONFIG_FILE="${HOME}/.config/wezterm/wezterm.lua"
 
 # JINA CLI autocomplete
 if [[ -o interactive ]]; then

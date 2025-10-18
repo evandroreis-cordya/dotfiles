@@ -101,7 +101,7 @@ plugins=(
     ssh-agent
 
     # Development tools
-    iterm2
+    wezterm
     terraform
     vscode
     xcode

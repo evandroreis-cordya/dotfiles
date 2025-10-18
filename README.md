@@ -264,7 +264,7 @@ All configuration files are stored in `$HOME/.jarvistoolset/macos/configs/shell/
 | `aliases.zsh` | General aliases and shortcuts | 20 |
 | `gcloud.zsh` | Google Cloud SDK | 21 |
 | `conda.zsh` | Conda package manager | 22 |
-| `misc.zsh` | Final initializations (iTerm2, etc.) | 23 |
+| `misc.zsh` | Final initializations (WezTerm, etc.) | 23 |
 
 ### Benefits of This Approach
 
