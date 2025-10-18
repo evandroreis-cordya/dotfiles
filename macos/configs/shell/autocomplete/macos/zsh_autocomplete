@@ -1,0 +1,20 @@
+#!/usr/bin/env zsh
+
+# [!] Do not rename this file to `zsh_completion`
+#     as it will create an infinite loop!
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+ZSH_COMPLETION_PATH="$(brew --prefix 2> /dev/null)/share/zsh-completion/zsh_completion"
+
+if [ -f "$ZSH_COMPLETION_PATH" ]; then
+
+    # Use the latest `zsh-completion`.
+
+    . "$ZSH_COMPLETION_PATH"
+
+    # Make Zsh complete the `g` alias just like it does `git`.
+
+    complete -o default -o nospace -F _git g
+
+fi

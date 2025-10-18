@@ -68,7 +68,6 @@ EOF
 *.dll
 *.so
 *.dylib
-
 # Test binary, built with 'go test -c'
 *.test
 

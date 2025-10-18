@@ -1,0 +1,30 @@
+# Generic shell configuration file
+# This file contains configurations that are common across all platforms
+
+# Load generic configurations
+source ~/.jarvistoolset/generic/configs/shell/generic_exports
+source ~/.jarvistoolset/generic/configs/shell/generic_functions
+source ~/.jarvistoolset/generic/configs/shell/generic_options
+source ~/.jarvistoolset/generic/configs/shell/generic_aliases
+
+# Load platform-specific configurations
+case "$(uname -s)" in
+    Darwin*)
+        source ~/.jarvistoolset/macos/configs/shell/macos_specific
+        ;;
+    Linux*)
+        source ~/.jarvistoolset/linux/configs/shell/linux_specific
+        ;;
+    CYGWIN*|MINGW*|MSYS*)
+        source ~/.jarvistoolset/windows/configs/shell/windows_specific
+        ;;
+esac
+
+# Load additional configurations if they exist
+if [[ -d ~/.jarvistoolset/generic/configs/shell/aliases ]]; then
+    for file in ~/.jarvistoolset/generic/configs/shell/aliases/*; do
+        if [[ -f "$file" ]]; then
+            source "$file"
+        fi
+    done
+fi

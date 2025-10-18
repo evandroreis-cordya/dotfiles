@@ -7,9 +7,9 @@ SCRIPT_DIR=${0:a:h}
 JARVIS_DIR="$HOME/.jarvistoolset"
 
 # Define paths to scripts
-UTILS_SCRIPT="${JARVIS_DIR}/scripts/os/utils.zsh"
-MACOS_UTILS_SCRIPT="${JARVIS_DIR}/scripts/os/install/macos/utils.zsh"
-LOGGING_SCRIPT="${JARVIS_DIR}/scripts/os/logging.zsh"
+UTILS_SCRIPT="${JARVIS_DIR}/generic/scripts/os/utils.zsh"
+LOGGING_SCRIPT="${JARVIS_DIR}/generic/scripts/os/logging.zsh"
+SETUP_SCRIPT="${JARVIS_DIR}/generic/scripts/os/setup.zsh"
 
 # Define the logs directory
 LOGS_DIR="$HOME/.jarvistoolset/logs"
@@ -59,7 +59,6 @@ source_script "$LOGGING_SCRIPT"
 
 # Source utility scripts if they exist
 source_script "$UTILS_SCRIPT"
-source_script "$MACOS_UTILS_SCRIPT"
 
 # Define fallback logging functions if they don't exist
 if ! type log_info >/dev/null 2>&1; then
@@ -258,7 +257,7 @@ log_info "  Directory: $DIRECTORY"
 
 
 # Path to the setup script
-SETUP_SCRIPT="${JARVIS_DIR}/scripts/os/setup.zsh"
+SETUP_SCRIPT="${JARVIS_DIR}/generic/scripts/os/setup.zsh"
 
 # Check if the setup script exists
 if [[ ! -f "$SETUP_SCRIPT" ]]; then

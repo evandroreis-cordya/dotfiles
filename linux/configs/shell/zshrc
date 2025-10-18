@@ -1,0 +1,188 @@
+# Linux-specific Zsh configuration file
+# Load all shell configurations
+
+# Load zsh-specific configurations
+source ~/.jarvistoolset/linux/configs/shell/zsh_exports
+source ~/.jarvistoolset/linux/configs/shell/zsh_functions
+source ~/.jarvistoolset/linux/configs/shell/zsh_options
+source ~/.jarvistoolset/linux/configs/shell/zsh_prompt
+
+# Load colors
+source ~/.jarvistoolset/linux/configs/shell/zsh_colors
+
+# Load autocomplete
+fpath=(~/.jarvistoolset/linux/configs/shell/autocomplete $fpath)
+
+# Initialize autocomplete
+autoload -Uz compinit
+compinit
+
+# Load other configurations
+source ~/.jarvistoolset/linux/configs/shell/curlrc
+
+# Load keybindings
+if [[ -f ~/.jarvistoolset/linux/configs/shell/zsh_keybindings ]]; then
+  source ~/.jarvistoolset/linux/configs/shell/zsh_keybindings
+fi
+
+# Load zsh_logout
+if [[ -f ~/.jarvistoolset/linux/configs/shell/zsh_logout ]]; then
+  source ~/.jarvistoolset/linux/configs/shell/zsh_logout
+fi
+
+# Linux-specific aliases
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+alias df='df -h'
+alias du='du -h'
+alias free='free -h'
+alias ps='ps aux'
+alias top='htop'
+alias vi='vim'
+alias nano='vim'
+
+# Package manager aliases
+if command -v apt >/dev/null 2>&1; then
+    alias update='sudo apt update'
+    alias upgrade='sudo apt upgrade'
+    alias install='sudo apt install'
+    alias remove='sudo apt remove'
+    alias search='apt search'
+    alias show='apt show'
+elif command -v yum >/dev/null 2>&1; then
+    alias update='sudo yum update'
+    alias upgrade='sudo yum upgrade'
+    alias install='sudo yum install'
+    alias remove='sudo yum remove'
+    alias search='yum search'
+    alias info='yum info'
+elif command -v dnf >/dev/null 2>&1; then
+    alias update='sudo dnf update'
+    alias upgrade='sudo dnf upgrade'
+    alias install='sudo dnf install'
+    alias remove='sudo dnf remove'
+    alias search='dnf search'
+    alias info='dnf info'
+elif command -v pacman >/dev/null 2>&1; then
+    alias update='sudo pacman -Syu'
+    alias upgrade='sudo pacman -Syu'
+    alias install='sudo pacman -S'
+    alias remove='sudo pacman -R'
+    alias search='pacman -Ss'
+    alias info='pacman -Si'
+elif command -v zypper >/dev/null 2>&1; then
+    alias update='sudo zypper update'
+    alias upgrade='sudo zypper up'
+    alias install='sudo zypper install'
+    alias remove='sudo zypper remove'
+    alias search='zypper search'
+    alias info='zypper info'
+fi
+
+# System service aliases
+alias start='sudo systemctl start'
+alias stop='sudo systemctl stop'
+alias restart='sudo systemctl restart'
+alias status='sudo systemctl status'
+alias enable='sudo systemctl enable'
+alias disable='sudo systemctl disable'
+
+# Network aliases
+alias ports='netstat -tuln'
+alias connections='netstat -tuln'
+alias listening='netstat -tuln | grep LISTEN'
+
+# File permissions
+alias chmod='chmod -v'
+alias chown='chown -v'
+alias chgrp='chgrp -v'
+
+# Archive operations
+alias untar='tar -xvf'
+alias targz='tar -czvf'
+alias tarbz2='tar -cjvf'
+
+# Git aliases
+alias gs='git status'
+alias ga='git add'
+alias gc='git commit'
+alias gp='git push'
+alias gl='git pull'
+alias gd='git diff'
+alias gb='git branch'
+alias gco='git checkout'
+alias gcm='git checkout main'
+alias gcb='git checkout -b'
+
+# Docker aliases
+alias d='docker'
+alias dc='docker-compose'
+alias dps='docker ps'
+alias dpsa='docker ps -a'
+alias di='docker images'
+alias drm='docker rm'
+alias drmi='docker rmi'
+alias dstop='docker stop'
+alias dstart='docker start'
+alias drestart='docker restart'
+alias dlogs='docker logs'
+alias dexec='docker exec -it'
+
+# Kubernetes aliases
+alias k='kubectl'
+alias kg='kubectl get'
+alias kd='kubectl describe'
+alias kdel='kubectl delete'
+alias kapply='kubectl apply'
+alias klogs='kubectl logs'
+alias kexec='kubectl exec -it'
+
+# Development aliases
+alias py='python3'
+alias pip='pip3'
+alias node='nodejs'
+alias npm='npm'
+alias yarn='yarn'
+alias go='go'
+alias rust='cargo'
+alias java='java'
+alias javac='javac'
+
+# Editor aliases
+alias code='code'
+alias vim='vim'
+alias nano='nano'
+
+# Utility aliases
+alias weather='curl wttr.in'
+alias myip='curl ipinfo.io/ip'
+alias speedtest='speedtest-cli'
+alias battery='upower -i /org/freedesktop/UPower/devices/battery_BAT0'
+alias disk='df -h'
+alias memory='free -h'
+alias cpu='htop'
+alias processes='ps aux | grep'
+
+# Fun aliases
+alias matrix='cmatrix'
+alias cowsay='cowsay'
+alias fortune='fortune'
+alias sl='sl'
+alias figlet='figlet'
+alias toilet='toilet'
+
+# Load additional configurations if they exist
+if [[ -d ~/.jarvistoolset/linux/configs/shell/aliases ]]; then
+    for file in ~/.jarvistoolset/linux/configs/shell/aliases/*; do
+        if [[ -f "$file" ]]; then
+            source "$file"
+        fi
+    done
+fi

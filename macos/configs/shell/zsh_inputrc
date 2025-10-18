@@ -1,0 +1,12 @@
+# Zsh configuration file for readline-like settings
+
+# Disable beeping
+setopt no_beep
+
+# Case-insensitive tab completion
+setopt auto_complete
+setopt complete_aliases
+setopt complete_in_word
+
+# Show all matches on successive tab key presses
+setopt auto_list

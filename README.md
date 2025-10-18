@@ -4,7 +4,7 @@
         /\_/ / (_| | |   \ V /| \__ \  / / | (_) | (_) | \__ \  __/ |_
         \___/ \__,_|_|    \_/ |_|___/  \/   \___/ \___/|_|___/\___|\__|
 
-Welcome to ARVOS.AI Jarvis Toolset 25H1 Edition, the complete Mac OS tools and apps installer for AI and Vibe Coders!
+Welcome to ARVOS.AI Jarvis Toolset 25H1 Edition, the complete multi-platform tools and apps installer for AI and Vibe Coders!
 Copyright (c) 2025 ARVOS.AI. All rights reserved.
 
 ## Introduction
@@ -13,19 +13,62 @@ First and foremost, I want to express my gratitude to [Victor Cavalcante](https:
 
 **WARNING:** If you want to use this jarvistoolset and configuration scripts, first fork this repository. **DO NOT** use them without understanding what they do.
 
-```zsh
+```bash
 git clone https://github.com/YOUR_USERNAME/jarvistoolset.git ~/.jarvistoolset
 ```
 **WARNING:** If you don't fork this repository, you will not be able to make changes to the configuration files. It must be downloaded from your forked repository. You must clone it in the `~/.jarvistoolset` directory otherwise the script will not work.
+
+## Supported Platforms
+
+The Jarvis Toolset now supports multiple operating systems:
+
+| Platform | Shell | Package Manager | Terminal | Status |
+|----------|-------|----------------|----------|--------|
+| **macOS** | Zsh | Homebrew | WezTerm | ✅ Fully Supported |
+| **Linux** | Zsh (with Bash fallback) | apt/yum/dnf/pacman/zypper | WezTerm | ✅ Fully Supported |
+| **Windows** | PowerShell 7+ | winget/chocolatey | WezTerm | ✅ Fully Supported |
+
+### Prerequisites
+
+#### macOS
+- macOS 10.15 (Catalina) or later
+- Command Line Tools (will be installed if missing)
+- Internet connection
+
+#### Linux
+- Ubuntu 18.04+, CentOS 7+, Fedora 30+, Arch Linux, or openSUSE
+- Bash shell (Zsh will be installed and set as default)
+- Internet connection
+- sudo privileges
+
+#### Windows
+- Windows 10 version 1903 or later / Windows 11
+- PowerShell 7.0 or later
+- Internet connection
+- Administrator privileges
 
 ## Quick Start
 
 1. Fork this repository
 2. Review and modify the configuration files
 3. Run the setup script:
+
+### macOS
 ```zsh
 cd ~/.jarvistoolset
 ./start_jarvis.zsh
+```
+
+### Linux
+```bash
+cd ~/.jarvistoolset
+./start_jarvis.zsh
+```
+
+### Windows
+```powershell
+cd $env:USERPROFILE\.jarvistoolset
+.\start_jarvis.ps1
 ```
 
 ## Recent Updates (March 2025)
@@ -71,21 +114,67 @@ Review the code and remove anything you find unnecessary. The main files you sho
 
 ## Directory Structure
 
-The Jarvis Toolset follows a modular organization with scripts grouped by functionality:
+The Jarvis Toolset follows a modular, multi-platform organization with scripts grouped by functionality and platform:
 
-| Directory | Purpose |
-|-----------|---------|
-| `scripts/os/install/macos/system/` | System setup scripts (Xcode, Homebrew, Oh My Zsh) |
-| `scripts/os/install/macos/dev_langs/` | Development language installations (Python, Node.js, Ruby, etc.) |
-| `scripts/os/install/macos/dev_tools/` | Development tools (Git, Docker, VSCode, JetBrains, etc.) |
-| `scripts/os/install/macos/data_science/` | Data science environment setup |
-| `scripts/os/install/macos/web_tools/` | Web and frontend development tools |
-| `scripts/os/install/macos/daily_tools/` | Daily utilities (browsers, productivity apps, etc.) |
-| `scripts/os/install/macos/media_tools/` | Media and creative tools |
-| `scripts/os/install/macos/creative_tools/` | Creative and 3D design tools (Blender, Maya, ZBrush, etc.) |
-| `scripts/os/install/macos/cloud_tools/` | Cloud and DevOps tools |
-| `scripts/os/install/macos/ai_tools/` | AI and productivity tools (including Anthropic libraries and MCP servers/clients) |
-| `scripts/os/install/macos/app_store/` | App Store applications and system tools |
+```
+.jarvistoolset/
+├── generic/                    # Generic configurations and scripts
+│   ├── configs/
+│   │   ├── shell/             # Generic shell configurations
+│   │   └── terminal/          # Generic terminal configurations
+│   ├── scripts/
+│   │   ├── os/                # Generic OS scripts
+│   │   └── shell/             # Generic shell scripts
+│   └── install/               # Generic installation scripts
+├── macos/                     # macOS-specific configurations
+│   ├── configs/
+│   │   ├── shell/             # macOS shell configurations
+│   │   └── terminal/          # macOS terminal configurations
+│   ├── scripts/
+│   │   ├── os/                # macOS OS scripts
+│   │   └── shell/             # macOS shell scripts
+│   ├── install/               # macOS installation scripts
+│   └── preferences/           # macOS system preferences
+├── linux/                     # Linux-specific configurations
+│   ├── configs/
+│   │   ├── shell/             # Linux shell configurations
+│   │   └── terminal/          # Linux terminal configurations
+│   ├── scripts/
+│   │   ├── os/                # Linux OS scripts
+│   │   └── shell/             # Linux shell scripts
+│   ├── install/               # Linux installation scripts
+│   └── preferences/           # Linux system preferences
+├── windows/                   # Windows-specific configurations
+│   ├── configs/
+│   │   ├── shell/             # Windows shell configurations
+│   │   └── terminal/          # Windows terminal configurations
+│   ├── scripts/
+│   │   ├── os/                # Windows OS scripts
+│   │   └── shell/             # Windows shell scripts
+│   ├── install/               # Windows installation scripts
+│   └── preferences/           # Windows system preferences
+└── logs/                      # Installation and runtime logs
+```
+
+### Platform-Specific Features
+
+#### macOS
+- **Shell**: Zsh with Oh My Zsh and PowerLevel10k
+- **Package Manager**: Homebrew
+- **Terminal**: WezTerm
+- **System Integration**: macOS preferences, Xcode tools, App Store apps
+
+#### Linux
+- **Shell**: Zsh with Oh My Zsh and PowerLevel10k (Bash fallback)
+- **Package Manager**: apt, yum, dnf, pacman, or zypper (auto-detected)
+- **Terminal**: WezTerm
+- **System Integration**: systemd services, Linux-specific tools
+
+#### Windows
+- **Shell**: PowerShell 7+ with Oh My Posh
+- **Package Manager**: winget or Chocolatey
+- **Terminal**: WezTerm
+- **System Integration**: Windows features, WSL, Windows-specific tools
 
 ## Script Groups
 
@@ -205,66 +294,89 @@ Review the configuration parameters (and your preferences) in `~/scripts/os/pref
 
 Feel free to send suggestions, corrections, and feedback. I'll accept pull requests that add value to the project, as long as they're constructive and respectful.
 
-## What Will Be Installed
+## Installation Instructions
 
-The setup process will:
+### macOS Installation
 
-1. Fork this repository (at your own risk)
-2. Clone the repository
-3. Install command-line tools and applications
-4. Set up development environments
-5. Configure system preferences
+1. **Prerequisites**:
+   ```zsh
+   # Install Xcode Command Line Tools
+   xcode-select --install
+   ```
 
-### 1. Requirements
+2. **Clone and Setup**:
+   ```zsh
+   # Fork and clone the repository
+   git clone https://github.com/YOUR_USERNAME/jarvistoolset.git ~/.jarvistoolset
+   cd ~/.jarvistoolset
+   
+   # Run the setup script
+   ./start_jarvis.zsh
+   ```
 
-* A clean installation of macOS (preferably the latest version)
-* Command Line Tools (will be installed if missing)
-* Internet connection
+3. **Post-Installation**:
+   - Restart your terminal or run `source ~/.zshrc`
+   - WezTerm will be installed and configured as the default terminal
+   - PowerLevel10k will prompt you to configure your prompt
 
-### 2. Backup
+### Linux Installation
 
-Before proceeding, back up your existing configuration files:
+1. **Prerequisites**:
+   ```bash
+   # Update package list
+   sudo apt update  # Ubuntu/Debian
+   # or
+   sudo yum update   # CentOS/RHEL
+   # or
+   sudo dnf update   # Fedora
+   # or
+   sudo pacman -Syu  # Arch Linux
+   # or
+   sudo zypper update # openSUSE
+   ```
 
-```zsh
-mkdir -p ~/.backup/jarvistoolset
-cp -r ~/.* ~/.backup/jarvistoolset/ 2>/dev/null || true
-```
+2. **Clone and Setup**:
+   ```bash
+   # Fork and clone the repository
+   git clone https://github.com/YOUR_USERNAME/jarvistoolset.git ~/.jarvistoolset
+   cd ~/.jarvistoolset
+   
+   # Run the setup script
+   ./start_jarvis.zsh
+   ```
 
-### 3. Install Command Line Tools
+3. **Post-Installation**:
+   - Log out and log back in for Zsh to become the default shell
+   - Or run `exec zsh` to switch to Zsh immediately
+   - WezTerm will be installed and configured as the default terminal
+   - PowerLevel10k will prompt you to configure your prompt
 
-```zsh
-xcode-select --install
-```
+### Windows Installation
 
-### 4. Clone the Git Repository
+1. **Prerequisites**:
+   ```powershell
+   # Install PowerShell 7+ (if not already installed)
+   winget install Microsoft.PowerShell
+   
+   # Install Windows Package Manager (if not already installed)
+   winget install Microsoft.WindowsPackageManager
+   ```
 
-Fork [my jarvistoolset repository](https://github.com/arvosai/jarvistoolset) to your GitHub account. This is important as you'll be making your own modifications to these files and storing them in your GitHub for future reference.
+2. **Clone and Setup**:
+   ```powershell
+   # Fork and clone the repository
+   git clone https://github.com/YOUR_USERNAME/jarvistoolset.git $env:USERPROFILE\.jarvistoolset
+   cd $env:USERPROFILE\.jarvistoolset
+   
+   # Run the setup script (as Administrator)
+   .\start_jarvis.ps1
+   ```
 
-Clone your forked repository to the ~/.jarvistoolset directory:
-
-```zsh
-git clone https://github.com/YOUR_USERNAME/jarvistoolset.git ~/.jarvistoolset
-```
-
-### 5. Running start_jarvis.zsh
-
-To set up the jarvistoolset, execute the appropriate snippet in your terminal:
-
-(:warning: **DO NOT** execute "start_jarvis.zsh" if you don't fully understand what it does. Seriously, **DO NOT RUN IT** unless you've reviewed the code!)
-
-| OS | Snippet |
-|:---|:--------|
-| `macOS` | `zsh -c "$(curl -fsSL https://raw.github.com/arvosai/jarvistoolset/main/start_jarvis.zsh)"` |
-
-That's it! :sparkles:
-
-The start_jarvis.zsh script will call setup.zsh which will:
-
-* Download the jarvistoolset to your computer (default location: `~/.jarvistoolset`)
-* Create necessary directories following the [XDG Base Directory Specification](scripts/os/create_directories.zsh)
-* Create [local configuration files](scripts/os/create_local_config_files.zsh) for git and shell
-* Install applications and command-line tools for [`macOS`](scripts/os/install/macos)
-* Configure system preferences for [`macOS`](scripts/os/preferences/macos)
+3. **Post-Installation**:
+   - Restart your terminal or run `refreshenv` to reload environment variables
+   - WezTerm will be installed and configured as the default terminal
+   - Oh My Posh will be configured with a beautiful theme
+   - WSL will be installed if not already present
 
 ## Installed Tools by Category
 

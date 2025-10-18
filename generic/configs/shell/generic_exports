@@ -1,0 +1,104 @@
+# Generic environment variables for all platforms
+
+# Editor
+export EDITOR='vim'
+export VISUAL='vim'
+
+# Pager
+export PAGER='less'
+
+# Language
+export LANG='en_US.UTF-8'
+export LC_ALL='en_US.UTF-8'
+
+# History
+export HISTSIZE=10000
+export SAVEHIST=10000
+export HISTFILE=~/.zsh_history
+
+# Path
+export PATH="$HOME/.local/bin:$PATH"
+
+# Development
+export NODE_ENV='development'
+export PYTHONPATH="$HOME/.local/lib/python3.11/site-packages:$PYTHONPATH"
+
+# Git
+export GIT_EDITOR='vim'
+export GIT_PAGER='less'
+
+# Docker
+export DOCKER_BUILDKIT=1
+export COMPOSE_DOCKER_CLI_BUILD=1
+
+# Kubernetes
+export KUBECONFIG="$HOME/.kube/config"
+
+# AWS
+export AWS_DEFAULT_REGION='us-east-1'
+
+# Google Cloud
+export GOOGLE_APPLICATION_CREDENTIALS="$HOME/.config/gcloud/application_default_credentials.json"
+
+# Azure
+export AZURE_CONFIG_DIR="$HOME/.azure"
+
+# Terraform
+export TF_LOG=INFO
+export TF_LOG_PATH="$HOME/.terraform.log"
+
+# Ansible
+export ANSIBLE_CONFIG="$HOME/.ansible.cfg"
+
+# Java
+export JAVA_HOME="/usr/lib/jvm/java-11-openjdk"
+
+# Go
+export GOPATH="$HOME/go"
+export GOROOT="/usr/local/go"
+export PATH="$GOROOT/bin:$GOPATH/bin:$PATH"
+
+# Rust
+export CARGO_HOME="$HOME/.cargo"
+export RUSTUP_HOME="$HOME/.rustup"
+export PATH="$CARGO_HOME/bin:$PATH"
+
+# Python
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+
+# Node.js
+export NVM_DIR="$HOME/.nvm"
+export PATH="$HOME/.nvm/versions/node/v18.17.0/bin:$PATH"
+
+# Ruby
+export RBENV_ROOT="$HOME/.rbenv"
+export PATH="$RBENV_ROOT/bin:$PATH"
+
+# PHP
+export COMPOSER_HOME="$HOME/.composer"
+export PATH="$COMPOSER_HOME/vendor/bin:$PATH"
+
+# C/C++
+export CC='gcc'
+export CXX='g++'
+export CFLAGS='-Wall -Wextra -Werror'
+export CXXFLAGS='-Wall -Wextra -Werror'
+
+# Build tools
+export MAKEFLAGS='-j$(nproc)'
+
+# Security
+export GPG_TTY=$(tty)
+
+# XDG Base Directory
+export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_DATA_HOME="$HOME/.local/share"
+export XDG_CACHE_HOME="$HOME/.cache"
+export XDG_RUNTIME_DIR="$HOME/.local/run"
+
+# Custom
+export JARVIS_DIR="$HOME/.jarvistoolset"
+export JARVIS_CONFIG_DIR="$JARVIS_DIR/configs"
+export JARVIS_SCRIPTS_DIR="$JARVIS_DIR/scripts"
+export JARVIS_LOGS_DIR="$JARVIS_DIR/logs"
