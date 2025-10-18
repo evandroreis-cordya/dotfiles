@@ -71,5 +71,6 @@ alias fabric=fabric-alias
 alias st=sublime-text
 alias vscode=visual-studio-code
 alias vsc=visual-studio-code
+alias sbl="/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl"
 
 
