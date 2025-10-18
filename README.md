@@ -133,8 +133,7 @@ The Jarvis Toolset follows a modular, multi-platform organization with scripts g
 │   ├── scripts/
 │   │   ├── os/                # macOS OS scripts
 │   │   └── shell/             # macOS shell scripts
-│   ├── install/               # macOS installation scripts
-│   └── preferences/           # macOS system preferences
+│   └── install/               # macOS installation scripts
 ├── linux/                     # Linux-specific configurations
 │   ├── configs/
 │   │   ├── shell/             # Linux shell configurations
@@ -142,8 +141,7 @@ The Jarvis Toolset follows a modular, multi-platform organization with scripts g
 │   ├── scripts/
 │   │   ├── os/                # Linux OS scripts
 │   │   └── shell/             # Linux shell scripts
-│   ├── install/               # Linux installation scripts
-│   └── preferences/           # Linux system preferences
+│   └── install/               # Linux installation scripts
 ├── windows/                   # Windows-specific configurations
 │   ├── configs/
 │   │   ├── shell/             # Windows shell configurations
@@ -151,8 +149,7 @@ The Jarvis Toolset follows a modular, multi-platform organization with scripts g
 │   ├── scripts/
 │   │   ├── os/                # Windows OS scripts
 │   │   └── shell/             # Windows shell scripts
-│   ├── install/               # Windows installation scripts
-│   └── preferences/           # Windows system preferences
+│   └── install/               # Windows installation scripts
 └── logs/                      # Installation and runtime logs
 ```
 
@@ -162,7 +159,7 @@ The Jarvis Toolset follows a modular, multi-platform organization with scripts g
 - **Shell**: Zsh with Oh My Zsh and PowerLevel10k
 - **Package Manager**: Homebrew
 - **Terminal**: WezTerm
-- **System Integration**: macOS preferences, Xcode tools, App Store apps
+- **System Integration**: Xcode tools, App Store apps
 
 #### Linux
 - **Shell**: Zsh with Oh My Zsh and PowerLevel10k (Bash fallback)
@@ -274,23 +271,6 @@ All configuration files are stored in `$HOME/.jarvistoolset/macos/configs/shell/
 - **Performance Optimization**: Optimal loading sequence for fastest shell startup
 - **Debugging Support**: Clear load order makes troubleshooting easier
 - **Modular Design**: Each tool has its own isolated configuration space
-
-## System Preferences
-
-Review the configuration parameters (and your preferences) in `~/scripts/os/preferences/macos`:
-
-| Script | Description |
-|--------|-------------|
-| `app_store.zsh` | App Store preferences |
-| `chrome.zsh` | Google Chrome preferences |
-| `dock.zsh` | Dock preferences and layout |
-| `finder.zsh` | Finder view and behavior settings |
-| `keyboard.zsh` | Keyboard and input preferences |
-| `language.zsh` | Language and region settings |
-| `security.zsh` | Security and privacy settings |
-| `terminal.zsh` | Terminal appearance and behavior |
-| `trackpad.zsh` | Trackpad gestures and sensitivity |
-| `ui_ux.zsh` | General UI/UX preferences |
 
 Feel free to send suggestions, corrections, and feedback. I'll accept pull requests that add value to the project, as long as they're constructive and respectful.
 
@@ -705,17 +685,6 @@ The jarvistoolset includes a comprehensive set of installation scripts organized
 | `extratools.zsh` | Additional system tools and utilities |
 | `mas.zsh` | Mac App Store command line interface |
 
-### macOS System Preferences
-
-| Script | Description |
-|-------|-------------|
-| `preferences.zsh` | Configures macOS system preferences for optimal development experience |
-| `accessibility.zsh` | Accessibility and assistive technology settings |
-| `security.zsh` | Security and privacy preferences |
-| `dock.zsh` | Dock appearance and behavior |
-| `finder.zsh` | Finder view and behavior settings |
-| `keyboard.zsh` | Keyboard and input preferences |
-| `terminal.zsh` | Terminal appearance and behavior |
 
 ## New Features and Capabilities
 
@@ -848,7 +817,7 @@ If you encounter issues during the installation process, here are common solutio
 2. Check that security tools are not blocked by macOS security policies
 3. Verify that required dependencies are installed
 4. Check firewall settings if network security tools are not working
-5. Review macOS security preferences for tool-specific issues
+5. Check system security settings for tool-specific issues
 
 ### Cloud and DevOps Tools
 
