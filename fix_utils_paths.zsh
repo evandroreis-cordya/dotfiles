@@ -3,37 +3,37 @@
 # This script fixes the utils.zsh paths in all zsh scripts in the macos directory
 
 # Base directory
-BASE_DIR="/Users/evandroreis/.jarvistoolset/scripts/os/install/macos"
+BASE_DIR="/Users/evandroreis/.jarvistoolset/macos/install"
 
 # Find all zsh files
 find "$BASE_DIR" -name "*.zsh" | while read -r file; do
     echo "Processing $file..."
-    
+
     # Skip main.zsh as it's already been fixed
     if [[ "$file" == *"/main.zsh" ]]; then
         echo "Skipping main.zsh"
         continue
     fi
-    
+
     # Calculate the relative path to the utils.zsh files
     # Get the directory depth relative to BASE_DIR
     rel_path="${file#$BASE_DIR/}"
     depth=$(echo "$rel_path" | tr -cd '/' | wc -c)
-    
+
     # Create the correct path string based on depth
     utils_path=""
     for ((i=0; i<depth; i++)); do
         utils_path="../$utils_path"
     done
-    
+
     # Create the sed commands to replace the paths
     sed_cmd1="s|source \"\\${SCRIPT_DIR}/../../utils.zsh\"|source \"\\${SCRIPT_DIR}/${utils_path}../../utils.zsh\"|g"
     sed_cmd2="s|source \"\\${SCRIPT_DIR}/utils.zsh\"|source \"\\${SCRIPT_DIR}/${utils_path}../utils.zsh\"|g"
-    
+
     # Apply the replacements
     sed -i '' "$sed_cmd1" "$file"
     sed -i '' "$sed_cmd2" "$file"
-    
+
     # Check if the file contains the SCRIPT_DIR variable
     if ! grep -q "SCRIPT_DIR=" "$file"; then
         # Add the SCRIPT_DIR variable and source commands at the beginning of the file
@@ -53,7 +53,7 @@ find "$BASE_DIR" -name "*.zsh" | while read -r file; do
         mv "$temp_file" "$file"
         chmod +x "$file"
     fi
-    
+
     echo "Fixed $file"
 done
 

@@ -1,11 +1,12 @@
 # Zsh configuration file
-# Load modular configuration system
-source ~/.jarvistoolset/macos/configs/shell/zsh_configs/00_load_order.zsh
+# Load all shell configurations
+for file in ~/.jarvistoolset/macos/configs/shell/aliases/*; do
+    if [[ -f "$file" ]]; then
+        source "$file"
+    fi
+done
 
-# Load configurations in the proper order
-load_configs_in_order
-
-# Load additional shell-specific configurations
+# Load zsh-specific configurations
 source ~/.jarvistoolset/macos/configs/shell/zsh_exports
 source ~/.jarvistoolset/macos/configs/shell/zsh_functions
 source ~/.jarvistoolset/macos/configs/shell/zsh_options

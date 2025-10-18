@@ -2,7 +2,7 @@
 
 # Get the directory of the current script
 SCRIPT_DIR=${0:a:h}
-source "${SCRIPT_DIR}/../../../../../scripts/os/utils.zsh"
+source "${SCRIPT_DIR}/../../../../macos/scripts/os/utils.zsh"
 source "${SCRIPT_DIR}/../utils.zsh" 2>/dev/null || true  # Source local utils if available
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -80,10 +80,10 @@ set_xcode_developer_directory() {
 create_xcode_config() {
     local config_dir="$HOME/.jarvistoolset/macos/configs/shell/zsh_configs"
     local config_file="$config_dir/xcode.zsh"
-    
+
     # Create directory if it doesn't exist
     mkdir -p "$config_dir"
-    
+
     # Create Xcode configuration file
     cat > "$config_file" << 'EOL'
 #!/bin/zsh
@@ -113,25 +113,25 @@ xcnew() {
         echo "Usage: xcnew <project_name> <organization_identifier> [--swift | --objc]"
         return 1
     fi
-    
+
     local project_name=$1
     local org_identifier=$2
     local language="swift"
-    
+
     if [[ "$3" == "--objc" ]]; then
         language="objc"
     fi
-    
+
     mkdir -p "$project_name"
     cd "$project_name" || return
-    
+
     if [[ "$language" == "swift" ]]; then
         swift package init --type executable
         echo "Swift project '$project_name' created"
     else
         # Create basic Objective-C project structure
         mkdir -p "$project_name/Classes" "$project_name/Resources"
-        
+
         # Create main.m
         cat > "$project_name/main.m" << EOF
 #import <Foundation/Foundation.h>
@@ -145,7 +145,7 @@ int main(int argc, const char * argv[]) {
 EOF
         echo "Objective-C project '$project_name' created"
     fi
-    
+
     # Create a basic .gitignore for Xcode projects
     cat > ".gitignore" << EOF
 # Xcode
@@ -239,12 +239,12 @@ fastlane/test_output
 
 iOSInjectionProject/
 EOF
-    
+
     # Initialize git repository
     git init
     git add .
     git commit -m "Initial commit"
-    
+
     # Open in Xcode if available
     if [ -d "/Applications/Xcode.app" ]; then
         open -a Xcode .
@@ -264,7 +264,7 @@ reset_simulator() {
     echo "iOS Simulator has been reset"
 }
 EOL
-    
+
     print_result $? "Created Xcode configuration file"
 }
 
@@ -279,10 +279,10 @@ main() {
     install_xcode
     set_xcode_developer_directory
     agree_with_xcode_licence
-    
+
     # Create modular configuration
     create_xcode_config
-    
+
     # Check if oh-my-zsh.zsh is already sourcing the modular configs
     if ! grep -q "source \"\$HOME/.jarvistoolset/macos/configs/shell/zsh_configs/xcode.zsh\"" "$HOME/.zshrc"; then
         # Add a line to source the Xcode config in .zshrc if oh-my-zsh.zsh isn't handling it
@@ -292,7 +292,7 @@ source "$HOME/.jarvistoolset/macos/configs/shell/zsh_configs/xcode.zsh"
 EOL
         print_result $? "Added Xcode configuration to .zshrc"
     fi
-    
+
     print_in_green "
   Xcode setup complete!
 "

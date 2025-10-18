@@ -197,12 +197,12 @@ brew_cask_install() {
     local -r APP_NAME="$1"
     local -r DESCRIPTION="${2:-Installing $APP_NAME}"
     local -r OPTIONAL="${3:-false}"
-    
+
     # Log the installation attempt
     if type log_info &>/dev/null; then
         log_info "Installing cask: $APP_NAME ($DESCRIPTION)"
     fi
-    
+
     # Check if Homebrew is installed
     if ! command -v brew &>/dev/null; then
         print_error "$APP_NAME (Homebrew is not installed)"
@@ -211,7 +211,7 @@ brew_cask_install() {
         fi
         return 1
     fi
-    
+
     # Check if the cask exists in the Homebrew repository
     if brew info --cask "$APP_NAME" &>/dev/null; then
         # Install or upgrade cask
@@ -229,7 +229,7 @@ brew_cask_install() {
                 brew install --cask "$APP_NAME" &>/dev/null
                 local exit_code=$?
                 print_result $exit_code "$DESCRIPTION"
-                
+
                 # Log the result
                 if type log_info &>/dev/null; then
                     if [ $exit_code -eq 0 ]; then
@@ -238,7 +238,7 @@ brew_cask_install() {
                         log_error "Failed to install cask: $APP_NAME (exit code $exit_code)"
                     fi
                 fi
-                
+
                 if [ $exit_code -ne 0 ]; then
                     return 1
                 fi
@@ -292,16 +292,16 @@ execute_original() {
     local -r MSG="${2:-$1}"
     local -r TMP_FILE="$(mktemp /tmp/XXXXX)"
     local exitCode=0
-    
+
     # Execute commands with proper error handling for broken pipes
     { eval "$CMDS" 2>"$TMP_FILE" || exitCode=$?; } 2>/dev/null
-    
+
     print_result $exitCode "$MSG" 2>/dev/null
-    
+
     if [ $exitCode -ne 0 ]; then
         print_error_stream < "$TMP_FILE" 2>/dev/null
     fi
-    
+
     rm -rf "$TMP_FILE"
     return $exitCode
 }
@@ -311,12 +311,12 @@ execute_original() {
 execute() {
     local -r CMDS="$1"
     local -r MSG="${2:-$1}"
-    
+
     # Check if this is a sudo command and ensure sudo is active
     if [[ "$CMDS" == sudo* ]]; then
         ensure_sudo_active
     fi
-    
+
     # If logging is available, use it
     if type log_command &>/dev/null; then
         log_command "$CMDS" "$MSG"
@@ -329,16 +329,16 @@ execute() {
     else
         local -r TMP_FILE="$(mktemp /tmp/XXXXX)"
         local exitCode=0
-        
+
         # Execute commands with proper error handling for broken pipes
         { eval "$CMDS" 2>"$TMP_FILE" || exitCode=$?; } 2>/dev/null
-        
+
         print_result $exitCode "$MSG" 2>/dev/null
-        
+
         if [ $exitCode -ne 0 ]; then
             print_error_stream < "$TMP_FILE" 2>/dev/null
         fi
-        
+
         rm -rf "$TMP_FILE"
         return $exitCode
     fi
@@ -347,7 +347,7 @@ execute() {
 run_command() {
     local -r COMMAND="$1"
     local -r DESCRIPTION="${2:-$1}"
-    
+
     # If logging is available, use it
     if type log_command &>/dev/null; then
         log_info "Running command: $DESCRIPTION"
@@ -358,26 +358,26 @@ run_command() {
         if [[ "$COMMAND" == sudo* ]]; then
             ensure_sudo_active
         fi
-        
+
         # Execute the command
         local output
         local exit_code
-        
+
         output=$(eval "$COMMAND" 2>&1) || exit_code=$?
-        
+
         if [ -z "$exit_code" ]; then
             exit_code=0
         fi
-        
+
         print_result $exit_code "$DESCRIPTION"
-        
+
         if [ $exit_code -ne 0 ]; then
             print_error "Command failed: $COMMAND"
             if [ -n "$output" ]; then
                 print_error_stream <<< "$output"
             fi
         fi
-        
+
         return $exit_code
     fi
 }
@@ -390,12 +390,12 @@ pip_install() {
     local -r PACKAGE="$1"
     local -r PACKAGE_READABLE_NAME="${2:-$PACKAGE}"
     local -r INSTALL_FLAGS="${3:-}"
-    
+
     # Log the installation attempt
     if type log_info &>/dev/null; then
         log_info "Installing Python package: $PACKAGE_READABLE_NAME ($PACKAGE)"
     fi
-    
+
     # Check if pip is installed
     if ! command -v pip &>/dev/null; then
         print_error "$PACKAGE_READABLE_NAME (pip is not installed)"
@@ -404,7 +404,7 @@ pip_install() {
         fi
         return 1
     fi
-    
+
     # Check if package is already installed
     if pip list | grep -q "^$PACKAGE "; then
         print_success "$PACKAGE_READABLE_NAME (already installed)"
@@ -413,7 +413,7 @@ pip_install() {
         fi
         return 0
     fi
-    
+
     # Install the package
     if type execute_with_log &>/dev/null; then
         execute_with_log "pip install $PACKAGE $INSTALL_FLAGS" "Installing $PACKAGE_READABLE_NAME"
@@ -422,7 +422,7 @@ pip_install() {
         pip install "$PACKAGE" $INSTALL_FLAGS &>/dev/null
         local exit_code=$?
         print_result $exit_code "$PACKAGE_READABLE_NAME"
-        
+
         # Log the result
         if type log_info &>/dev/null; then
             if [ $exit_code -eq 0 ]; then
@@ -431,7 +431,7 @@ pip_install() {
                 log_error "Failed to install Python package: $PACKAGE_READABLE_NAME ($PACKAGE) (exit code $exit_code)"
             fi
         fi
-        
+
         return $exit_code
     fi
 }
@@ -440,12 +440,12 @@ pipx_install() {
     local -r PACKAGE="$1"
     local -r PACKAGE_READABLE_NAME="${2:-$PACKAGE}"
     local -r INSTALL_FLAGS="${3:-}"
-    
+
     # Log the installation attempt
     if type log_info &>/dev/null; then
         log_info "Installing Python package with pipx: $PACKAGE_READABLE_NAME ($PACKAGE)"
     fi
-    
+
     # Check if pipx is installed
     if ! command -v pipx &>/dev/null; then
         print_error "$PACKAGE_READABLE_NAME (pipx is not installed)"
@@ -454,7 +454,7 @@ pipx_install() {
         fi
         return 1
     fi
-    
+
     # Check if package is already installed
     if pipx list | grep -q "$PACKAGE"; then
         print_success "$PACKAGE_READABLE_NAME (already installed)"
@@ -463,7 +463,7 @@ pipx_install() {
         fi
         return 0
     fi
-    
+
     # Install the package
     if type execute_with_log &>/dev/null; then
         execute_with_log "pipx install $PACKAGE $INSTALL_FLAGS" "Installing $PACKAGE_READABLE_NAME with pipx"
@@ -472,7 +472,7 @@ pipx_install() {
         pipx install "$PACKAGE" $INSTALL_FLAGS &>/dev/null
         local exit_code=$?
         print_result $exit_code "$PACKAGE_READABLE_NAME"
-        
+
         # Log the result
         if type log_info &>/dev/null; then
             if [ $exit_code -eq 0 ]; then
@@ -481,7 +481,7 @@ pipx_install() {
                 log_error "Failed to install Python package with pipx: $PACKAGE_READABLE_NAME ($PACKAGE) (exit code $exit_code)"
             fi
         fi
-        
+
         return $exit_code
     fi
 }
@@ -494,12 +494,12 @@ npm_install() {
     local -r PACKAGE="$1"
     local -r PACKAGE_READABLE_NAME="${2:-$PACKAGE}"
     local -r INSTALL_FLAGS="${3:-}"
-    
+
     # Log the installation attempt
     if type log_info &>/dev/null; then
         log_info "Installing npm package: $PACKAGE_READABLE_NAME ($PACKAGE)"
     fi
-    
+
     # Check if npm is installed
     if ! command -v npm &>/dev/null; then
         print_error "$PACKAGE_READABLE_NAME (npm is not installed)"
@@ -508,7 +508,7 @@ npm_install() {
         fi
         return 1
     fi
-    
+
     # Check if package is already installed
     if npm list -g --depth=0 | grep -q "$PACKAGE@"; then
         print_success "$PACKAGE_READABLE_NAME (already installed)"
@@ -517,7 +517,7 @@ npm_install() {
         fi
         return 0
     fi
-    
+
     # Install the package
     if type execute_with_log &>/dev/null; then
         execute_with_log "npm install -g $PACKAGE $INSTALL_FLAGS" "Installing $PACKAGE_READABLE_NAME with npm"
@@ -526,7 +526,7 @@ npm_install() {
         npm install -g "$PACKAGE" $INSTALL_FLAGS &>/dev/null
         local exit_code=$?
         print_result $exit_code "$PACKAGE_READABLE_NAME"
-        
+
         # Log the result
         if type log_info &>/dev/null; then
             if [ $exit_code -eq 0 ]; then
@@ -535,7 +535,7 @@ npm_install() {
                 log_error "Failed to install npm package: $PACKAGE_READABLE_NAME ($PACKAGE) (exit code $exit_code)"
             fi
         fi
-        
+
         return $exit_code
     fi
 }
@@ -594,13 +594,13 @@ gem_install() {
     local -r PACKAGE_LABEL="$1"
     local -r PACKAGE_NAME="$2"
     local -r EXTRA_ARGS="${3:-}"
-    
+
     # Check if gem is installed
     if ! cmd_exists "gem"; then
         print_error "gem is not installed. Please install Ruby first."
         return 1
     fi
-    
+
     # Check if the package is already installed
     if gem list | grep -q "^$PACKAGE_NAME "; then
         print_success "$PACKAGE_LABEL (already installed)"
@@ -614,16 +614,16 @@ gem_install() {
 rbenv_install() {
     local -r RUBY_VERSION="$1"
     local -r SET_GLOBAL="${2:-false}"  # Whether to set as global version
-    
+
     # Check if rbenv is installed
     if ! cmd_exists "rbenv"; then
         print_error "rbenv is not installed. Please install rbenv first."
         return 1
     fi
-    
+
     # Initialize rbenv
     eval "$(rbenv init -)"
-    
+
     # Check if the requested version is already installed
     if rbenv versions | grep -q "$RUBY_VERSION"; then
         print_success "Ruby $RUBY_VERSION (already installed)"
@@ -632,7 +632,7 @@ rbenv_install() {
         rbenv install "$RUBY_VERSION" &> /dev/null
         print_result $? "Ruby $RUBY_VERSION"
     fi
-    
+
     # Set as global if requested
     if [[ "$SET_GLOBAL" == "true" ]]; then
         # Use direct command execution instead of execute function
@@ -677,13 +677,13 @@ rustup_install() {
     if ! cmd_exists "rustup"; then
         print_in_purple "\n   Installing Rust\n\n"
         execute "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y" "Rustup"
-        
+
         # Source cargo environment
         source "$HOME/.cargo/env"
     else
         print_success "Rustup (already installed)"
     fi
-    
+
     # Add Rust to PATH if not already added
     if ! grep -q '$HOME/.cargo/bin' "$HOME/.zshrc"; then
         cat >> "$HOME/.zshrc" << 'EOL'
@@ -692,7 +692,7 @@ rustup_install() {
 export PATH="$HOME/.cargo/bin:$PATH"
 EOL
     fi
-    
+
     # Load NVM for the current session
     export NVM_DIR="$HOME/.nvm"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
@@ -705,7 +705,7 @@ rustup_update() {
         print_error "Rustup is not installed"
         return 1
     fi
-    
+
     # Update Rust
     execute "rustup update" "Rustup (update)"
 }
@@ -795,13 +795,13 @@ go_install() {
     local -r PACKAGE_LABEL="$1"
     local -r PACKAGE_NAME="$2"
     local -r VERSION="${3:-latest}"
-    
+
     # Check if go is installed
     if ! cmd_exists "go"; then
         print_error "go is not installed. Please install Go first."
         return 1
     fi
-    
+
     # Install the package using direct command execution with better error handling
     # Try different installation approaches
     # First try with @latest (modern approach)
@@ -810,7 +810,7 @@ go_install() {
     go get -u "$PACKAGE_NAME" &> /dev/null || \
     # Finally try with go get -u -v (for very old packages)
     go get -u -v "$PACKAGE_NAME" &> /dev/null || true
-    
+
     # Always report success since these are optional tools
     print_success "$PACKAGE_LABEL"
 }
@@ -821,19 +821,19 @@ go_install() {
 
 nvm_install() {
     local -r NVM_VERSION="${1:-v0.39.5}"  # Default to latest stable version
-    
+
     # Check if NVM is already installed
     if [[ -d "$HOME/.nvm" ]]; then
         print_success "NVM (already installed)"
         return 0
     fi
-    
+
     print_in_purple "\n   Installing NVM\n\n"
-    
+
     # Use direct command execution instead of execute function
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/$NVM_VERSION/install.sh | bash &> /dev/null
     print_result $? "NVM"
-    
+
     # Add NVM to shell configuration if not already there
     if ! grep -q 'export NVM_DIR="$HOME/.nvm"' "$HOME/.zshrc"; then
         cat >> "$HOME/.zshrc" << 'EOL'
@@ -844,7 +844,7 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 EOL
     fi
-    
+
     # Load NVM for the current session
     export NVM_DIR="$HOME/.nvm"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
@@ -853,17 +853,17 @@ EOL
 
 node_install() {
     local -r NODE_VERSION="${1:-lts/*}"  # Default to latest LTS version
-    
+
     # Check if NVM is installed
     if [[ ! -d "$HOME/.nvm" ]]; then
         print_error "NVM is not installed. Please install NVM first."
         return 1
     fi
-    
+
     # Load NVM
     export NVM_DIR="$HOME/.nvm"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-    
+
     # Check if the requested version is already installed
     if nvm ls "$NODE_VERSION" &> /dev/null; then
         print_success "Node.js $NODE_VERSION (already installed)"
@@ -872,7 +872,7 @@ node_install() {
         nvm install "$NODE_VERSION" &> /dev/null
         print_result $? "Node.js $NODE_VERSION"
     fi
-    
+
     # Set as default if requested
     if [[ "$2" == "default" ]]; then
         # Use direct command execution instead of execute function
@@ -888,22 +888,22 @@ node_install() {
 pyenv_install() {
     local -r PYTHON_VERSION="$1"
     local -r SET_GLOBAL="${2:-false}"  # Whether to set as global version
-    
+
     # Check if pyenv is installed
     if ! cmd_exists "pyenv"; then
         print_error "pyenv is not installed. Please install pyenv first."
         return 1
     fi
-    
+
     # Set up pyenv in the current shell session if not already done
     export PYENV_ROOT="$HOME/.pyenv"
     export PATH="$PYENV_ROOT/bin:$PATH"
-    
+
     # Initialize pyenv
     eval "$(pyenv init --path)"
     eval "$(pyenv init -)"
     eval "$(pyenv virtualenv-init -)"
-    
+
     # Check if the requested version is already installed
     if pyenv versions 2>/dev/null | grep -q "$PYTHON_VERSION"; then
         print_success "Python $PYTHON_VERSION (already installed)"
@@ -916,7 +916,7 @@ pyenv_install() {
         }
         print_success "Python $PYTHON_VERSION"
     fi
-    
+
     # Set as global if requested
     if [[ "$SET_GLOBAL" == "true" ]]; then
         pyenv global "$PYTHON_VERSION" 2>/dev/null || {
@@ -943,16 +943,16 @@ poetry_install() {
 rbenv_install() {
     local -r RUBY_VERSION="$1"
     local -r SET_GLOBAL="${2:-false}"  # Whether to set as global version
-    
+
     # Check if rbenv is installed
     if ! cmd_exists "rbenv"; then
         print_error "rbenv is not installed. Please install rbenv first."
         return 1
     fi
-    
+
     # Initialize rbenv
     eval "$(rbenv init -)"
-    
+
     # Check if the requested version is already installed
     if rbenv versions | grep -q "$RUBY_VERSION"; then
         print_success "Ruby $RUBY_VERSION (already installed)"
@@ -961,7 +961,7 @@ rbenv_install() {
         rbenv install "$RUBY_VERSION" &> /dev/null
         print_result $? "Ruby $RUBY_VERSION"
     fi
-    
+
     # Set as global if requested
     if [[ "$SET_GLOBAL" == "true" ]]; then
         # Use direct command execution instead of execute function
@@ -979,25 +979,25 @@ sdk_install() {
     local -r PACKAGE_NAME="$2"
     local -r VERSION="${3:-}"
     local -r SET_DEFAULT="${4:-false}"
-    
+
     # Check if SDKMAN is installed
     if [[ ! -s "$HOME/.sdkman/bin/sdkman-init.sh" ]]; then
         print_error "SDKMAN is not installed. Please install SDKMAN first."
         return 1
     fi
-    
+
     # Source SDKMAN with error handling
     if ! source "$HOME/.sdkman/bin/sdkman-init.sh"; then
         print_error "Failed to source SDKMAN initialization script."
         return 1
     fi
-    
+
     # Verify sdk command is available
     if ! command -v sdk &> /dev/null; then
         print_error "SDKMAN 'sdk' command not found after sourcing initialization script."
         return 1
     fi
-    
+
     # Format display name
     local DISPLAY_NAME
     if [[ -n "$VERSION" ]]; then
@@ -1006,20 +1006,20 @@ sdk_install() {
         DISPLAY_NAME="$PACKAGE_TYPE"
         PACKAGE_NAME="$PACKAGE_TYPE"
     fi
-    
+
     # Check if already installed (more robust check)
     if sdk list "$PACKAGE_TYPE" 2>/dev/null | grep -q "$PACKAGE_NAME" && sdk list "$PACKAGE_TYPE" 2>/dev/null | grep -q "installed"; then
         print_success "$DISPLAY_NAME (already installed)"
-        
+
         # Set as default if requested
         if [[ "$SET_DEFAULT" == "true" ]]; then
             sdk default "$PACKAGE_TYPE" "$PACKAGE_NAME" &> /dev/null
             print_result $? "Setting $DISPLAY_NAME as default"
         fi
-        
+
         return 0
     fi
-    
+
     # Install the package with more robust error handling
     local RESULT=1
     if [[ -n "$VERSION" ]]; then
@@ -1031,10 +1031,10 @@ sdk_install() {
         sdk install "$PACKAGE_TYPE" &> /dev/null
         RESULT=$?
     fi
-    
+
     if [[ $RESULT -eq 0 ]]; then
         print_success "$DISPLAY_NAME"
-        
+
         # Set as default if requested and installation was successful
         if [[ "$SET_DEFAULT" == "true" ]]; then
             sdk default "$PACKAGE_TYPE" "$PACKAGE_NAME" &> /dev/null
@@ -1043,7 +1043,7 @@ sdk_install() {
     else
         print_error "$DISPLAY_NAME (installation failed)"
     fi
-    
+
     return $RESULT
 }
 
@@ -1056,9 +1056,9 @@ create_figlet_banner() {
     local title="$1"
     local width=80
     local line=$(printf '%*s' "$width" | tr ' ' '=')
-    
+
     echo "\n$line"
-    
+
     # Check if figlet is installed
     if command -v figlet &>/dev/null; then
         # Check if jazmine font is available
@@ -1076,7 +1076,7 @@ create_figlet_banner() {
         echo "Note: figlet not installed. Using simple text banner."
         echo "To install figlet: brew install figlet"
     fi
-    
+
     echo "$line\n"
 }
 
@@ -1084,17 +1084,17 @@ create_figlet_banner() {
 get_group_name_from_path() {
     local script_path="$1"
     local group_name
-    
+
     # Extract the group name from the path
-    # Example: /Users/evandroreis/.jarvistoolset/scripts/os/install/macos/dev_langs/python.zsh
+    # Example: /Users/evandroreis/.jarvistoolset/macos/install/dev_langs/python.zsh
     # Group name: DEV LANGS
-    
+
     # Get the directory name
     group_name=$(dirname "$script_path" | xargs basename)
-    
+
     # Convert to uppercase and replace underscores with spaces
     group_name=$(echo "$group_name" | tr '[:lower:]' '[:upper:]' | tr '_' ' ')
-    
+
     echo "$group_name"
 }
 
@@ -1103,7 +1103,7 @@ create_install_banner() {
     local script_path="$1"
     local script_name=$(basename "$script_path")
     local group_name=$(get_group_name_from_path "$script_path")
-    
+
     # Create the banner
     create_figlet_banner "$group_name - $script_name"
 }
@@ -1117,44 +1117,44 @@ create_framed_header() {
     local script_path="$1"
     local description="$2"
     local tools_array=("${@:3}")  # Get all remaining arguments as tools array
-    
+
     # Get script name with extension
     local script_name=$(basename "$script_path")
-    
+
     # Get current timestamp
     local timestamp=$(date +"%Y-%m-%d %H:%M:%S")
-    
+
     # Calculate frame width (80 characters)
     local frame_width=80
-    
+
     # Create the top frame border
     local border=$(printf '%*s' "$frame_width" | tr ' ' '*')
-    
+
     # Print the framed header
     echo "$border"
-    
+
     # Print script name centered
     local name_line="**  ${script_name}  **"
     printf "%-${frame_width}s\n" "$name_line" | sed 's/ $/*/g'
-    
+
     # Print timestamp
     local time_line="**  Timestamp: ${timestamp}  **"
     printf "%-${frame_width}s\n" "$time_line" | sed 's/ $/*/g'
-    
+
     # Print description
     local desc_line="**  Description: ${description}  **"
     printf "%-${frame_width}s\n" "$desc_line" | sed 's/ $/*/g'
-    
+
     # Print separator line
     local separator="**  "
     separator+=$(printf '%*s' $((frame_width - 6)) | tr ' ' '-')
     separator+="  **"
     echo "$separator"
-    
+
     # Print tools header
     local tools_header="**  Tools to be installed and/or configured:  **"
     printf "%-${frame_width}s\n" "$tools_header" | sed 's/ $/*/g'
-    
+
     # Print tools list
     local counter=1
     for tool in "${tools_array[@]}"; do
@@ -1162,7 +1162,7 @@ create_framed_header() {
         printf "%-${frame_width}s\n" "$tool_line" | sed 's/ $/*/g'
         ((counter++))
     done
-    
+
     # Print the bottom frame border
     echo "$border"
     echo ""
@@ -1172,7 +1172,7 @@ create_framed_header() {
 extract_tools_from_script() {
     local script_path="$1"
     local tools=()
-    
+
     # Extract tool names from various installation commands
     while IFS= read -r line; do
         # Extract tool name from brew_install lines
@@ -1195,12 +1195,12 @@ extract_tools_from_script() {
             tools+=("${BASH_REMATCH[1]} (go)")
         fi
     done < "$script_path"
-    
+
     # If no tools were found, add a default message
     if [ ${#tools[@]} -eq 0 ]; then
         tools+=("No specific tools identified in script")
     fi
-    
+
     # Return the tools array
     echo "${tools[@]}"
 }
@@ -1210,10 +1210,10 @@ get_script_description() {
     local script_path="$1"
     local script_name=$(basename "$script_path" .zsh)
     local dir_name=$(dirname "$script_path" | xargs basename)
-    
+
     # Default description
     local description="Installs and configures ${script_name} tools"
-    
+
     # Customize description based on directory
     case "$dir_name" in
         "dev_langs")
@@ -1259,7 +1259,7 @@ get_script_description() {
             # Keep default description
             ;;
     esac
-    
+
     echo "$description"
 }
 
@@ -1267,34 +1267,34 @@ get_script_description() {
 add_framed_header_to_script() {
     local script_path="$1"
     local script_name=$(basename "$script_path")
-    
+
     # Skip template and utility scripts
     if [[ "$script_name" == "template.zsh" || "$script_name" == "update_banners.zsh" || "$script_name" == "update_headers.zsh" || "$script_name" == "utils.zsh" ]]; then
         return 0
     fi
-    
+
     echo "Adding framed header to: $script_path"
-    
+
     # Get script description
     local description=$(get_script_description "$script_path")
-    
+
     # Extract tools from the script
     local tools_string=$(extract_tools_from_script "$script_path")
     local tools_array=($tools_string)
-    
+
     # Create a temporary file
     local temp_file=$(mktemp)
-    
+
     # Read the script file
     local script_content=$(cat "$script_path")
-    
+
     # Remove any existing framed header calls
     script_content=$(echo "$script_content" | sed '/create_framed_header/d')
-    
+
     # Add the function call after the separator line
     script_content=$(echo "$script_content" | awk -v script="$script_path" -v desc="$description" -v tools="${tools_array[*]}" '
     BEGIN { found = 0; }
-    
+
     /^# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -$/ && !found {
         print $0;
         print "";
@@ -1304,16 +1304,16 @@ add_framed_header_to_script() {
         found = 1;
         next;
     }
-    
+
     { print $0; }
     ')
-    
+
     # Write the modified content back to the temporary file
     echo "$script_content" > "$temp_file"
-    
+
     # Replace the original file with the modified one
     mv "$temp_file" "$script_path"
     chmod +x "$script_path"
-    
+
     echo "Added framed header to: $script_path"
 }

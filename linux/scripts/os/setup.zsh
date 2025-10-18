@@ -1,14 +1,19 @@
 #!/usr/bin/env zsh
-# Linux-specific setup script
 
 # Get the directory of the current script
 SCRIPT_DIR=${0:a:h}
-JARVIS_DIR="$HOME/.jarvistoolset"
+source "${SCRIPT_DIR}/utils.zsh"
+# Source logging script if available
+source "${SCRIPT_DIR}/logging.zsh" 2>/dev/null || true
 
-# Source generic utilities
-source "${JARVIS_DIR}/generic/scripts/os/detect_environment.zsh"
-source "${JARVIS_DIR}/generic/scripts/os/utils.zsh"
-source "${JARVIS_DIR}/generic/scripts/os/logging.zsh"
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Repository configuration
+typeset -r GITHUB_REPOSITORY="arvosai/jarvistoolset"
+typeset -r JARVIS_ORIGIN="git@github.com:$GITHUB_REPOSITORY.git"
+
+# Default configuration
+typeset skipQuestions=false
 
 # Default values for user information
 HOSTNAME=${1:-$(hostname)}
@@ -22,34 +27,30 @@ export USERNAME
 export EMAIL
 export DIRECTORY
 
-# Verify we're running on Linux
-if [[ "$JARVIS_OS" != "linux" ]]; then
-    print_error "This script is intended for Linux only. Detected OS: $JARVIS_OS"
-    log_error "Linux setup script called on non-Linux system: $JARVIS_OS"
-    exit 1
+# Log configuration
+if type log_info &>/dev/null; then
+    log_info "Setup configuration:"
+    log_info "  Hostname: $HOSTNAME"
+    log_info "  Username: $USERNAME"
+    log_info "  Email: $EMAIL"
+    log_info "  Directory: $DIRECTORY"
 fi
 
-# Log configuration
-log_info "Linux setup configuration:"
-log_info "  Hostname: $HOSTNAME"
-log_info "  Username: $USERNAME"
-log_info "  Email: $EMAIL"
-log_info "  Directory: $DIRECTORY"
-log_info "  Package Manager: $JARVIS_PACKAGE_MANAGER"
-
 # Script groups for installation
+# Ensure we're using zsh associative arrays properly
 typeset -A SCRIPT_GROUPS
 SCRIPT_GROUPS=(
-    "system" "System Setup (zsh, oh-my-zsh, wezterm, build-essential)"
-    "dev_langs" "Development Languages (python, node, ruby, go, java, kotlin, rust, php, cpp)"
+    "system" "System Setup (xcode, homebrew, oh-my-zsh)"
+    "dev_langs" "Development Languages (python, node, ruby, go, java, kotlin, rust, swift, php, cpp)"
     "data_science" "Data Science Environment"
     "dev_tools" "Development Tools (git, docker, vscode, jetbrains, yarn)"
     "web_tools" "Web and Frontend Tools"
     "daily_tools" "Daily Tools and Utilities (browsers, compression, misc, office)"
     "media_tools" "Media and Creative Tools"
-    "creative_tools" "Creative and 3D Design Tools (blender, gimp, inkscape)"
+    "creative_tools" "Creative and 3D Design Tools (blender, maya, zbrush, unity, unreal)"
     "cloud_tools" "Cloud and DevOps Tools"
     "ai_tools" "AI and Productivity Tools (including Anthropic Libraries and MCP Servers/Clients)"
+    "app_store" "App Store and System Tools"
 )
 
 # Default: all groups are selected
@@ -58,547 +59,426 @@ for group in ${(k)SCRIPT_GROUPS}; do
     SELECTED_GROUPS[$group]="true"
 done
 
-# Function to install system packages
-install_system_packages() {
-    print_in_purple "
- >> Installing system packages
-"
-    log_info "Installing system packages"
+# ----------------------------------------------------------------------
+# | Helper Functions                                                     |
+# ----------------------------------------------------------------------
 
-    local packages=(
-        "build-essential"
-        "curl"
-        "wget"
-        "git"
-        "vim"
-        "htop"
-        "tree"
-        "jq"
-        "unzip"
-        "zip"
-        "tar"
-        "gzip"
-        "bzip2"
-        "xz-utils"
-        "software-properties-common"
-        "apt-transport-https"
-        "ca-certificates"
-        "gnupg"
-        "lsb-release"
-        "zsh"
-        "tmux"
-        "neofetch"
-        "bat"
-        "exa"
-        "fd-find"
-        "ripgrep"
-        "fzf"
-    )
+download() {
+    local url="$1"
+    local output="$2"
 
-    case "$JARVIS_PACKAGE_MANAGER" in
-        apt)
-            execute_with_log "sudo apt update" "Updating package list"
-            for package in "${packages[@]}"; do
-                execute_with_log "sudo apt install -y $package" "Installing $package"
-            done
-            ;;
-        yum)
-            for package in "${packages[@]}"; do
-                execute_with_log "sudo yum install -y $package" "Installing $package"
-            done
-            ;;
-        dnf)
-            for package in "${packages[@]}"; do
-                execute_with_log "sudo dnf install -y $package" "Installing $package"
-            done
-            ;;
-        pacman)
-            execute_with_log "sudo pacman -S --noconfirm ${packages[*]}" "Installing system packages"
-            ;;
-        zypper)
-            for package in "${packages[@]}"; do
-                execute_with_log "sudo zypper install -y $package" "Installing $package"
-            done
-            ;;
-        *)
-            print_error "Unsupported package manager: $JARVIS_PACKAGE_MANAGER"
-            return 1
-            ;;
-    esac
+    if type log_info &>/dev/null; then
+        log_info "Downloading: $url to $output"
+    fi
+
+    if (( $+commands[curl] )); then
+        if type execute_with_log &>/dev/null; then
+            execute_with_log "curl -LsSo \"$output\" \"$url\"" "Downloading $url"
+        else
+            curl -LsSo "$output" "$url" &> /dev/null
+            #     │││└─ write output to file
+            #     ││└─ show error messages
+            #     │└─ don't show the progress meter
+            #     └─ follow redirects
+        fi
+        return $?
+    elif (( $+commands[wget] )); then
+        if type execute_with_log &>/dev/null; then
+            execute_with_log "wget -qO \"$output\" \"$url\"" "Downloading $url"
+        else
+            wget -qO "$output" "$url" &> /dev/null
+            #     │└─ write output to file
+            #     └─ don't show output
+        fi
+        return $?
+    fi
+    
+    if type log_error &>/dev/null; then
+        log_error "Neither curl nor wget is available for downloading"
+    fi
+    return 1
 }
 
-# Function to install WezTerm
-install_wezterm() {
-    if ! command_exists wezterm; then
-        print_in_purple "
- >> Installing WezTerm
-"
-        log_info "Installing WezTerm"
+download_utils() {
+    local tmpFile=""
 
-        case "$JARVIS_PACKAGE_MANAGER" in
-            apt)
-                # Add WezTerm repository
-                execute_with_log "curl -fsSL https://apt.fury.io/wez/gpg.key | sudo gpg --dearmor -o /usr/share/keyrings/wezterm-fury.gpg" "Adding WezTerm GPG key"
-                execute_with_log "echo 'deb [signed-by=/usr/share/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ * *' | sudo tee /etc/apt/sources.list.d/wezterm.list" "Adding WezTerm repository"
-                execute_with_log "sudo apt update" "Updating package list"
-                execute_with_log "sudo apt install -y wezterm" "Installing WezTerm"
-                ;;
-            yum|dnf)
-                execute_with_log "sudo dnf install -y wezterm" "Installing WezTerm"
-                ;;
-            pacman)
-                execute_with_log "sudo pacman -S --noconfirm wezterm" "Installing WezTerm"
-                ;;
-            zypper)
-                execute_with_log "sudo zypper install -y wezterm" "Installing WezTerm"
-                ;;
-            *)
-                # Fallback to manual installation
-                local latest_version=$(get_latest_release "wez/wezterm")
-                local arch=$(get_arch)
-                local download_url="https://github.com/wez/wezterm/releases/download/${latest_version}/wezterm-${latest_version}-Ubuntu-${arch}.deb"
+    tmpFile="$(mktemp /tmp/XXXXX)"
+    download "$JARVIS_UTILS_URL" "$tmpFile" \
+        && source "$tmpFile" \
+        && rm -rf "$tmpFile" \
+        && return 0
 
-                execute_with_log "wget -O /tmp/wezterm.deb $download_url" "Downloading WezTerm"
-                execute_with_log "sudo dpkg -i /tmp/wezterm.deb" "Installing WezTerm"
-                execute_with_log "sudo apt-get install -f" "Fixing dependencies"
-                ;;
-        esac
+    return 1
+}
 
-        print_result $? "WezTerm"
+verify_os() {
+    local os_name=""
+    os_name="$(get_os)"
+
+    if type log_info &>/dev/null; then
+        log_info "Verifying operating system: $os_name"
+    fi
+
+    if [[ "$os_name" = "macos" ]]; then
+        if type log_success &>/dev/null; then
+            log_success "Operating system verified: macOS"
+        fi
+        return 0
     else
-        log_info "WezTerm is already installed"
-    fi
-}
-
-# Function to install Oh My Zsh
-install_oh_my_zsh() {
-    if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
-        print_in_purple "
- >> Installing Oh My Zsh
-"
-        log_info "Installing Oh My Zsh"
-
-        # Install Oh My Zsh
-        execute_with_log 'sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended' "Installing Oh My Zsh"
-
-        print_result $? "Oh My Zsh"
-    else
-        log_info "Oh My Zsh is already installed"
-    fi
-}
-
-# Function to install PowerLevel10k
-install_powerlevel10k() {
-    if [[ ! -d "$HOME/.oh-my-zsh/custom/themes/powerlevel10k" ]]; then
-        print_in_purple "
- >> Installing PowerLevel10k
-"
-        log_info "Installing PowerLevel10k"
-
-        # Install PowerLevel10k
-        execute_with_log "git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k" "Installing PowerLevel10k"
-
-        print_result $? "PowerLevel10k"
-    else
-        log_info "PowerLevel10k is already installed"
-    fi
-}
-
-# Function to install Zsh plugins
-install_zsh_plugins() {
-    print_in_purple "
- >> Installing Zsh plugins
-"
-    log_info "Installing Zsh plugins"
-
-    # Install zsh-syntax-highlighting
-    if [[ ! -d "$HOME/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting" ]]; then
-        execute_with_log "git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting" "Installing zsh-syntax-highlighting"
-    fi
-
-    # Install zsh-autosuggestions
-    if [[ ! -d "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions" ]]; then
-        execute_with_log "git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions" "Installing zsh-autosuggestions"
-    fi
-
-    # Install zsh-completions
-    if [[ ! -d "$HOME/.oh-my-zsh/custom/plugins/zsh-completions" ]]; then
-        execute_with_log "git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-completions" "Installing zsh-completions"
-    fi
-}
-
-# Function to configure Zsh
-configure_zsh() {
-    print_in_purple "
- >> Configuring Zsh
-"
-    log_info "Configuring Zsh"
-
-    # Backup existing .zshrc
-    backup_file "$HOME/.zshrc"
-
-    # Create symbolic links to configuration files
-    create_symlink "${JARVIS_DIR}/linux/configs/shell/zshrc" "$HOME/.zshrc"
-    create_symlink "${JARVIS_DIR}/linux/configs/shell/zsh_exports" "$HOME/.zsh_exports"
-    create_symlink "${JARVIS_DIR}/linux/configs/shell/zsh_functions" "$HOME/.zsh_functions"
-    create_symlink "${JARVIS_DIR}/linux/configs/shell/zsh_options" "$HOME/.zsh_options"
-    create_symlink "${JARVIS_DIR}/linux/configs/shell/zsh_prompt" "$HOME/.zsh_prompt"
-    create_symlink "${JARVIS_DIR}/linux/configs/shell/zsh_aliases" "$HOME/.zsh_aliases"
-
-    # Create .zshrc with PowerLevel10k configuration
-    cat > "$HOME/.zshrc" << 'EOF'
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
-# Path to your oh-my-zsh installation.
-export ZSH="$HOME/.oh-my-zsh"
-
-# Set name of the theme to load
-ZSH_THEME="powerlevel10k/powerlevel10k"
-
-# Which plugins would you like to load?
-plugins=(
-    git
-    zsh-syntax-highlighting
-    zsh-autosuggestions
-    zsh-completions
-    docker
-    docker-compose
-    kubectl
-    helm
-    terraform
-    aws
-    gcloud
-    python
-    node
-    npm
-    yarn
-    rust
-    golang
-    java
-    maven
-    gradle
-    sdk
-    conda
-    pip
-    systemd
-    vscode
-    vim
-    tmux
-    history
-    colored-man-pages
-    command-not-found
-    extract
-    web-search
-    copypath
-    copyfile
-    dirhistory
-    history-substring-search
-    per-directory-history
-    z
-)
-
-# Load Oh My Zsh
-source $ZSH/oh-my-zsh.sh
-
-# Load Jarvis Toolset configurations
-for file in ~/.jarvistoolset/linux/configs/shell/*.zsh; do
-    if [[ -f "$file" ]]; then
-        source "$file"
-    fi
-done
-
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-EOF
-
-    log_success "Zsh configuration completed"
-}
-
-# Function to configure WezTerm
-configure_wezterm() {
-    print_in_purple "
- >> Configuring WezTerm
-"
-    log_info "Configuring WezTerm"
-
-    # Create WezTerm config directory
-    local wezterm_config_dir="$HOME/.config/wezterm"
-    mkdir -p "$wezterm_config_dir"
-
-    # Create WezTerm configuration
-    cat > "$wezterm_config_dir/wezterm.lua" << 'EOF'
--- WezTerm configuration for Linux
-local wezterm = require 'wezterm'
-
-return {
-    -- Font configuration
-    font = wezterm.font_with_fallback({
-        'JetBrains Mono',
-        'Fira Code',
-        'Cascadia Code',
-        'Ubuntu Mono',
-        'Liberation Mono',
-        'Courier New',
-        'monospace',
-    }),
-    font_size = 14.0,
-
-    -- Color scheme
-    color_scheme = 'Catppuccin Mocha',
-
-    -- Window configuration
-    window_background_opacity = 0.95,
-    window_decorations = "RESIZE",
-    window_close_confirmation = "NeverPrompt",
-
-    -- Tab configuration
-    use_fancy_tab_bar = true,
-    tab_bar_at_bottom = true,
-    show_tab_index_in_tab_bar = true,
-    show_new_tab_button_in_tab_bar = true,
-
-    -- Key bindings
-    keys = {
-        {
-            key = 'n',
-            mods = 'CTRL|SHIFT',
-            action = wezterm.action.SpawnTab 'DefaultDomain',
-        },
-        {
-            key = 'w',
-            mods = 'CTRL|SHIFT',
-            action = wezterm.action.CloseCurrentTab { confirm = false },
-        },
-        {
-            key = 't',
-            mods = 'CTRL|SHIFT',
-            action = wezterm.action.SpawnTab 'DefaultDomain',
-        },
-        {
-            key = 'Tab',
-            mods = 'CTRL',
-            action = wezterm.action.ActivateTabRelative(1),
-        },
-        {
-            key = 'Tab',
-            mods = 'CTRL|SHIFT',
-            action = wezterm.action.ActivateTabRelative(-1),
-        },
-    },
-
-    -- Launch menu
-    launch_menu = {
-        {
-            label = 'Bash',
-            args = { 'bash', '-l' },
-        },
-        {
-            label = 'Zsh',
-            args = { 'zsh', '-l' },
-        },
-        {
-            label = 'Fish',
-            args = { 'fish', '-l' },
-        },
-    },
-}
-EOF
-
-    log_success "WezTerm configuration completed"
-}
-
-# Function to set Zsh as default shell
-set_zsh_default() {
-    print_in_purple "
- >> Setting Zsh as default shell
-"
-    log_info "Setting Zsh as default shell"
-
-    # Check if zsh is installed
-    if ! command_exists zsh; then
-        print_error "Zsh is not installed. Please install zsh first."
+        printf "Sorry, this script is intended only for macOS.\n"
+        if type log_error &>/dev/null; then
+            log_error "Operating system verification failed: $os_name is not supported"
+        fi
         return 1
     fi
-
-    # Get zsh path
-    local zsh_path=$(which zsh)
-
-    # Check if zsh is already the default shell
-    if [[ "$SHELL" == "$zsh_path" ]]; then
-        log_info "Zsh is already the default shell"
-        return 0
-    fi
-
-    # Add zsh to /etc/shells if not already there
-    if ! grep -q "$zsh_path" /etc/shells; then
-        execute_with_log "echo '$zsh_path' | sudo tee -a /etc/shells" "Adding zsh to /etc/shells"
-    fi
-
-    # Change default shell to zsh
-    execute_with_log "chsh -s $zsh_path" "Changing default shell to zsh"
-
-    log_success "Zsh set as default shell. Please log out and log back in for changes to take effect."
 }
 
-# Function to run PowerLevel10k configuration
-run_p10k_configure() {
-    print_in_purple "
- >> Running PowerLevel10k configuration
-"
-    log_info "Running PowerLevel10k configuration"
+install_homebrew() {
+    if ! (( $+commands[brew] )); then
+        print_in_purple "\n >> Installing Homebrew\n\n"
+        
+        if type log_info &>/dev/null; then
+            log_info "Installing Homebrew"
+        fi
+        
+        # Install Homebrew using the official script
+        if type execute_with_log &>/dev/null; then
+            execute_with_log "/bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\"" "Installing Homebrew"
+        else
+            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" &> /dev/null
+        fi
+        
+        # Add Homebrew to PATH for Apple Silicon Macs
+        if [[ "$(uname -m)" = "arm64" ]]; then
+            if ! grep -q 'eval "$(/opt/homebrew/bin/brew shellenv)"' "$HOME/.zprofile"; then
+                echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> "$HOME/.zprofile"
+                eval "$(/opt/homebrew/bin/brew shellenv)"
+                
+                if type log_info &>/dev/null; then
+                    log_info "Added Homebrew to PATH for Apple Silicon Mac"
+                fi
+            fi
+        fi
+        
+        print_result $? "Homebrew"
+        
+        if type log_info &>/dev/null; then
+            if [ $? -eq 0 ]; then
+                log_success "Homebrew installed successfully"
+            else
+                log_error "Failed to install Homebrew"
+            fi
+        fi
+    else
+        if type log_info &>/dev/null; then
+            log_info "Homebrew is already installed"
+        fi
+    fi
+    
+    return 0
+}
 
-    # Run p10k configure
-    execute_with_log "p10k configure" "Configuring PowerLevel10k"
+install_figlet() {
+    if ! (( $+commands[figlet] )); then
+        if type log_info &>/dev/null; then
+            log_info "Installing figlet"
+        fi
+        
+        # Install Homebrew if not already installed (silently)
+        install_homebrew > /dev/null 2>&1
+        
+        # Install figlet using Homebrew (silently)
+        if type execute_with_log &>/dev/null; then
+            execute_with_log "brew install figlet" "Installing figlet"
+        else
+            brew install figlet > /dev/null 2>&1
+        fi
+        
+        if type log_info &>/dev/null; then
+            if (( $+commands[figlet] )); then
+                log_success "figlet installed successfully"
+            else
+                log_error "Failed to install figlet"
+            fi
+        fi
+    else
+        if type log_info &>/dev/null; then
+            log_info "figlet is already installed"
+        fi
+    fi
+    
+    return 0
+}
+
+install_git() {
+    if ! (( $+commands[git] )); then
+        print_in_purple "\n >> Installing Git\n\n"
+        
+        if type log_info &>/dev/null; then
+            log_info "Installing Git"
+        fi
+        
+        # Install Homebrew if not already installed
+        install_homebrew
+        
+        # Install Git using Homebrew
+        if type execute_with_log &>/dev/null; then
+            execute_with_log "brew install git" "Installing Git"
+        else
+            brew install git &> /dev/null
+        fi
+        
+        print_result $? "Git"
+        
+        # Make Git available in the current shell session
+        if [[ "$(uname -m)" = "arm64" ]]; then
+            export PATH="/opt/homebrew/bin:$PATH"
+        else
+            export PATH="/usr/local/bin:$PATH"
+        fi
+        
+        # Verify Git is now available
+        if (( $+commands[git] )); then
+            print_success "Git is now available"
+            if type log_success &>/dev/null; then
+                log_success "Git installed and available in PATH"
+            fi
+        else
+            print_error "Git installation failed or Git is not in PATH"
+            if type log_error &>/dev/null; then
+                log_error "Git installation failed or Git is not in PATH"
+            fi
+            exit 1
+        fi
+    else
+        if type log_info &>/dev/null; then
+            log_info "Git is already installed"
+        fi
+    fi
+    
+    return 0
+}
+
+display_banner() {
+    if (( $+commands[figlet] )); then
+        print_in_yellow "$(figlet -f ogre -c 'Jarvis Toolset')\n"
+        print_in_yellow "Welcome to ARVOS.AI Jarvis Toolset 25H1 Edition, the complete Mac OS tools and apps installer for AI and Vibe Coders!\n"
+        print_in_yellow "Copyright (c) 2025 ARVOS.AI. All rights reserved.\n"
+        
+        if type log_info &>/dev/null; then
+            log_info "Displayed Jarvis Toolset banner with figlet"
+        fi
+    else
+        print_in_yellow "\n >> Welcome to ARVOS.AI Jarvis Toolset 25H1 Edition, the complete Mac OS tools and apps installer for AI and Vibe Coders!\n"
+        print_in_yellow "Copyright (c) 2025 ARVOS.AI. All rights reserved.\n"
+        
+        if type log_info &>/dev/null; then
+            log_info "Displayed Jarvis Toolset banner (figlet not available)"
+        fi
+    fi
 }
 
 # Interactive menu to select script groups
 select_script_groups() {
     local answer
-
-    print_in_purple "
- >> Installation Options
-"
-    print_in_yellow "Would you like to install the complete toolset or select specific groups?
-"
-    print_in_yellow "1) Install complete toolset (all groups)
-"
-    print_in_yellow "2) Select specific groups to install
-"
-
+    
+    print_in_purple "\n >> Installation Options\n\n"
+    print_in_yellow "Would you like to install the complete toolset or select specific groups?\n\n"
+    print_in_yellow "1) Install complete toolset (all groups)\n"
+    print_in_yellow "2) Select specific groups to install\n\n"
+    
     answer=""
     vared -p $'Enter your choice (1/2): ' answer
-
+    
     if [[ "$answer" == "2" ]]; then
         # Reset all groups to false
         for group in ${(k)SCRIPT_GROUPS}; do
             SELECTED_GROUPS[$group]="false"
         done
-
-        print_in_purple "
- >> Available groups to install
-"
+        
+        print_in_purple "\n >> Available groups to install\n\n"
 
         for group in ${(k)SCRIPT_GROUPS}; do
             local group_answer=""
-
+            
             vared -p $'Install '"${SCRIPT_GROUPS[$group]}"$'? (y/n): ' group_answer
-
+            
             if [[ "$group_answer" =~ ^[Yy]$ ]]; then
                 SELECTED_GROUPS[$group]="true"
             else
                 SELECTED_GROUPS[$group]="false"
             fi
         done
-
+        
         # Summary of selected groups
-        print_in_purple "
- >> Installation Summary
-"
+        print_in_purple "\n >> Installation Summary\n\n"
         for group in ${(k)SCRIPT_GROUPS}; do
             if [[ "${SELECTED_GROUPS[$group]}" == "true" ]]; then
-                print_in_green "Will install: ${SCRIPT_GROUPS[$group]}
-"
+                print_in_green "Will install: ${SCRIPT_GROUPS[$group]}\n"
             else
-                print_in_red   "Will skip...: ${SCRIPT_GROUPS[$group]}
-"
+                print_in_red   "Will skip...: ${SCRIPT_GROUPS[$group]}\n"
             fi
         done
-
+        
         # Confirmation
         local confirm_answer=""
-        vared -p $'
- >> Proceed with installation? (y/n): ' confirm_answer
-
+        vared -p $'\n\n >> Proceed with installation? (y/n): ' confirm_answer
+        
         if [[ ! "$confirm_answer" =~ ^[Yy]$ ]]; then
-            print_in_red "
-** Installation cancelled by user!!
-"
+            print_in_red "\n\n** Installation cancelled by user!!\n\n"
             exit 0
         fi
     else
-        print_in_green "
-Installing complete toolset (all groups).
-"
+        print_in_green "\n\nInstalling complete toolset (all groups).\n\n"
     fi
 }
 
-# Main function
+# Function to update configuration
+update_configuration() {
+    local update_config=""
+    
+    vared -p $'Would you like to update this configuration? (y/n): ' update_config
+    
+    if [[ "$update_config" =~ ^[Yy]$ ]]; then
+        print_in_yellow "\nEnter new values (or press Enter to keep current value):\n"
+        
+        # Update hostname
+        local new_hostname=""
+        vared -p $'Hostname ['"$HOSTNAME"$']: ' new_hostname
+        
+        if [[ -n "$new_hostname" ]]; then
+            HOSTNAME="$new_hostname"
+        fi
+        
+        # Update username
+        local new_username=""
+        vared -p $'Username ['"$USERNAME"$']: ' new_username
+        
+        if [[ -n "$new_username" ]]; then
+            USERNAME="$new_username"
+        fi
+        
+        # Update email
+        local new_email=""
+        vared -p $'Email ['"$EMAIL"$']: ' new_email
+        
+        if [[ -n "$new_email" ]]; then
+            EMAIL="$new_email"
+        fi
+        
+        # Update directory
+        local new_directory=""
+        vared -p $'Directory ['"$DIRECTORY"$']: ' new_directory
+        
+        if [[ -n "$new_directory" ]]; then
+            DIRECTORY="$new_directory"
+        fi
+        
+        # Display updated configuration
+        print_in_green "\n >> Updated configuration:\n"
+        print_in_green "---------------------------------------------------------------\n"
+        print_in_green "Hostname: $HOSTNAME\n"
+        print_in_green "Username : $USERNAME\n"
+        print_in_green "Email    : $EMAIL\n"
+        print_in_green "Directory: $DIRECTORY\n"
+        print_in_green "---------------------------------------------------------------\n"
+    else
+        print_in_yellow "Continuing with current configuration.\n"
+    fi
+}
+
+# ----------------------------------------------------------------------
+# | Main                                                                |
+# ----------------------------------------------------------------------
+
 main() {
+    # Ensure that the following actions
+    # are made relative to this file's path.
+    
     clear
+    
+    cd "$(dirname "${BASH_SOURCE[0]}")" \
+        || exit 1
 
-    # Display banner
-    print_in_yellow "
- >> Welcome to ARVOS.AI Jarvis Toolset 25H1 Edition for Linux
-"
-    print_in_yellow "Copyright (c) 2025 ARVOS.AI. All rights reserved.
-"
-
-    # Ask for sudo password upfront
-    print_in_purple "
- >> Requesting administrator privileges...
-"
+    # Load utils
+    source "./utils.zsh"
+    # Install figlet for banner display
+    install_figlet
+    
+    # Display welcome banner
+    display_banner
+    
+    # Ask for sudo password upfront and keep sudo credentials alive
+    print_in_purple "\n >> Requesting administrator privileges...\n\n"
     ask_for_sudo
 
-    # Display configuration
-    print_in_green "
- >> Starting Jarvis Toolset with the following configuration:
-"
-    print_in_green "---------------------------------------------------------------
-"
-    print_in_green "Hostname : $HOSTNAME
-"
-    print_in_green "Username : $USERNAME
-"
-    print_in_green "Email    : $EMAIL
-"
-    print_in_green "Directory: $DIRECTORY
-"
-    print_in_green "Package Manager: $JARVIS_PACKAGE_MANAGER
-"
-    print_in_green "---------------------------------------------------------------
-"
+    # Create a sudo timestamp directory with appropriate permissions
+    setup_sudo_timestamp_dir() {
+        local sudo_timestamp_dir="/var/run/sudo/${USER}"
+        
+        # Create the timestamp directory if it doesn't exist
+        if [ ! -d "$sudo_timestamp_dir" ]; then
+            sudo mkdir -p "$sudo_timestamp_dir" 2>/dev/null
+            sudo chmod 700 "$sudo_timestamp_dir" 2>/dev/null
+        fi
+        
+        # Set the sudo timeout to 2 hours (7200 seconds)
+        sudo sh -c "echo 'Defaults:${USER} timestamp_timeout=7200' > /etc/sudoers.d/jarvis_timeout"
+        sudo chmod 440 /etc/sudoers.d/jarvis_timeout
+        
+        # Export the SUDO_REQUESTED variable to child processes
+        export SUDO_REQUESTED=true
+    }
 
-    # Install system prerequisites
-    install_system_packages
-    install_wezterm
-    install_oh_my_zsh
-    install_powerlevel10k
-    install_zsh_plugins
+    # Set up the sudo timestamp directory
+    setup_sudo_timestamp_dir
 
-    # Configure shell and terminal
-    configure_zsh
-    configure_wezterm
-    set_zsh_default
+    # Display information about what's happening
+    print_in_green "\n >> Starting Jarvis Toolset with the following configuration:\n"
+    print_in_green "---------------------------------------------------------------\n"
+    print_in_green "Hostname : $HOSTNAME\n"
+    print_in_green "Username : $USERNAME\n"
+    print_in_green "Email    : $EMAIL\n"
+    print_in_green "Directory: $DIRECTORY\n"
+    print_in_green "---------------------------------------------------------------\n"
+    
+    # Ask if user wants to update configuration
+    update_configuration
+    
+    # Ensure the script is run on macOS
+    verify_os || exit 1
 
+    # Install Git if not already installed
+    install_git
+
+    # Initialize SELECTED_GROUPS as a global associative array
+    typeset -gA SELECTED_GROUPS
+    # Default: all groups are selected
+    for group in ${(k)SCRIPT_GROUPS}; do
+        SELECTED_GROUPS[$group]="true"
+    done
+    
     # Interactive menu to select script groups
     select_script_groups
-
+    
     # Export the SELECTED_GROUPS associative array
+    # This needs to be done before sourcing any scripts that use it
     export SELECTED_GROUPS
 
     # Create directories
-    create_directories
+    source "${SCRIPT_DIR}/create_directories.zsh"
+    
+    # Create local config files
+    source "${SCRIPT_DIR}/create_local_config_files.zsh"
 
-    # Install everything based on selected groups
-    source "${JARVIS_DIR}/linux/install/main.zsh" \
+    # Install everything
+    source "${SCRIPT_DIR}/install/macos/main.zsh" \
         "$HOSTNAME" \
         "$USERNAME" \
         "$EMAIL" \
         "$DIRECTORY"
 
-    # Run PowerLevel10k configuration
-    run_p10k_configure
-
-    print_in_purple "
- >> Setup completed! Please log out and log back in for Zsh to become the default shell.
-"
-    print_in_yellow "Alternatively, you can run 'exec zsh' to switch to Zsh immediately.
-"
+    print_in_purple "\n >> Setup completed! Please restart your terminal.\n\n"
 }
 
 main "$@"

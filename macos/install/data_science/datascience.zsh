@@ -20,7 +20,7 @@ print_result $? "Creating Data Science virtual environment"
 pip_install_in_env() {
     local -r PACKAGE_READABLE_NAME="$1"
     local -r PACKAGE="$2"
-    
+
     PYENV_VERSION=$DATASCIENCE_ENV pip install $PACKAGE -U &>/dev/null
     print_result $? "$PACKAGE_READABLE_NAME"
 }
@@ -54,7 +54,7 @@ pip_install_in_env "LightGBM" "lightgbm"
 
 # Create activation script for the data science environment
 DIRECTORY="${SCRIPT_DIR}/../../.."
-ACTIVATE_SCRIPT="${DIRECTORY}/scripts/activate_datascience.sh"
+ACTIVATE_SCRIPT="${DIRECTORY}/macos/scripts/activate_datascience.sh"
 mkdir -p "$(dirname "$ACTIVATE_SCRIPT")"
 
 cat > "$ACTIVATE_SCRIPT" << EOL
@@ -65,10 +65,10 @@ cat > "$ACTIVATE_SCRIPT" << EOL
 if command -v pyenv 1>/dev/null 2>&1; then
     eval "\$(pyenv init -)"
     eval "\$(pyenv virtualenv-init -)"
-    
+
     # Activate the datascience environment
     pyenv activate datascience
-    
+
     echo "Data Science environment activated!"
     echo "This environment includes: Jupyter, Pandas, NumPy, Matplotlib, TensorFlow, PyTorch, etc."
 else
@@ -83,5 +83,5 @@ print_result $? "Creating Data Science activation script"
 print_in_yellow "
   To activate the Data Science environment, run:
 "
-print_in_yellow "  source ${DIRECTORY}/scripts/activate_datascience.sh
+print_in_yellow "  source ${DIRECTORY}/macos/scripts/activate_datascience.sh
 "
