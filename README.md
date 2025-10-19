@@ -139,33 +139,29 @@ dotfiles/
 │   ├── configs/
 │   │   ├── shell/             # Generic shell configurations
 │   │   └── terminal/          # Generic terminal configurations
-│   ├── scripts/
-│   │   ├── os/                # Generic OS scripts
-│   │   └── shell/             # Generic shell scripts
+│   ├── scripts/               # Generic shell scripts
+│   ├── os/                    # Generic OS scripts
 │   └── install/               # Generic installation scripts
 ├── macos/                     # macOS-specific configurations
 │   ├── configs/
 │   │   ├── shell/             # macOS shell configurations
 │   │   └── terminal/          # macOS terminal configurations
-│   ├── scripts/
-│   │   ├── os/                # macOS OS scripts
-│   │   └── shell/             # macOS shell scripts
+│   ├── scripts/               # macOS shell scripts
+│   ├── os/                    # macOS OS scripts
 │   └── install/               # macOS installation scripts
 ├── linux/                     # Linux-specific configurations
 │   ├── configs/
 │   │   ├── shell/             # Linux shell configurations
 │   │   └── terminal/          # Linux terminal configurations
-│   ├── scripts/
-│   │   ├── os/                # Linux OS scripts
-│   │   └── shell/             # Linux shell scripts
+│   ├── scripts/               # Linux shell scripts
+│   ├── os/                    # Linux OS scripts
 │   └── install/               # Linux installation scripts
 ├── windows/                   # Windows-specific configurations
 │   ├── configs/
 │   │   ├── shell/             # Windows shell configurations
 │   │   └── terminal/          # Windows terminal configurations
-│   ├── scripts/
-│   │   ├── os/                # Windows OS scripts
-│   │   └── shell/             # Windows shell scripts
+│   ├── scripts/               # Windows shell scripts
+│   ├── os/                    # Windows OS scripts
 │   └── install/               # Windows installation scripts
 └── logs/                      # Installation and runtime logs
 ```

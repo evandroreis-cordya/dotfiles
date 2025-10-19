@@ -7,9 +7,9 @@ SCRIPT_DIR=${0:a:h}
 DOTFILES_DIR="$HOME/dotfiles"
 
 # Define paths to scripts
-UTILS_SCRIPT="${DOTFILES_DIR}/generic/scripts/os/utils.zsh"
-LOGGING_SCRIPT="${DOTFILES_DIR}/generic/scripts/os/logging.zsh"
-SETUP_SCRIPT="${DOTFILES_DIR}/generic/scripts/os/setup.zsh"
+UTILS_SCRIPT="${DOTFILES_DIR}/generic/os/utils.zsh"
+LOGGING_SCRIPT="${DOTFILES_DIR}/generic/os/logging.zsh"
+SETUP_SCRIPT="${DOTFILES_DIR}/generic/os/setup.zsh"
 
 # Define the logs directory
 LOGS_DIR="$HOME/dotfiles/logs"
@@ -257,7 +257,7 @@ log_info "  Directory: $DIRECTORY"
 
 
 # Path to the setup script
-SETUP_SCRIPT="${DOTFILES_DIR}/generic/scripts/os/setup.zsh"
+SETUP_SCRIPT="${DOTFILES_DIR}/generic/os/setup.zsh"
 
 # Check if the setup script exists
 if [[ ! -f "$SETUP_SCRIPT" ]]; then
