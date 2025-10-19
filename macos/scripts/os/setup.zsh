@@ -18,7 +18,7 @@ typeset skipQuestions=false
 # Default values for user information
 HOSTNAME=${1:-$(hostname)}
 USERNAME=${2:-$(whoami)}
-EMAIL=${3:-"evandro.reis@arvos.ai"}
+EMAIL=${3:-"evandro.reis@cordya.ai"}
 DIRECTORY=${4:-"$HOME/.jarvistoolset"}
 
 # Export variables for use in other scripts
@@ -92,7 +92,7 @@ download() {
         fi
         return $?
     fi
-    
+
     if type log_error &>/dev/null; then
         log_error "Neither curl nor wget is available for downloading"
     fi
@@ -136,32 +136,32 @@ verify_os() {
 install_homebrew() {
     if ! (( $+commands[brew] )); then
         print_in_purple "\n >> Installing Homebrew\n\n"
-        
+
         if type log_info &>/dev/null; then
             log_info "Installing Homebrew"
         fi
-        
+
         # Install Homebrew using the official script
         if type execute_with_log &>/dev/null; then
             execute_with_log "/bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\"" "Installing Homebrew"
         else
             /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" &> /dev/null
         fi
-        
+
         # Add Homebrew to PATH for Apple Silicon Macs
         if [[ "$(uname -m)" = "arm64" ]]; then
             if ! grep -q 'eval "$(/opt/homebrew/bin/brew shellenv)"' "$HOME/.zprofile"; then
                 echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> "$HOME/.zprofile"
                 eval "$(/opt/homebrew/bin/brew shellenv)"
-                
+
                 if type log_info &>/dev/null; then
                     log_info "Added Homebrew to PATH for Apple Silicon Mac"
                 fi
             fi
         fi
-        
+
         print_result $? "Homebrew"
-        
+
         if type log_info &>/dev/null; then
             if [ $? -eq 0 ]; then
                 log_success "Homebrew installed successfully"
@@ -174,7 +174,7 @@ install_homebrew() {
             log_info "Homebrew is already installed"
         fi
     fi
-    
+
     return 0
 }
 
@@ -183,17 +183,17 @@ install_figlet() {
         if type log_info &>/dev/null; then
             log_info "Installing figlet"
         fi
-        
+
         # Install Homebrew if not already installed (silently)
         install_homebrew > /dev/null 2>&1
-        
+
         # Install figlet using Homebrew (silently)
         if type execute_with_log &>/dev/null; then
             execute_with_log "brew install figlet" "Installing figlet"
         else
             brew install figlet > /dev/null 2>&1
         fi
-        
+
         if type log_info &>/dev/null; then
             if (( $+commands[figlet] )); then
                 log_success "figlet installed successfully"
@@ -206,37 +206,37 @@ install_figlet() {
             log_info "figlet is already installed"
         fi
     fi
-    
+
     return 0
 }
 
 install_git() {
     if ! (( $+commands[git] )); then
         print_in_purple "\n >> Installing Git\n\n"
-        
+
         if type log_info &>/dev/null; then
             log_info "Installing Git"
         fi
-        
+
         # Install Homebrew if not already installed
         install_homebrew
-        
+
         # Install Git using Homebrew
         if type execute_with_log &>/dev/null; then
             execute_with_log "brew install git" "Installing Git"
         else
             brew install git &> /dev/null
         fi
-        
+
         print_result $? "Git"
-        
+
         # Make Git available in the current shell session
         if [[ "$(uname -m)" = "arm64" ]]; then
             export PATH="/opt/homebrew/bin:$PATH"
         else
             export PATH="/usr/local/bin:$PATH"
         fi
-        
+
         # Verify Git is now available
         if (( $+commands[git] )); then
             print_success "Git is now available"
@@ -255,7 +255,7 @@ install_git() {
             log_info "Git is already installed"
         fi
     fi
-    
+
     return 0
 }
 
@@ -264,14 +264,14 @@ display_banner() {
         print_in_yellow "$(figlet -f ogre -c 'Jarvis Toolset')\n"
         print_in_yellow "Welcome to ARVOS.AI Jarvis Toolset 25H1 Edition, the complete Mac OS tools and apps installer for AI and Vibe Coders!\n"
         print_in_yellow "Copyright (c) 2025 ARVOS.AI. All rights reserved.\n"
-        
+
         if type log_info &>/dev/null; then
             log_info "Displayed Jarvis Toolset banner with figlet"
         fi
     else
         print_in_yellow "\n >> Welcome to ARVOS.AI Jarvis Toolset 25H1 Edition, the complete Mac OS tools and apps installer for AI and Vibe Coders!\n"
         print_in_yellow "Copyright (c) 2025 ARVOS.AI. All rights reserved.\n"
-        
+
         if type log_info &>/dev/null; then
             log_info "Displayed Jarvis Toolset banner (figlet not available)"
         fi
@@ -281,35 +281,35 @@ display_banner() {
 # Interactive menu to select script groups
 select_script_groups() {
     local answer
-    
+
     print_in_purple "\n >> Installation Options\n\n"
     print_in_yellow "Would you like to install the complete toolset or select specific groups?\n\n"
     print_in_yellow "1) Install complete toolset (all groups)\n"
     print_in_yellow "2) Select specific groups to install\n\n"
-    
+
     answer=""
     vared -p $'Enter your choice (1/2): ' answer
-    
+
     if [[ "$answer" == "2" ]]; then
         # Reset all groups to false
         for group in ${(k)SCRIPT_GROUPS}; do
             SELECTED_GROUPS[$group]="false"
         done
-        
+
         print_in_purple "\n >> Available groups to install\n\n"
 
         for group in ${(k)SCRIPT_GROUPS}; do
             local group_answer=""
-            
+
             vared -p $'Install '"${SCRIPT_GROUPS[$group]}"$'? (y/n): ' group_answer
-            
+
             if [[ "$group_answer" =~ ^[Yy]$ ]]; then
                 SELECTED_GROUPS[$group]="true"
             else
                 SELECTED_GROUPS[$group]="false"
             fi
         done
-        
+
         # Summary of selected groups
         print_in_purple "\n >> Installation Summary\n\n"
         for group in ${(k)SCRIPT_GROUPS}; do
@@ -319,11 +319,11 @@ select_script_groups() {
                 print_in_red   "Will skip...: ${SCRIPT_GROUPS[$group]}\n"
             fi
         done
-        
+
         # Confirmation
         local confirm_answer=""
         vared -p $'\n\n >> Proceed with installation? (y/n): ' confirm_answer
-        
+
         if [[ ! "$confirm_answer" =~ ^[Yy]$ ]]; then
             print_in_red "\n\n** Installation cancelled by user!!\n\n"
             exit 0
@@ -336,44 +336,44 @@ select_script_groups() {
 # Function to update configuration
 update_configuration() {
     local update_config=""
-    
+
     vared -p $'Would you like to update this configuration? (y/n): ' update_config
-    
+
     if [[ "$update_config" =~ ^[Yy]$ ]]; then
         print_in_yellow "\nEnter new values (or press Enter to keep current value):\n"
-        
+
         # Update hostname
         local new_hostname=""
         vared -p $'Hostname ['"$HOSTNAME"$']: ' new_hostname
-        
+
         if [[ -n "$new_hostname" ]]; then
             HOSTNAME="$new_hostname"
         fi
-        
+
         # Update username
         local new_username=""
         vared -p $'Username ['"$USERNAME"$']: ' new_username
-        
+
         if [[ -n "$new_username" ]]; then
             USERNAME="$new_username"
         fi
-        
+
         # Update email
         local new_email=""
         vared -p $'Email ['"$EMAIL"$']: ' new_email
-        
+
         if [[ -n "$new_email" ]]; then
             EMAIL="$new_email"
         fi
-        
+
         # Update directory
         local new_directory=""
         vared -p $'Directory ['"$DIRECTORY"$']: ' new_directory
-        
+
         if [[ -n "$new_directory" ]]; then
             DIRECTORY="$new_directory"
         fi
-        
+
         # Display updated configuration
         print_in_green "\n >> Updated configuration:\n"
         print_in_green "---------------------------------------------------------------\n"
@@ -394,9 +394,9 @@ update_configuration() {
 main() {
     # Ensure that the following actions
     # are made relative to this file's path.
-    
+
     clear
-    
+
     cd "$(dirname "${BASH_SOURCE[0]}")" \
         || exit 1
 
@@ -404,10 +404,10 @@ main() {
     source "./utils.zsh"
     # Install figlet for banner display
     install_figlet
-    
+
     # Display welcome banner
     display_banner
-    
+
     # Ask for sudo password upfront and keep sudo credentials alive
     print_in_purple "\n >> Requesting administrator privileges...\n\n"
     ask_for_sudo
@@ -415,17 +415,17 @@ main() {
     # Create a sudo timestamp directory with appropriate permissions
     setup_sudo_timestamp_dir() {
         local sudo_timestamp_dir="/var/run/sudo/${USER}"
-        
+
         # Create the timestamp directory if it doesn't exist
         if [ ! -d "$sudo_timestamp_dir" ]; then
             sudo mkdir -p "$sudo_timestamp_dir" 2>/dev/null
             sudo chmod 700 "$sudo_timestamp_dir" 2>/dev/null
         fi
-        
+
         # Set the sudo timeout to 2 hours (7200 seconds)
         sudo sh -c "echo 'Defaults:${USER} timestamp_timeout=7200' > /etc/sudoers.d/jarvis_timeout"
         sudo chmod 440 /etc/sudoers.d/jarvis_timeout
-        
+
         # Export the SUDO_REQUESTED variable to child processes
         export SUDO_REQUESTED=true
     }
@@ -441,10 +441,10 @@ main() {
     print_in_green "Email    : $EMAIL\n"
     print_in_green "Directory: $DIRECTORY\n"
     print_in_green "---------------------------------------------------------------\n"
-    
+
     # Ask if user wants to update configuration
     update_configuration
-    
+
     # Ensure the script is run on macOS
     verify_os || exit 1
 
@@ -457,17 +457,17 @@ main() {
     for group in ${(k)SCRIPT_GROUPS}; do
         SELECTED_GROUPS[$group]="true"
     done
-    
+
     # Interactive menu to select script groups
     select_script_groups
-    
+
     # Export the SELECTED_GROUPS associative array
     # This needs to be done before sourcing any scripts that use it
     export SELECTED_GROUPS
 
     # Create directories
     source "${SCRIPT_DIR}/create_directories.zsh"
-    
+
     # Create local config files
     source "${SCRIPT_DIR}/create_local_config_files.zsh"
 

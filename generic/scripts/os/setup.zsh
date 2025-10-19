@@ -15,7 +15,7 @@ source "${SCRIPT_DIR}/logging.zsh" 2>/dev/null || true
 # Default values for user information
 HOSTNAME=${1:-$(hostname)}
 USERNAME=${2:-$(whoami)}
-EMAIL=${3:-"evandro.reis@arvos.ai"}
+EMAIL=${3:-"evandro.reis@cordya.ai"}
 DIRECTORY=${4:-"$HOME/.jarvistoolset"}
 
 # Export variables for use in other scripts

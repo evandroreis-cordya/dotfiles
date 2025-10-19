@@ -3,7 +3,7 @@
 param(
     [string]$Hostname = $env:COMPUTERNAME,
     [string]$Username = $env:USERNAME,
-    [string]$Email = "evandro.reis@arvos.ai",
+    [string]$Email = "evandro.reis@cordya.ai",
     [string]$Directory = "$env:USERPROFILE\.jarvistoolset"
 )
 
