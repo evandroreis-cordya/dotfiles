@@ -41,7 +41,7 @@ call_platform_setup() {
 
     case "$platform" in
         macos)
-            setup_script="${JARVIS_DIR}/macos/scripts/os/setup.zsh"
+            setup_script="${JARVIS_DIR}/macos/scripts/setup.zsh"
             ;;
         linux)
             setup_script="${JARVIS_DIR}/linux/scripts/os/setup.zsh"

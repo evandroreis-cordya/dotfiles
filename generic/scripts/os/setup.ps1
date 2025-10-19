@@ -31,7 +31,7 @@ function Invoke-PlatformSetup {
     param([string]$Platform)
 
     $setupScript = switch ($Platform) {
-        "macos" { "$JarvisDir\macos\scripts\os\setup.zsh" }
+        "macos" { "$JarvisDir\macos\scripts\setup.zsh" }
         "linux" { "$JarvisDir\linux\scripts\os\setup.zsh" }
         "windows" { "$JarvisDir\windows\scripts\os\setup.ps1" }
         default {
