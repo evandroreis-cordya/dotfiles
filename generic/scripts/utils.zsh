@@ -73,58 +73,11 @@ get_arch() {
     esac
 }
 
-# Function to create directories
-create_directories() {
-    local dirs=(
-        "$HOME/.config"
-        "$HOME/.local/bin"
-        "$HOME/.local/share"
-        "$HOME/.cache"
-        "$HOME/.logs"
-    )
+# DEPRECATED: create_directories() function removed - use GNU Stow instead
 
-    for dir in "${dirs[@]}"; do
-        if [[ ! -d "$dir" ]]; then
-            mkdir -p "$dir"
-            if type log_info &>/dev/null; then
-                log_info "Created directory: $dir"
-            fi
-        fi
-    done
-}
+# DEPRECATED: backup_file() function removed - GNU Stow handles this automatically
 
-# Function to backup existing files
-backup_file() {
-    local file="$1"
-    local backup_dir="$HOME/dotfiles/backups"
-
-    if [[ -f "$file" ]]; then
-        mkdir -p "$backup_dir"
-        local backup_file="${backup_dir}/$(basename "$file").$(date +%Y%m%d_%H%M%S).bak"
-        cp "$file" "$backup_file"
-        if type log_info &>/dev/null; then
-            log_info "Backed up $file to $backup_file"
-        fi
-    fi
-}
-
-# Function to create symbolic link
-create_symlink() {
-    local source="$1"
-    local target="$2"
-
-    if [[ -L "$target" ]]; then
-        rm "$target"
-    elif [[ -f "$target" ]]; then
-        backup_file "$target"
-        rm "$target"
-    fi
-
-    ln -s "$source" "$target"
-    if type log_info &>/dev/null; then
-        log_info "Created symbolic link: $target -> $source"
-    fi
-}
+# DEPRECATED: create_symlink() function removed - use GNU Stow instead
 
 # Function to install package using platform-specific package manager
 install_package() {
@@ -363,4 +316,319 @@ get_system_info() {
             echo "Windows Version: $(systeminfo | findstr /B /C:"OS Name" /C:"OS Version")"
             ;;
     esac
+}
+
+# ----------------------------------------------------------------------
+# | GNU Stow Functions                                                  |
+# ----------------------------------------------------------------------
+
+# Function to check if stow is installed
+stow_installed() {
+    command_exists stow
+}
+
+# Function to install stow
+install_stow() {
+    local os="${DOTFILES_OS:-$(get_os)}"
+
+    if stow_installed; then
+        if type log_info &>/dev/null; then
+            log_info "GNU Stow is already installed"
+        fi
+        return 0
+    fi
+
+    print_in_purple "\n >> Installing GNU Stow\n\n"
+
+    if type log_info &>/dev/null; then
+        log_info "Installing GNU Stow"
+    fi
+
+    case "$os" in
+        macos)
+            if command_exists brew; then
+                if type execute_with_log &>/dev/null; then
+                    execute_with_log "brew install stow" "Installing GNU Stow via Homebrew"
+                else
+                    brew install stow
+                fi
+            else
+                print_error "Homebrew not found. Please install Homebrew first."
+                return 1
+            fi
+            ;;
+        linux)
+            local package_manager="${DOTFILES_PACKAGE_MANAGER:-$(detect_package_manager linux)}"
+            case "$package_manager" in
+                apt)
+                    if type execute_with_log &>/dev/null; then
+                        execute_with_log "sudo apt update && sudo apt install -y stow" "Installing GNU Stow via apt"
+                    else
+                        sudo apt update && sudo apt install -y stow
+                    fi
+                    ;;
+                yum)
+                    if type execute_with_log &>/dev/null; then
+                        execute_with_log "sudo yum install -y stow" "Installing GNU Stow via yum"
+                    else
+                        sudo yum install -y stow
+                    fi
+                    ;;
+                dnf)
+                    if type execute_with_log &>/dev/null; then
+                        execute_with_log "sudo dnf install -y stow" "Installing GNU Stow via dnf"
+                    else
+                        sudo dnf install -y stow
+                    fi
+                    ;;
+                pacman)
+                    if type execute_with_log &>/dev/null; then
+                        execute_with_log "sudo pacman -S --noconfirm stow" "Installing GNU Stow via pacman"
+                    else
+                        sudo pacman -S --noconfirm stow
+                    fi
+                    ;;
+                zypper)
+                    if type execute_with_log &>/dev/null; then
+                        execute_with_log "sudo zypper install -y stow" "Installing GNU Stow via zypper"
+                    else
+                        sudo zypper install -y stow
+                    fi
+                    ;;
+                *)
+                    print_error "Unsupported package manager: $package_manager"
+                    return 1
+                    ;;
+            esac
+            ;;
+        *)
+            print_error "Unsupported operating system: $os"
+            return 1
+            ;;
+    esac
+
+    if stow_installed; then
+        print_success "GNU Stow installed successfully"
+        if type log_success &>/dev/null; then
+            log_success "GNU Stow installed successfully"
+        fi
+        return 0
+    else
+        print_error "Failed to install GNU Stow"
+        if type log_error &>/dev/null; then
+            log_error "Failed to install GNU Stow"
+        fi
+        return 1
+    fi
+}
+
+# Function to simulate stow operations
+stow_simulate() {
+    local package="$1"
+    local stow_dir="${2:-$HOME/dotfiles/stow}"
+    local target_dir="${3:-$HOME}"
+
+    if ! stow_installed; then
+        print_error "GNU Stow is not installed"
+        return 1
+    fi
+
+    if type log_info &>/dev/null; then
+        log_info "Simulating stow operation for package: $package"
+    fi
+
+    stow --simulate --verbose --dir="$stow_dir" --target="$target_dir" "$package"
+}
+
+# Function to install stow package
+stow_install() {
+    local package="$1"
+    local stow_dir="${2:-$HOME/dotfiles/stow}"
+    local target_dir="${3:-$HOME}"
+    local force="${4:-false}"
+
+    if ! stow_installed; then
+        print_error "GNU Stow is not installed"
+        return 1
+    fi
+
+    if [[ ! -d "$stow_dir/$package" ]]; then
+        print_error "Stow package '$package' not found in $stow_dir"
+        if type log_error &>/dev/null; then
+            log_error "Stow package '$package' not found in $stow_dir"
+        fi
+        return 1
+    fi
+
+    if type log_info &>/dev/null; then
+        log_info "Installing stow package: $package"
+    fi
+
+    local stow_cmd="stow --dir=\"$stow_dir\" --target=\"$target_dir\""
+
+    if [[ "$force" == "true" ]]; then
+        stow_cmd="$stow_cmd --adopt"
+    fi
+
+    stow_cmd="$stow_cmd \"$package\""
+
+    if type execute_with_log &>/dev/null; then
+        execute_with_log "$stow_cmd" "Installing stow package: $package"
+    else
+        eval "$stow_cmd"
+    fi
+
+    local exit_code=$?
+
+    if [[ $exit_code -eq 0 ]]; then
+        print_success "Stow package '$package' installed successfully"
+        if type log_success &>/dev/null; then
+            log_success "Stow package '$package' installed successfully"
+        fi
+    else
+        print_error "Failed to install stow package '$package'"
+        if type log_error &>/dev/null; then
+            log_error "Failed to install stow package '$package'"
+        fi
+    fi
+
+    return $exit_code
+}
+
+# Function to remove stow package
+stow_remove() {
+    local package="$1"
+    local stow_dir="${2:-$HOME/dotfiles/stow}"
+    local target_dir="${3:-$HOME}"
+
+    if ! stow_installed; then
+        print_error "GNU Stow is not installed"
+        return 1
+    fi
+
+    if type log_info &>/dev/null; then
+        log_info "Removing stow package: $package"
+    fi
+
+    local stow_cmd="stow --delete --dir=\"$stow_dir\" --target=\"$target_dir\" \"$package\""
+
+    if type execute_with_log &>/dev/null; then
+        execute_with_log "$stow_cmd" "Removing stow package: $package"
+    else
+        eval "$stow_cmd"
+    fi
+
+    local exit_code=$?
+
+    if [[ $exit_code -eq 0 ]]; then
+        print_success "Stow package '$package' removed successfully"
+        if type log_success &>/dev/null; then
+            log_success "Stow package '$package' removed successfully"
+        fi
+    else
+        print_error "Failed to remove stow package '$package'"
+        if type log_error &>/dev/null; then
+            log_error "Failed to remove stow package '$package'"
+        fi
+    fi
+
+    return $exit_code
+}
+
+# Function to restore stow package
+stow_restore() {
+    local package="$1"
+    local stow_dir="${2:-$HOME/dotfiles/stow}"
+    local target_dir="${3:-$HOME}"
+
+    if ! stow_installed; then
+        print_error "GNU Stow is not installed"
+        return 1
+    fi
+
+    if type log_info &>/dev/null; then
+        log_info "Restoring stow package: $package"
+    fi
+
+    local stow_cmd="stow --restow --dir=\"$stow_dir\" --target=\"$target_dir\" \"$package\""
+
+    if type execute_with_log &>/dev/null; then
+        execute_with_log "$stow_cmd" "Restoring stow package: $package"
+    else
+        eval "$stow_cmd"
+    fi
+
+    local exit_code=$?
+
+    if [[ $exit_code -eq 0 ]]; then
+        print_success "Stow package '$package' restored successfully"
+        if type log_success &>/dev/null; then
+            log_success "Stow package '$package' restored successfully"
+        fi
+    else
+        print_error "Failed to restore stow package '$package'"
+        if type log_error &>/dev/null; then
+            log_error "Failed to restore stow package '$package'"
+        fi
+    fi
+
+    return $exit_code
+}
+
+# Function to setup stow packages
+setup_stow_packages() {
+    local stow_dir="${1:-$HOME/dotfiles/stow}"
+    local target_dir="${2:-$HOME}"
+    local packages=("${@:3}")
+
+    if [[ ${#packages[@]} -eq 0 ]]; then
+        # Default packages
+        packages=(shell git nvim ssh gnupg config)
+    fi
+
+    print_in_purple "\n >> Setting up GNU Stow packages\n\n"
+
+    if type log_info &>/dev/null; then
+        log_info "Setting up stow packages: ${packages[*]}"
+    fi
+
+    # Install stow if not already installed
+    if ! install_stow; then
+        return 1
+    fi
+
+    # Process each package
+    for package in "${packages[@]}"; do
+        if [[ -d "$stow_dir/$package" ]]; then
+            # Simulate first to show what will happen
+            print_in_yellow "Simulating stow operation for package: $package\n"
+            stow_simulate "$package" "$stow_dir" "$target_dir"
+
+            # Ask for confirmation
+            if type ask_for_confirmation &>/dev/null; then
+                ask_for_confirmation "Install stow package '$package'?"
+                if answer_is_yes; then
+                    stow_install "$package" "$stow_dir" "$target_dir"
+                else
+                    print_in_yellow "Skipping package: $package\n"
+                    if type log_info &>/dev/null; then
+                        log_info "Skipped stow package: $package"
+                    fi
+                fi
+            else
+                # Auto-install if no confirmation function available
+                stow_install "$package" "$stow_dir" "$target_dir"
+            fi
+        else
+            print_error "Package '$package' not found in $stow_dir"
+            if type log_error &>/dev/null; then
+                log_error "Package '$package' not found in $stow_dir"
+            fi
+        fi
+    done
+
+    print_success "Stow package setup completed"
+    if type log_success &>/dev/null; then
+        log_success "Stow package setup completed"
+    fi
 }

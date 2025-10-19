@@ -465,14 +465,14 @@ main() {
     # This needs to be done before sourcing any scripts that use it
     export SELECTED_GROUPS
 
-    # Create directories
-    source "${SCRIPT_DIR}/create_directories.zsh"
+    # Setup GNU Stow environment (replaces directory creation and symlinks)
+    source "${SCRIPT_DIR}/stow_setup.zsh"
 
     # Create local config files
     source "${SCRIPT_DIR}/create_local_config_files.zsh"
 
     # Install everything
-    source "${SCRIPT_DIR}/install/macos/main.zsh" \
+    source "${SCRIPT_DIR}/install/linux/main.zsh" \
         "$HOSTNAME" \
         "$USERNAME" \
         "$EMAIL" \

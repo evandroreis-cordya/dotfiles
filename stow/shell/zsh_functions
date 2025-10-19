@@ -1,0 +1,122 @@
+#!/bin/zsh
+
+# Create data URI from a file
+function datauri() {
+    local mimeType=""
+    
+    if [[ -f "$1" ]]; then
+        mimeType=$(file -b --mime-type "$1")
+        
+        if [[ $mimeType == text/* ]]; then
+            mimeType="$mimeType;charset=utf-8"
+        fi
+        
+        printf "data:%s;base64,%s" \
+            "$mimeType" \
+            "$(openssl base64 -in "$1" | tr -d "\n")"
+    else
+        printf "%s is not a file.\n" "$1"
+    fi
+}
+
+# Delete files that match a certain pattern from the current directory
+function delete-files() {
+    local q="${1:-*.DS_Store}"
+    find . -type f -name "$q" -ls -delete
+}
+
+# Get gzip information (gzipped file size + reduction size)
+function gz() {
+    local -i gzippedSize=0
+    local -i originalSize=0
+    
+    if [[ -f "$1" ]]; then
+        if [[ -s "$1" ]]; then
+            originalSize=$(wc -c < "$1")
+            printf "\n original size:   %12s\n" "$(hrfs "$originalSize")"
+            
+            gzippedSize=$(gzip -c "$1" | wc -c)
+            printf " gzipped size:    %12s\n" "$(hrfs "$gzippedSize")"
+            
+            printf " ─────────────────────────────\n"
+            printf " reduction:       %12s [%s%%]\n\n" \
+                "$(hrfs $((originalSize - gzippedSize)))" \
+                "$(printf "%s" "$originalSize $gzippedSize" | \
+                    awk '{ printf "%.1f", 100 - $2 * 100 / $1 }' | \
+                    sed -e "s/0*$//;s/\.$//")"
+        else
+            printf "\"%s\" is empty.\n" "$1"
+        fi
+    else
+        printf "\"%s\" is not a file.\n" "$1"
+    fi
+}
+
+# Human readable file size
+function hrfs() {
+    printf "%s" "$1" |
+    awk '{
+            i = 1;
+            split("B KB MB GB TB PB EB ZB YB WTFB", v);
+            value = $1;
+            
+            if (value + .0 == value) {
+                while (value >= 1024) {
+                    value/=1024;
+                    i++;
+                }
+                
+                if (value == int(value)) {
+                    printf "%d %s", value, v[i]
+                } else {
+                    printf "%.1f %s", value, v[i]
+                }
+            }
+        }' |
+    sed -e ":l" \
+        -e "s/\([0-9]\)\([0-9]\{3\}\)/\1,\2/; t l"
+}
+
+# Create new directories and enter the first one
+function mkd() {
+    if [[ -n "$*" ]]; then
+        mkdir -p "$@"
+        cd "$@" || exit 1
+    fi
+}
+
+# Search history
+function qh() {
+    grep --color=always "$*" "$HISTFILE" | less -RX
+}
+
+# Search for text within the current directory
+function qt() {
+    grep -ir --color=always "$*" --exclude-dir=".git" --exclude-dir="node_modules" . | less -RX
+}
+
+# Zsh-specific functions
+function take() {
+    mkdir -p "$1" && cd "$1"
+}
+
+function extract() {
+    if [[ -f "$1" ]]; then
+        case "$1" in
+            *.tar.bz2)   tar xjf "$1"     ;;
+            *.tar.gz)    tar xzf "$1"     ;;
+            *.bz2)       bunzip2 "$1"     ;;
+            *.rar)       unrar x "$1"     ;;
+            *.gz)        gunzip "$1"      ;;
+            *.tar)       tar xf "$1"      ;;
+            *.tbz2)      tar xjf "$1"     ;;
+            *.tgz)       tar xzf "$1"     ;;
+            *.zip)       unzip "$1"       ;;
+            *.Z)         uncompress "$1"  ;;
+            *.7z)        7z x "$1"        ;;
+            *)          echo "'$1' cannot be extracted via extract()" ;;
+        esac
+    else
+        echo "'$1' is not a valid file"
+    fi
+} 

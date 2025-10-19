@@ -1,0 +1,40 @@
+#!/bin/zsh
+
+# Zsh Variables and Exports
+
+# Make `nano` the default editor
+export EDITOR="nano"
+
+# History settings
+HISTSIZE=10000
+SAVEHIST=10000
+HISTFILE=~/.zsh_history
+
+# Don't add certain commands to the history file
+HISTORY_IGNORE="&:[bf]g:c:clear:history:exit:q:pwd:* --help"
+
+# Prefer US English and use UTF-8 encoding
+export LANG="en_US"
+export LC_ALL="en_US.UTF-8"
+
+# Use custom `less` colors for `man` pages
+export LESS_TERMCAP_md="$(tput bold 2> /dev/null; tput setaf 2 2> /dev/null)"
+export LESS_TERMCAP_me="$(tput sgr0 2> /dev/null)"
+
+# Don't clear the screen after quitting a `man` page
+export MANPAGER="less -X"
+
+# Node REPL history size
+export NODE_REPL_HISTORY_SIZE=10000
+
+# Make Python use UTF-8 encoding
+export PYTHONIOENCODING="UTF-8"
+
+# Zsh specific settings
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_REDUCE_BLANKS
+setopt HIST_VERIFY
+setopt SHARE_HISTORY
+setopt EXTENDED_HISTORY
+setopt APPEND_HISTORY
+setopt INC_APPEND_HISTORY 
