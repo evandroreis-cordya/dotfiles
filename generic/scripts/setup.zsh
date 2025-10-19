@@ -44,10 +44,10 @@ call_platform_setup() {
             setup_script="${DOTFILES_DIR}/macos/scripts/setup.zsh"
             ;;
         linux)
-            setup_script="${DOTFILES_DIR}/linux/os/setup.zsh"
+            setup_script="${DOTFILES_DIR}/linux/scripts/setup.zsh"
             ;;
         windows)
-            setup_script="${DOTFILES_DIR}/windows/os/setup.ps1"
+            setup_script="${DOTFILES_DIR}/windows/scripts/setup.ps1"
             ;;
         *)
             print_error "Unsupported platform: $platform"

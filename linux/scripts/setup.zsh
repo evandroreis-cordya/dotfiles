@@ -9,7 +9,7 @@ source "${SCRIPT_DIR}/logging.zsh" 2>/dev/null || true
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # Repository configuration
-typeset -r GITHUB_REPOSITORY="arvosai/dotfiles"
+typeset -r GITHUB_REPOSITORY="evandroreis-cordya/dotfiles"
 typeset -r DOTFILES_ORIGIN="git@github.com:$GITHUB_REPOSITORY.git"
 
 # Default configuration
