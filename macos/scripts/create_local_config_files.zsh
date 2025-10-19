@@ -28,9 +28,9 @@ create_gitconfig_local() {
 
 [user]
     name = Evandro Paes
-    email = evandro.reis@avos.ai
+    email = evandro.reis@cordya.ai
     # Add your GPG key ID here
-    # signingkey = YOUR_GPG_KEY_ID
+    signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK8qib/hrtdHKhJ/K+E+XQFn7Y7S8z9IE1bm5w1AfuDV
 
 [core]
     excludesfile = ~/.gitignore
@@ -65,7 +65,7 @@ EOL
 
 main() {
     print_in_purple "\n >> Create local config files\n\n"
-    
+
     create_zsh_local
     create_gitconfig_local
 }
