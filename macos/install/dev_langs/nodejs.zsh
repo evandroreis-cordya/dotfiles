@@ -15,32 +15,32 @@ print_in_purple "
 install_nvm() {
     if [ ! -d "$HOME/.nvm" ]; then
         print_info "Installing NVM..."
-        
+
         # Install NVM
         curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
-        
+
         # Source NVM
         export NVM_DIR="$HOME/.nvm"
         [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
         [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-        
+
         print_result $? "NVM installation"
     else
         print_success "NVM is already installed"
-        
+
         # Source NVM
         export NVM_DIR="$HOME/.nvm"
         [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
         [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
     fi
-    
+
     # Ensure NVM is available in this script
     if ! command -v nvm &>/dev/null; then
         print_warning "NVM command not found, attempting to load NVM again..."
         export NVM_DIR="$HOME/.nvm"
         [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
         [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-        
+
         # Check again if NVM is available
         if ! command -v nvm &>/dev/null; then
             print_error "Failed to load NVM. Please restart your terminal and try again."
@@ -53,13 +53,13 @@ install_nvm() {
 install_nodejs() {
     # Install the LTS version of Node.js
     print_info "Installing Node.js LTS..."
-    
+
     nvm install --lts
     nvm use --lts
     nvm alias default node
-    
+
     print_result $? "Node.js LTS installation"
-    
+
     # Display Node.js and npm versions
     node --version
     npm --version
@@ -83,10 +83,10 @@ install_npm_packages() {
    Installing Global npm Packages
 
 "
-    
+
     # Update npm
     execute "npm install -g npm@latest" "npm update"
-    
+
     # Install essential global packages
     npm_install "Yarn" "yarn"
     npm_install "pnpm" "pnpm"
@@ -103,7 +103,7 @@ install_npm_packages() {
     npm_install "npm-check" "npm-check"
     npm_install "depcheck" "depcheck"
     npm_install "madge" "madge"
-    
+
     # Framework CLIs
     npm_install "create-react-app" "create-react-app"
     npm_install "create-next-app" "create-next-app"
@@ -117,12 +117,12 @@ install_npm_packages() {
 
 # Create modular configuration file for Node.js
 create_nodejs_config() {
-    local config_dir="$HOME/.jarvistoolset/macos/configs/shell/zsh_configs"
+    local config_dir="$HOME/dotfiles/macos/configs/shell/zsh_configs"
     local config_file="$config_dir/nodejs.zsh"
-    
+
     # Create directory if it doesn't exist
     mkdir -p "$config_dir"
-    
+
     # Create Node.js configuration file
     cat > "$config_file" << 'EOL'
 #!/bin/zsh
@@ -205,35 +205,35 @@ alias paud='pnpm audit'
 create-node-project() {
     local project_name=$1
     local template=${2:-"basic"}
-    
+
     if [ -z "$project_name" ]; then
         echo "Error: Project name is required."
         echo "Usage: create-node-project <project-name> [template]"
         echo "Available templates: basic, express, typescript, ts-express"
         return 1
     fi
-    
+
     mkdir -p "$project_name"
     cd "$project_name" || return
-    
+
     case "$template" in
         "basic")
             # Initialize npm
             npm init -y
-            
+
             # Create basic structure
             mkdir -p src
             touch src/index.js
-            
+
             # Add start script
             sed -i '' 's/"test": "echo \"Error: no test specified\" && exit 1"/"test": "echo \"Error: no test specified\" && exit 1",
     "start": "node src\/index.js"/' package.json
-            
+
             # Create basic index.js
             cat > src/index.js << 'EOF'
 console.log('Hello, Node.js!');
 EOF
-            
+
             # Create README
             cat > README.md << 'EOF'
 # Node.js Project
@@ -245,7 +245,7 @@ A basic Node.js project.
 1. Install dependencies: `npm install`
 2. Run the project: `npm start`
 EOF
-            
+
             # Create .gitignore
             cat > .gitignore << 'EOF'
 # Logs
@@ -281,24 +281,24 @@ build/
 *.sw?
 EOF
             ;;
-            
+
         "express")
             # Initialize npm
             npm init -y
-            
+
             # Install dependencies
             npm install express
             npm install --save-dev nodemon
-            
+
             # Create basic structure
             mkdir -p src
             touch src/index.js
-            
+
             # Add scripts
             sed -i '' 's/"test": "echo \"Error: no test specified\" && exit 1"/"test": "echo \"Error: no test specified\" && exit 1",
     "start": "node src\/index.js",
     "dev": "nodemon src\/index.js"/' package.json
-            
+
             # Create basic Express app
             cat > src/index.js << 'EOF'
 const express = require('express');
@@ -315,7 +315,7 @@ app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
 EOF
-            
+
             # Create README
             cat > README.md << 'EOF'
 # Express.js Project
@@ -332,7 +332,7 @@ A basic Express.js project.
 
 - GET / - Returns a welcome message
 EOF
-            
+
             # Create .gitignore
             cat > .gitignore << 'EOF'
 # Logs
@@ -368,33 +368,33 @@ build/
 *.sw?
 EOF
             ;;
-            
+
         "typescript")
             # Initialize npm
             npm init -y
-            
+
             # Install dependencies
             npm install --save-dev typescript ts-node @types/node nodemon
-            
+
             # Create tsconfig.json
             npx tsc --init --rootDir src --outDir dist --esModuleInterop --resolveJsonModule --lib es6 --module commonjs --allowJs true --noImplicitAny true
-            
+
             # Create basic structure
             mkdir -p src
             touch src/index.ts
-            
+
             # Add scripts
             sed -i '' 's/"test": "echo \"Error: no test specified\" && exit 1"/"test": "echo \"Error: no test specified\" && exit 1",
     "start": "node dist\/index.js",
     "build": "tsc",
     "dev": "nodemon --exec ts-node src\/index.ts"/' package.json
-            
+
             # Create basic TypeScript file
             cat > src/index.ts << 'EOF'
 const greeting: string = 'Hello, TypeScript!';
 console.log(greeting);
 EOF
-            
+
             # Create README
             cat > README.md << 'EOF'
 # TypeScript Project
@@ -408,7 +408,7 @@ A basic TypeScript project.
 3. Build the project: `npm run build`
 4. Run the built project: `npm start`
 EOF
-            
+
             # Create .gitignore
             cat > .gitignore << 'EOF'
 # Logs
@@ -447,28 +447,28 @@ build/
 *.sw?
 EOF
             ;;
-            
+
         "ts-express")
             # Initialize npm
             npm init -y
-            
+
             # Install dependencies
             npm install express
             npm install --save-dev typescript ts-node @types/node @types/express nodemon
-            
+
             # Create tsconfig.json
             npx tsc --init --rootDir src --outDir dist --esModuleInterop --resolveJsonModule --lib es6 --module commonjs --allowJs true --noImplicitAny true
-            
+
             # Create basic structure
             mkdir -p src
             touch src/index.ts
-            
+
             # Add scripts
             sed -i '' 's/"test": "echo \"Error: no test specified\" && exit 1"/"test": "echo \"Error: no test specified\" && exit 1",
     "start": "node dist\/index.js",
     "build": "tsc",
     "dev": "nodemon --exec ts-node src\/index.ts"/' package.json
-            
+
             # Create basic Express app with TypeScript
             cat > src/index.ts << 'EOF'
 import express, { Request, Response } from 'express';
@@ -486,7 +486,7 @@ app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
 EOF
-            
+
             # Create README
             cat > README.md << 'EOF'
 # Express.js with TypeScript Project
@@ -504,7 +504,7 @@ A basic Express.js project with TypeScript.
 
 - GET / - Returns a welcome message
 EOF
-            
+
             # Create .gitignore
             cat > .gitignore << 'EOF'
 # Logs
@@ -543,21 +543,21 @@ build/
 *.sw?
 EOF
             ;;
-            
+
         *)
             echo "Unknown template: $template"
             echo "Available templates: basic, express, typescript, ts-express"
             return 1
             ;;
     esac
-    
+
     # Initialize git repository if git is available
     if command -v git >/dev/null 2>&1; then
         git init
         git add .
         git commit -m "Initial commit"
     fi
-    
+
     echo "Node.js project '${project_name}' created successfully with '${template}' template!"
 }
 
@@ -565,23 +565,23 @@ EOF
 create-vite-app() {
     local project_name=$1
     local template=${2:-"react"}
-    
+
     if [ -z "$project_name" ]; then
         echo "Error: Project name is required."
         echo "Usage: create-vite-app <project-name> [template]"
         echo "Available templates: vanilla, vanilla-ts, react, react-ts, vue, vue-ts, preact, preact-ts, lit, lit-ts, svelte, svelte-ts"
         return 1
     fi
-    
+
     npx create-vite "$project_name" --template "$template"
-    
+
     cd "$project_name" || return
     npm install
-    
+
     echo "Vite app '$project_name' created successfully with $template template!"
 }
 EOL
-    
+
     print_result $? "Created Node.js configuration file"
 }
 
@@ -590,20 +590,20 @@ main() {
     install_nvm
     install_nodejs
     install_npm_packages
-    
+
     # Create modular configuration
     create_nodejs_config
-    
+
     # Check if .zshrc is already sourcing the modular configs
-    if ! grep -q "source \"\$HOME/.jarvistoolset/macos/configs/shell/zsh_configs/nodejs.zsh\"" "$HOME/.zshrc"; then
+    if ! grep -q "source \"\$HOME/dotfiles/macos/configs/shell/zsh_configs/nodejs.zsh\"" "$HOME/.zshrc"; then
         # Add a line to source the Node.js config in .zshrc
         cat >> "$HOME/.zshrc" << 'EOL'
 # Load Node.js configuration
-source "$HOME/.jarvistoolset/macos/configs/shell/zsh_configs/nodejs.zsh"
+source "$HOME/dotfiles/macos/configs/shell/zsh_configs/nodejs.zsh"
 EOL
         print_result $? "Added Node.js configuration to .zshrc"
     fi
-    
+
     print_in_green "
   Node.js development environment setup complete!
 "

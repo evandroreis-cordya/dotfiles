@@ -16,12 +16,12 @@ brew_install "ruby-build" "ruby-build"
 
 # Create modular configuration file for Ruby
 create_ruby_config() {
-    local config_dir="$HOME/.jarvistoolset/macos/configs/shell/zsh_configs"
+    local config_dir="$HOME/dotfiles/macos/configs/shell/zsh_configs"
     local config_file="$config_dir/ruby.zsh"
-    
+
     # Create directory if it doesn't exist
     mkdir -p "$config_dir"
-    
+
     # Create Ruby configuration file
     cat > "$config_file" << 'EOL'
 #!/bin/zsh
@@ -76,19 +76,19 @@ new-ruby() {
         echo "Usage: new-ruby <project-name>"
         return 1
     fi
-    
+
     local project_name=$1
-    
+
     # Create project directory
     mkdir -p "$project_name"
     cd "$project_name" || return
-    
+
     # Initialize bundler
     bundle init
-    
+
     # Create basic project structure
     mkdir -p lib bin spec
-    
+
     # Create main lib file
     cat > "lib/${project_name}.rb" << EOF
 # Main module for ${project_name}
@@ -96,7 +96,7 @@ module $(echo "${project_name}" | sed -r 's/(^|_)([a-z])/
   VERSION = '0.1.0'
 end
 EOF
-    
+
     # Create executable
     cat > "bin/${project_name}" << EOF
 #!/usr/bin/env ruby
@@ -106,7 +106,7 @@ require_relative '../lib/${project_name}'
 # Your code here
 EOF
     chmod +x "bin/${project_name}"
-    
+
     # Create spec helper
     cat > "spec/spec_helper.rb" << EOF
 require 'bundler/setup'
@@ -124,7 +124,7 @@ RSpec.configure do |config|
   end
 end
 EOF
-    
+
     # Create main spec file
     cat > "spec/${project_name}_spec.rb" << EOF
 require 'spec_helper'
@@ -135,7 +135,7 @@ RSpec.describe $(echo "${project_name}" | sed -r 's/(^|_)([a-z])/
   end
 end
 EOF
-    
+
     # Update Gemfile
     cat > "Gemfile" << EOF
 source "https://rubygems.org"
@@ -147,7 +147,7 @@ gem "rake", "~> 13.0"
 gem "rspec", "~> 3.0"
 gem "rubocop", "~> 1.21"
 EOF
-    
+
     # Create gemspec
     cat > "${project_name}.gemspec" << EOF
 # frozen_string_literal: true
@@ -180,7 +180,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 end
 EOF
-    
+
     # Create README
     cat > "README.md" << EOF
 # ${project_name}
@@ -208,7 +208,7 @@ After checking out the repo, run \`bin/setup\` to install dependencies. Then, ru
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
 EOF
-    
+
     # Create .gitignore
     cat > ".gitignore" << EOF
 /.bundle/
@@ -221,18 +221,18 @@ EOF
 /tmp/
 *.gem
 EOF
-    
+
     # Initialize git repository if git is available
     if command -v git >/dev/null 2>&1; then
         git init
         git add .
         git commit -m "Initial commit"
     fi
-    
+
     echo "Ruby project '${project_name}' created successfully!"
 }
 EOL
-    
+
     print_result $? "Created Ruby configuration file"
 }
 
@@ -283,7 +283,7 @@ print_in_purple "
 install_gem() {
     local gem_name="$1"
     local readable_name="${2:-$gem_name}"
-    
+
     if gem list -i "^$gem_name$" > /dev/null; then
         print_success "$readable_name (already installed)"
     else
@@ -309,11 +309,11 @@ install_gem "jekyll" "Jekyll"
 create_ruby_config
 
 # Check if oh-my-zsh.zsh is already sourcing the modular configs
-if ! grep -q "source \"\$HOME/.jarvistoolset/macos/configs/shell/zsh_configs/ruby.zsh\"" "$HOME/.zshrc"; then
+if ! grep -q "source \"\$HOME/dotfiles/macos/configs/shell/zsh_configs/ruby.zsh\"" "$HOME/.zshrc"; then
     # Add a line to source the Ruby config in .zshrc if oh-my-zsh.zsh isn't handling it
     cat >> "$HOME/.zshrc" << 'EOL'
 # Load Ruby configuration
-source "$HOME/.jarvistoolset/macos/configs/shell/zsh_configs/ruby.zsh"
+source "$HOME/dotfiles/macos/configs/shell/zsh_configs/ruby.zsh"
 EOL
     print_result $? "Added Ruby configuration to .zshrc"
 fi

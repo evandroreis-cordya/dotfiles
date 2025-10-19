@@ -9,8 +9,8 @@ source "${SCRIPT_DIR}/logging.zsh" 2>/dev/null || true
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # Repository configuration
-typeset -r GITHUB_REPOSITORY="arvosai/jarvistoolset"
-typeset -r JARVIS_ORIGIN="git@github.com:$GITHUB_REPOSITORY.git"
+typeset -r GITHUB_REPOSITORY="arvosai/dotfiles"
+typeset -r DOTFILES_ORIGIN="git@github.com:$GITHUB_REPOSITORY.git"
 
 # Default configuration
 typeset skipQuestions=false
@@ -19,7 +19,7 @@ typeset skipQuestions=false
 HOSTNAME=${1:-$(hostname)}
 USERNAME=${2:-$(whoami)}
 EMAIL=${3:-"evandro.reis@cordya.ai"}
-DIRECTORY=${4:-"$HOME/.jarvistoolset"}
+DIRECTORY=${4:-"$HOME/dotfiles"}
 
 # Export variables for use in other scripts
 export HOSTNAME
@@ -103,7 +103,7 @@ download_utils() {
     local tmpFile=""
 
     tmpFile="$(mktemp /tmp/XXXXX)"
-    download "$JARVIS_UTILS_URL" "$tmpFile" \
+    download "$DOTFILES_UTILS_URL" "$tmpFile" \
         && source "$tmpFile" \
         && rm -rf "$tmpFile" \
         && return 0
@@ -261,19 +261,19 @@ install_git() {
 
 display_banner() {
     if (( $+commands[figlet] )); then
-        print_in_yellow "$(figlet -f ogre -c 'Jarvis Toolset')\n"
-        print_in_yellow "Welcome to ARVOS.AI Jarvis Toolset 25H1 Edition, the complete Mac OS tools and apps installer for AI and Vibe Coders!\n"
+        print_in_yellow "$(figlet -f ogre -c 'Dotfiles')\n"
+        print_in_yellow "Welcome to ARVOS.AI Dotfiles 25H1 Edition, the complete Mac OS tools and apps installer for AI and Vibe Coders!\n"
         print_in_yellow "Copyright (c) 2025 ARVOS.AI. All rights reserved.\n"
 
         if type log_info &>/dev/null; then
-            log_info "Displayed Jarvis Toolset banner with figlet"
+            log_info "Displayed Dotfiles banner with figlet"
         fi
     else
-        print_in_yellow "\n >> Welcome to ARVOS.AI Jarvis Toolset 25H1 Edition, the complete Mac OS tools and apps installer for AI and Vibe Coders!\n"
+        print_in_yellow "\n >> Welcome to ARVOS.AI Dotfiles 25H1 Edition, the complete Mac OS tools and apps installer for AI and Vibe Coders!\n"
         print_in_yellow "Copyright (c) 2025 ARVOS.AI. All rights reserved.\n"
 
         if type log_info &>/dev/null; then
-            log_info "Displayed Jarvis Toolset banner (figlet not available)"
+            log_info "Displayed Dotfiles banner (figlet not available)"
         fi
     fi
 }
@@ -423,8 +423,8 @@ main() {
         fi
 
         # Set the sudo timeout to 2 hours (7200 seconds)
-        sudo sh -c "echo 'Defaults:${USER} timestamp_timeout=7200' > /etc/sudoers.d/jarvis_timeout"
-        sudo chmod 440 /etc/sudoers.d/jarvis_timeout
+        sudo sh -c "echo 'Defaults:${USER} timestamp_timeout=7200' > /etc/sudoers.d/dotfiles_timeout"
+        sudo chmod 440 /etc/sudoers.d/dotfiles_timeout
 
         # Export the SUDO_REQUESTED variable to child processes
         export SUDO_REQUESTED=true
@@ -434,7 +434,7 @@ main() {
     setup_sudo_timestamp_dir
 
     # Display information about what's happening
-    print_in_green "\n >> Starting Jarvis Toolset with the following configuration:\n"
+    print_in_green "\n >> Starting Dotfiles with the following configuration:\n"
     print_in_green "---------------------------------------------------------------\n"
     print_in_green "Hostname : $HOSTNAME\n"
     print_in_green "Username : $USERNAME\n"

@@ -22,12 +22,12 @@ brew_install "Docker Desktop" "docker" "--cask"
 
 # Create modular configuration file for Docker
 create_docker_config() {
-    local config_dir="$HOME/.jarvistoolset/macos/configs/shell/zsh_configs"
+    local config_dir="$HOME/dotfiles/macos/configs/shell/zsh_configs"
     local config_file="$config_dir/docker.zsh"
-    
+
     # Create directory if it doesn't exist
     mkdir -p "$config_dir"
-    
+
     # Create Docker configuration file
     cat > "$config_file" << 'EOL'
 #!/bin/zsh
@@ -69,16 +69,16 @@ alias dcpull="docker-compose pull"
 docker-clean() {
     echo "Removing all stopped containers..."
     docker rm $(docker ps -a -q) 2>/dev/null || echo "No containers to remove"
-    
+
     echo "Removing all dangling images..."
     docker rmi $(docker images -f "dangling=true" -q) 2>/dev/null || echo "No images to remove"
-    
+
     echo "Removing all unused networks..."
     docker network prune -f 2>/dev/null || echo "No networks to remove"
-    
+
     echo "Removing all unused volumes..."
     docker volume prune -f 2>/dev/null || echo "No volumes to remove"
-    
+
     echo "Docker cleanup complete!"
 }
 
@@ -97,17 +97,17 @@ new-docker-project() {
         echo "Usage: new-docker-project <project-name> [--node|--python|--go|--java]"
         return 1
     fi
-    
+
     local project_name=$1
     local project_type=${2:-"--node"}
-    
+
     # Create project directory
     mkdir -p "$project_name"
     cd "$project_name" || return
-    
+
     # Create basic structure
     mkdir -p src
-    
+
     # Create Dockerfile based on project type
     case "$project_type" in
         --node)
@@ -126,7 +126,7 @@ EXPOSE 3000
 
 CMD ["npm", "start"]
 EOF
-            
+
             # Create package.json
             cat > "package.json" << EOF
 {
@@ -146,7 +146,7 @@ EOF
   }
 }
 EOF
-            
+
             # Create index.js
             mkdir -p src
             cat > "src/index.js" << EOF
@@ -163,7 +163,7 @@ app.listen(port, () => {
 });
 EOF
             ;;
-            
+
         --python)
             cat > "Dockerfile" << EOF
 FROM python:3.11-slim
@@ -180,13 +180,13 @@ EXPOSE 5000
 
 CMD ["python", "src/app.py"]
 EOF
-            
+
             # Create requirements.txt
             cat > "requirements.txt" << EOF
 flask==2.3.3
 gunicorn==21.2.0
 EOF
-            
+
             # Create app.py
             mkdir -p src
             cat > "src/app.py" << EOF
@@ -202,7 +202,7 @@ if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
 EOF
             ;;
-            
+
         --go)
             cat > "Dockerfile" << EOF
 FROM golang:1.21-alpine AS build
@@ -228,17 +228,17 @@ EXPOSE 8080
 
 CMD ["/app/server"]
 EOF
-            
+
             # Create go.mod
             cat > "go.mod" << EOF
 module github.com/$(whoami)/$project_name
 
 go 1.21
 EOF
-            
+
             # Create go.sum
             touch go.sum
-            
+
             # Create main.go
             mkdir -p src
             cat > "src/main.go" << EOF
@@ -259,7 +259,7 @@ func main() {
 }
 EOF
             ;;
-            
+
         --java)
             cat > "Dockerfile" << EOF
 FROM maven:3.9-eclipse-temurin-21-alpine AS build
@@ -281,7 +281,7 @@ EXPOSE 8080
 
 CMD ["java", "-jar", "app.jar"]
 EOF
-            
+
             # Create pom.xml
             cat > "pom.xml" << EOF
 <?xml version="1.0" encoding="UTF-8"?>
@@ -323,7 +323,7 @@ EOF
     </build>
 </project>
 EOF
-            
+
             # Create App.java
             mkdir -p src/main/java/com/example
             cat > "src/main/java/com/example/App.java" << EOF
@@ -337,7 +337,7 @@ public class App {
 EOF
             ;;
     esac
-    
+
     # Create docker-compose.yml
     cat > "docker-compose.yml" << EOF
 version: '3.8'
@@ -352,7 +352,7 @@ services:
     environment:
       - NODE_ENV=development
 EOF
-    
+
     # Create .dockerignore
     cat > ".dockerignore" << EOF
 node_modules
@@ -364,7 +364,7 @@ Dockerfile
 README.md
 docker-compose.yml
 EOF
-    
+
     # Create README.md
     cat > "README.md" << EOF
 # $project_name
@@ -389,7 +389,7 @@ docker run -p 8080:8080 $project_name
 docker-compose up
 \`\`\`
 EOF
-    
+
     # Create .gitignore
     cat > ".gitignore" << EOF
 # Docker
@@ -453,18 +453,18 @@ target/
 ehthumbs.db
 Thumbs.db
 EOF
-    
+
     # Initialize git repository if git is available
     if command -v git >/dev/null 2>&1; then
         git init
         git add .
         git commit -m "Initial commit"
     fi
-    
+
     echo "Docker project '$project_name' created successfully!"
 }
 EOL
-    
+
     print_result $? "Created Docker configuration file"
 }
 
@@ -472,11 +472,11 @@ EOL
 create_docker_config
 
 # Check if oh-my-zsh.zsh is already sourcing the modular configs
-if ! grep -q "source \"\$HOME/.jarvistoolset/macos/configs/shell/zsh_configs/docker.zsh\"" "$HOME/.zshrc"; then
+if ! grep -q "source \"\$HOME/dotfiles/macos/configs/shell/zsh_configs/docker.zsh\"" "$HOME/.zshrc"; then
     # Add a line to source the Docker config in .zshrc if oh-my-zsh.zsh isn't handling it
     cat >> "$HOME/.zshrc" << 'EOL'
 # Load Docker configuration
-source "$HOME/.jarvistoolset/macos/configs/shell/zsh_configs/docker.zsh"
+source "$HOME/dotfiles/macos/configs/shell/zsh_configs/docker.zsh"
 EOL
     print_result $? "Added Docker configuration to .zshrc"
 fi

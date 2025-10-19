@@ -17,7 +17,7 @@ create_header() {
     local timestamp=$(date "+%Y-%m-%d %H:%M:%S")
     local width=80
     local line=$(printf '%*s' "$width" | tr ' ' '=')
-    
+
     echo "
 $line"
     echo "||  ${script_name} v${version}"
@@ -45,8 +45,8 @@ if type log_info &>/dev/null; then
 fi
 
 # Create zsh_configs directory for modular configurations
-mkdir -p "$HOME/.jarvistoolset/macos/configs/shell/zsh_configs"
-print_success "Created modular configuration directory at $HOME/.jarvistoolset/macos/configs/shell/zsh_configs
+mkdir -p "$HOME/dotfiles/macos/configs/shell/zsh_configs"
+print_success "Created modular configuration directory at $HOME/dotfiles/macos/configs/shell/zsh_configs
 "
 
 SCRIPT_DIR_INSTALL_MACOS="$SCRIPT_DIR/install/macos"
@@ -58,7 +58,7 @@ if [[ "${SELECTED_GROUPS[system]}" == "true" ]]; then
  >> Installing System Setup
 
 "
-    
+
     # Source all scripts in the system directory
     for script in "${SCRIPT_DIR_INSTALL_MACOS}/system"/*.zsh; do
         if [ -f "$script" ]; then
@@ -81,7 +81,7 @@ if [[ "${SELECTED_GROUPS[dev_langs]}" == "true" ]]; then
  >> Installing Development Languages
 
 "
-    
+
     # Source all scripts in the dev_langs directory
     for script in "${SCRIPT_DIR_INSTALL_MACOS}/dev_langs"/*.zsh; do
         if [ -f "$script" ]; then
@@ -101,7 +101,7 @@ if [[ "${SELECTED_GROUPS[data_science]}" == "true" ]]; then
  >> Installing Data Science Environment
 
 "
-    
+
     # Source all scripts in the data_science directory
     for script in "${SCRIPT_DIR_INSTALL_MACOS}/data_science"/*.zsh; do
         if [ -f "$script" ]; then
@@ -121,7 +121,7 @@ if [[ "${SELECTED_GROUPS[ai_tools]}" == "true" ]]; then
  >> Installing AI and Productivity Tools
 
 "
-    
+
     # Source all scripts in the ai_tools directory
     for script in "${SCRIPT_DIR_INSTALL_MACOS}/ai_tools"/*.zsh; do
         if [ -f "$script" ]; then
@@ -141,7 +141,7 @@ if [[ "${SELECTED_GROUPS[dev_tools]}" == "true" ]]; then
  >> Installing Development Tools
 
 "
-    
+
     # Source all scripts in the dev_tools directory
     for script in "${SCRIPT_DIR_INSTALL_MACOS}/dev_tools"/*.zsh; do
         if [ -f "$script" ]; then
@@ -161,7 +161,7 @@ if [[ "${SELECTED_GROUPS[web_tools]}" == "true" ]]; then
  >> Installing Web and Frontend Tools
 
 "
-    
+
     # Source all scripts in the web_tools directory
     for script in "${SCRIPT_DIR_INSTALL_MACOS}/web_tools"/*.zsh; do
         if [ -f "$script" ]; then
@@ -181,7 +181,7 @@ if [[ "${SELECTED_GROUPS[daily_tools]}" == "true" ]]; then
  >> Installing Daily Tools and Utilities
 
 "
-    
+
     # Source all scripts in the daily_tools directory
     for script in "${SCRIPT_DIR_INSTALL_MACOS}/daily_tools"/*.zsh; do
         if [ -f "$script" ]; then
@@ -201,7 +201,7 @@ if [[ "${SELECTED_GROUPS[media_tools]}" == "true" ]]; then
  >> Installing Media and Creative Tools
 
 "
-    
+
     # Source all scripts in the media_tools directory
     for script in "${SCRIPT_DIR_INSTALL_MACOS}/media_tools"/*.zsh; do
         if [ -f "$script" ]; then
@@ -222,7 +222,7 @@ if [[ "${SELECTED_GROUPS[creative_tools]}" == "true" ]]; then
  >> Installing Creative and 3D Design Tools
 
 "
-    
+
     # Source all scripts in the creative_tools directory
     for script in "${SCRIPT_DIR_INSTALL_MACOS}/creative_tools"/*.zsh; do
         if [ -f "$script" ]; then
@@ -245,7 +245,7 @@ if [[ "${SELECTED_GROUPS[cloud_tools]}" == "true" ]]; then
  >> Installing Cloud and DevOps Tools
 
 "
-    
+
     # Source all scripts in the cloud_tools directory
     for script in "${SCRIPT_DIR_INSTALL_MACOS}/cloud_tools"/*.zsh; do
         if [ -f "$script" ]; then
@@ -265,7 +265,7 @@ if [[ "${SELECTED_GROUPS[app_store]}" == "true" ]]; then
  >> Installing App Store and System Tools
 
 "
-    
+
     # Source all scripts in the app_store directory
     for script in "${SCRIPT_DIR_INSTALL_MACOS}/app_store"/*.zsh; do
         if [ -f "$script" ]; then

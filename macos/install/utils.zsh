@@ -1086,7 +1086,7 @@ get_group_name_from_path() {
     local group_name
 
     # Extract the group name from the path
-    # Example: /Users/evandroreis/.jarvistoolset/macos/install/dev_langs/python.zsh
+    # Example: /Users/evandroreis/dotfiles/macos/install/dev_langs/python.zsh
     # Group name: DEV LANGS
 
     # Get the directory name

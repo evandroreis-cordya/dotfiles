@@ -97,12 +97,12 @@ chmod 666 /usr/local/var/log/php_errors.log
 
 # Create modular configuration file for PHP
 create_php_config() {
-    local config_dir="$HOME/.jarvistoolset/macos/configs/shell/zsh_configs"
+    local config_dir="$HOME/dotfiles/macos/configs/shell/zsh_configs"
     local config_file="$config_dir/php.zsh"
-    
+
     # Create directory if it doesn't exist
     mkdir -p "$config_dir"
-    
+
     # Create PHP configuration file
     cat > "$config_file" << 'EOL'
 #!/bin/zsh
@@ -132,10 +132,10 @@ new-php() {
         echo "Usage: new-php <project-name> [--laravel|--symfony|--slim]"
         return 1
     fi
-    
+
     local project_name=$1
     local project_type=${2:-"--basic"}
-    
+
     case "$project_type" in
         --laravel)
             # Create Laravel project
@@ -160,10 +160,10 @@ new-php() {
             # Create basic PHP project
             mkdir -p "$project_name"
             cd "$project_name" || return
-            
+
             # Create basic project structure
             mkdir -p src tests public
-            
+
             # Create composer.json
             cat > "composer.json" << EOF
 {
@@ -197,7 +197,7 @@ new-php() {
     }
 }
 EOF
-            
+
             # Create index.php
             cat > "public/index.php" << EOF
 <?php
@@ -209,7 +209,7 @@ use App\App;
 \$app = new App();
 \$app->run();
 EOF
-            
+
             # Create App class
             mkdir -p "src"
             cat > "src/App.php" << EOF
@@ -225,7 +225,7 @@ class App
     }
 }
 EOF
-            
+
             # Create phpunit.xml
             cat > "phpunit.xml" << EOF
 <?xml version="1.0" encoding="UTF-8"?>
@@ -245,7 +245,7 @@ EOF
     </coverage>
 </phpunit>
 EOF
-            
+
             # Create .gitignore
             cat > ".gitignore" << EOF
 /vendor/
@@ -259,7 +259,7 @@ EOF
 /yarn-error.log
 .DS_Store
 EOF
-            
+
             # Create README.md
             cat > "README.md" << EOF
 # $project_name
@@ -284,34 +284,34 @@ php -S localhost:8000 -t public
 composer test
 \`\`\`
 EOF
-            
+
             # Initialize composer
             composer install
-            
+
             # Initialize git repository if git is available
             if command -v git >/dev/null 2>&1; then
                 git init
                 git add .
                 git commit -m "Initial commit"
             fi
-            
+
             echo "PHP project '$project_name' created successfully!"
             ;;
     esac
 }
 EOL
-    
+
     print_result $? "Created PHP configuration file"
 }
 
 create_php_config
 
 # Check if oh-my-zsh.zsh is already sourcing the modular configs
-if ! grep -q "source \"\$HOME/.jarvistoolset/macos/configs/shell/zsh_configs/php.zsh\"" "$HOME/.zshrc"; then
+if ! grep -q "source \"\$HOME/dotfiles/macos/configs/shell/zsh_configs/php.zsh\"" "$HOME/.zshrc"; then
     # Add a line to source the PHP config in .zshrc if oh-my-zsh.zsh isn't handling it
     cat >> "$HOME/.zshrc" << 'EOL'
 # Load PHP configuration
-source "$HOME/.jarvistoolset/macos/configs/shell/zsh_configs/php.zsh"
+source "$HOME/dotfiles/macos/configs/shell/zsh_configs/php.zsh"
 EOL
     print_result $? "Added PHP configuration to .zshrc"
 fi

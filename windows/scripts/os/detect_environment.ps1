@@ -182,20 +182,20 @@ function Get-EnvironmentInfo {
 }
 
 # Export environment variables
-$env:JARVIS_OS = Get-OperatingSystem
-$env:JARVIS_SHELL = Get-Shell
-$env:JARVIS_PACKAGE_MANAGER = Get-PackageManager
-$env:JARVIS_TERMINAL = Get-Terminal
-$env:JARVIS_ARCH = Get-Architecture
+$env:DOTFILES_OS = Get-OperatingSystem
+$env:DOTFILES_SHELL = Get-Shell
+$env:DOTFILES_PACKAGE_MANAGER = Get-PackageManager
+$env:DOTFILES_TERMINAL = Get-Terminal
+$env:DOTFILES_ARCH = Get-Architecture
 
 # Log environment detection
 if (Get-Command Write-LogInfo -ErrorAction SilentlyContinue) {
     Write-LogInfo "Environment detected:"
-    Write-LogInfo "  OS: $env:JARVIS_OS"
-    Write-LogInfo "  Shell: $env:JARVIS_SHELL"
-    Write-LogInfo "  Package Manager: $env:JARVIS_PACKAGE_MANAGER"
-    Write-LogInfo "  Terminal: $env:JARVIS_TERMINAL"
-    Write-LogInfo "  Architecture: $env:JARVIS_ARCH"
+    Write-LogInfo "  OS: $env:DOTFILES_OS"
+    Write-LogInfo "  Shell: $env:DOTFILES_SHELL"
+    Write-LogInfo "  Package Manager: $env:DOTFILES_PACKAGE_MANAGER"
+    Write-LogInfo "  Terminal: $env:DOTFILES_TERMINAL"
+    Write-LogInfo "  Architecture: $env:DOTFILES_ARCH"
 }
 
 # Export functions

@@ -41,12 +41,12 @@ fi
 
 # Create modular configuration file for C/C++
 create_cpp_config() {
-    local config_dir="$HOME/.jarvistoolset/macos/configs/shell/zsh_configs"
+    local config_dir="$HOME/dotfiles/macos/configs/shell/zsh_configs"
     local config_file="$config_dir/cpp.zsh"
-    
+
     # Create directory if it doesn't exist
     mkdir -p "$config_dir"
-    
+
     # Create C/C++ configuration file
     cat > "$config_file" << 'EOL'
 #!/bin/zsh
@@ -79,21 +79,21 @@ new-cpp() {
         echo "Usage: new-cpp <project-name> [--lib]"
         return 1
     fi
-    
+
     local project_name=$1
     local project_type="executable"
-    
+
     if [[ "$2" == "--lib" ]]; then
         project_type="library"
     fi
-    
+
     # Create project directory
     mkdir -p "$project_name"
     cd "$project_name" || return
-    
+
     # Create basic structure
     mkdir -p src include test build
-    
+
     # Create main.cpp or library header/source
     if [[ "$project_type" == "executable" ]]; then
         cat > "src/main.cpp" << EOF
@@ -115,13 +115,13 @@ class ${project_name} {
 public:
     ${project_name}();
     ~${project_name}();
-    
+
     void hello();
 };
 
 } // namespace ${project_name}
 EOF
-        
+
         # Create library source
         cat > "src/${project_name}.cpp" << EOF
 #include "${project_name}.hpp"
@@ -139,7 +139,7 @@ void ${project_name}::hello() {
 } // namespace ${project_name}
 EOF
     fi
-    
+
     # Create CMakeLists.txt
     if [[ "$project_type" == "executable" ]]; then
         cat > "CMakeLists.txt" << EOF
@@ -181,13 +181,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Add library target
-add_library(\${PROJECT_NAME} 
+add_library(\${PROJECT_NAME}
     src/${project_name}.cpp
 )
 
 # Include directories
-target_include_directories(\${PROJECT_NAME} 
-    PUBLIC 
+target_include_directories(\${PROJECT_NAME}
+    PUBLIC
         \$<BUILD_INTERFACE:\${CMAKE_CURRENT_SOURCE_DIR}/include>
         \$<INSTALL_INTERFACE:include>
 )
@@ -220,7 +220,7 @@ install(EXPORT \${PROJECT_NAME}Targets
         DESTINATION lib/cmake/\${PROJECT_NAME})
 EOF
     fi
-    
+
     # Create test directory and files
     mkdir -p "test"
     cat > "test/CMakeLists.txt" << EOF
@@ -229,7 +229,7 @@ add_executable(test_${project_name} test_main.cpp)
 target_link_libraries(test_${project_name} PRIVATE ${project_name})
 add_test(NAME test_${project_name} COMMAND test_${project_name})
 EOF
-    
+
     cat > "test/test_main.cpp" << EOF
 #include <iostream>
 
@@ -239,7 +239,7 @@ int main() {
     return 0;
 }
 EOF
-    
+
     # Create .gitignore
     cat > ".gitignore" << EOF
 # Build directories
@@ -298,7 +298,7 @@ _deps
 # macOS files
 .DS_Store
 EOF
-    
+
     # Create README.md
     cat > "README.md" << EOF
 # ${project_name}
@@ -327,18 +327,18 @@ cd build
 ctest
 \`\`\`
 EOF
-    
+
     # Initialize git repository if git is available
     if command -v git >/dev/null 2>&1; then
         git init
         git add .
         git commit -m "Initial commit"
     fi
-    
+
     echo "C++ project '${project_name}' created successfully!"
 }
 EOL
-    
+
     print_result $? "Created C/C++ configuration file"
 }
 
@@ -346,11 +346,11 @@ EOL
 create_cpp_config
 
 # Check if oh-my-zsh.zsh is already sourcing the modular configs
-if ! grep -q "source \"\$HOME/.jarvistoolset/macos/configs/shell/zsh_configs/cpp.zsh\"" "$HOME/.zshrc"; then
+if ! grep -q "source \"\$HOME/dotfiles/macos/configs/shell/zsh_configs/cpp.zsh\"" "$HOME/.zshrc"; then
     # Add a line to source the C/C++ config in .zshrc if oh-my-zsh.zsh isn't handling it
     cat >> "$HOME/.zshrc" << 'EOL'
 # Load C/C++ configuration
-source "$HOME/.jarvistoolset/macos/configs/shell/zsh_configs/cpp.zsh"
+source "$HOME/dotfiles/macos/configs/shell/zsh_configs/cpp.zsh"
 EOL
     print_result $? "Added C/C++ configuration to .zshrc"
 fi

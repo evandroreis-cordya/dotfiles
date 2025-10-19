@@ -1,23 +1,23 @@
-# Windows PowerShell entry script for Jarvis Toolset
+# Windows PowerShell entry script for Dotfiles
 
 param(
     [string]$Hostname = $env:COMPUTERNAME,
     [string]$Username = $env:USERNAME,
     [string]$Email = "evandro.reis@cordya.ai",
-    [string]$Directory = "$env:USERPROFILE\.jarvistoolset"
+    [string]$Directory = "$env:USERPROFILE\dotfiles"
 )
 
 # Get the directory of the current script
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$JarvisDir = "$env:USERPROFILE\.jarvistoolset"
+$DotfilesDir = "$env:USERPROFILE\dotfiles"
 
 # Define paths to scripts
-$UtilsScript = "$JarvisDir\generic\scripts\os\utils.ps1"
-$LoggingScript = "$JarvisDir\generic\scripts\os\logging.ps1"
-$SetupScript = "$JarvisDir\generic\scripts\os\setup.ps1"
+$UtilsScript = "$DotfilesDir\generic\scripts\os\utils.ps1"
+$LoggingScript = "$DotfilesDir\generic\scripts\os\logging.ps1"
+$SetupScript = "$DotfilesDir\generic\scripts\os\setup.ps1"
 
 # Define the logs directory
-$LogsDir = "$env:USERPROFILE\.jarvistoolset\logs"
+$LogsDir = "$env:USERPROFILE\dotfiles\logs"
 
 # Ensure logs directory exists
 if (-not (Test-Path $LogsDir)) {
@@ -39,13 +39,13 @@ Initialize-Logging
 # Log system information
 Write-LogSystemInfo
 
-# Log start of Jarvis Toolset
-Write-LogInfo "Starting Jarvis Toolset"
+# Log start of Dotfiles
+Write-LogInfo "Starting Dotfiles"
 
 # Check if the first argument is "/help"
 if ($args[0] -eq "/help") {
     # Path to README.md
-    $ReadmePath = "$JarvisDir\README.md"
+    $ReadmePath = "$DotfilesDir\README.md"
 
     # Verify README.md exists
     if (-not (Test-Path $ReadmePath)) {
@@ -89,10 +89,10 @@ $ExitCode = $LASTEXITCODE
 # Log the result of the setup script execution
 if ($ExitCode -eq 0) {
     Write-LogSuccess "Setup script completed successfully"
-    Write-Host "Jarvis Toolset setup completed successfully!" -ForegroundColor Green
+    Write-Host "Dotfiles setup completed successfully!" -ForegroundColor Green
 } else {
     Write-LogError "Setup script failed with exit code $ExitCode"
-    Write-Error "Jarvis Toolset setup failed with exit code $ExitCode"
+    Write-Error "Dotfiles setup failed with exit code $ExitCode"
 }
 
 # Finalize logging

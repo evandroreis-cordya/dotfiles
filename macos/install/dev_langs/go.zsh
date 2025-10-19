@@ -14,12 +14,12 @@ brew_install "Go" "go"
 
 # Create modular configuration file for Go
 create_go_config() {
-    local config_dir="$HOME/.jarvistoolset/macos/configs/shell/zsh_configs"
+    local config_dir="$HOME/dotfiles/macos/configs/shell/zsh_configs"
     local config_file="$config_dir/go.zsh"
-    
+
     # Create directory if it doesn't exist
     mkdir -p "$config_dir"
-    
+
     # Create Go configuration file
     cat > "$config_file" << 'EOL'
 #!/bin/zsh
@@ -59,20 +59,20 @@ go_new_project() {
         echo "Usage: go_new_project <project_name> [module_path]"
         return 1
     fi
-    
+
     local project_name="$1"
     local module_path="${2:-github.com/$(whoami)/$project_name}"
-    
+
     # Create project directory
     mkdir -p "$project_name"
     cd "$project_name" || return 1
-    
+
     # Initialize Go module
     go mod init "$module_path"
-    
+
     # Create basic directory structure
     mkdir -p cmd pkg internal
-    
+
     # Create main.go
     cat > cmd/main.go << 'EOF'
 package main
@@ -85,7 +85,7 @@ func main() {
 	fmt.Println("Hello, Go!")
 }
 EOF
-    
+
     # Create README.md
     cat > README.md << EOF
 # $project_name
@@ -98,18 +98,18 @@ A Go project.
 go run cmd/main.go
 \`\`\`
 EOF
-    
+
     # Initialize git repository if git is available
     if command -v git >/dev/null 2>&1; then
         git init
         git add .
         git commit -m "Initial commit"
     fi
-    
+
     echo "Go project '$project_name' created successfully!"
 }
 EOL
-    
+
     print_result $? "Created Go configuration file"
 }
 

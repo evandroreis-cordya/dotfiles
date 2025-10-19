@@ -2,7 +2,7 @@
 
 # Global variables for logging
 $script:CURRENT_LOG_FILE = ""
-$script:LOGS_DIR = "$env:USERPROFILE\.jarvistoolset\logs"
+$script:LOGS_DIR = "$env:USERPROFILE\dotfiles\logs"
 
 # Initialize logging
 function Initialize-Logging {
@@ -10,7 +10,7 @@ function Initialize-Logging {
     $timestamp = Get-Date -Format "yyyy-MM-dd-HHmmss"
 
     # Create log filename
-    $script:CURRENT_LOG_FILE = "$script:LOGS_DIR\jarvistoolset-$timestamp.log"
+    $script:CURRENT_LOG_FILE = "$script:LOGS_DIR\dotfiles-$timestamp.log"
 
     # Ensure logs directory exists
     if (-not (Test-Path $script:LOGS_DIR)) {
@@ -26,12 +26,12 @@ function Initialize-Logging {
     # Add header to log file
     $header = @"
 ========================================================
-  JARVIS TOOLSET INSTALLATION LOG
+  DOTFILES TOOLSET INSTALLATION LOG
   Started: $(Get-Date)
   Hostname: $env:COMPUTERNAME
   User: $env:USERNAME
-  OS: $env:JARVIS_OS
-  Shell: $env:JARVIS_SHELL
+  OS: $env:DOTFILES_OS
+  Shell: $env:DOTFILES_SHELL
 ========================================================
 
 "@
@@ -141,11 +141,11 @@ function Execute-WithLog {
 # Log system information
 function Write-LogSystemInfo {
     Write-LogInfo "System Information:"
-    Write-LogInfo "  OS: $env:JARVIS_OS"
-    Write-LogInfo "  Architecture: $env:JARVIS_ARCH"
-    Write-LogInfo "  Shell: $env:JARVIS_SHELL"
-    Write-LogInfo "  Package Manager: $env:JARVIS_PACKAGE_MANAGER"
-    Write-LogInfo "  Terminal: $env:JARVIS_TERMINAL"
+    Write-LogInfo "  OS: $env:DOTFILES_OS"
+    Write-LogInfo "  Architecture: $env:DOTFILES_ARCH"
+    Write-LogInfo "  Shell: $env:DOTFILES_SHELL"
+    Write-LogInfo "  Package Manager: $env:DOTFILES_PACKAGE_MANAGER"
+    Write-LogInfo "  Terminal: $env:DOTFILES_TERMINAL"
     Write-LogInfo "  User: $env:USERNAME"
     Write-LogInfo "  Hostname: $env:COMPUTERNAME"
     Write-LogInfo "  Home Directory: $env:USERPROFILE"
@@ -166,10 +166,10 @@ function Write-LogSystemInfo {
 # Log environment variables
 function Write-LogEnvironment {
     Write-LogInfo "Environment Variables:"
-    Write-LogInfo "  JARVIS_OS: $env:JARVIS_OS"
-    Write-LogInfo "  JARVIS_SHELL: $env:JARVIS_SHELL"
-    Write-LogInfo "  JARVIS_PACKAGE_MANAGER: $env:JARVIS_PACKAGE_MANAGER"
-    Write-LogInfo "  JARVIS_TERMINAL: $env:JARVIS_TERMINAL"
+    Write-LogInfo "  DOTFILES_OS: $env:DOTFILES_OS"
+    Write-LogInfo "  DOTFILES_SHELL: $env:DOTFILES_SHELL"
+    Write-LogInfo "  DOTFILES_PACKAGE_MANAGER: $env:DOTFILES_PACKAGE_MANAGER"
+    Write-LogInfo "  DOTFILES_TERMINAL: $env:DOTFILES_TERMINAL"
     Write-LogInfo "  HOSTNAME: $env:HOSTNAME"
     Write-LogInfo "  USERNAME: $env:USERNAME"
     Write-LogInfo "  EMAIL: $env:EMAIL"
@@ -256,7 +256,7 @@ function Finalize-Logging {
         $footer = @"
 
 ========================================================
-  JARVIS TOOLSET INSTALLATION COMPLETED
+  DOTFILES TOOLSET INSTALLATION COMPLETED
   Finished: $(Get-Date)
   Total Duration: $((Get-Date) - (Get-Item $script:CURRENT_LOG_FILE).CreationTime).TotalSeconds seconds
 ========================================================
@@ -273,7 +273,7 @@ function Clear-OldLogs {
 
     if (Test-Path $script:LOGS_DIR) {
         $cutoffDate = (Get-Date).AddDays(-$DaysToKeep)
-        $oldLogs = Get-ChildItem -Path $script:LOGS_DIR -Filter "jarvistoolset-*.log" | Where-Object { $_.CreationTime -lt $cutoffDate }
+        $oldLogs = Get-ChildItem -Path $script:LOGS_DIR -Filter "dotfiles-*.log" | Where-Object { $_.CreationTime -lt $cutoffDate }
 
         foreach ($log in $oldLogs) {
             Remove-Item $log.FullName -Force

@@ -517,24 +517,24 @@ source $ZSH/oh-my-zsh.sh
 #==============================================================================
 
 # Source all modular configuration files
-JARVIS_ZSH_CONFIGS="$HOME/.jarvistoolset/macos/configs/shell/zsh_configs"
+DOTFILES_ZSH_CONFIGS="$HOME/dotfiles/macos/configs/shell/zsh_configs"
 
 # Source exports first
-if [[ -f "$JARVIS_ZSH_CONFIGS/exports.zsh" ]]; then
-  source "$JARVIS_ZSH_CONFIGS/exports.zsh"
+if [[ -f "$DOTFILES_ZSH_CONFIGS/exports.zsh" ]]; then
+  source "$DOTFILES_ZSH_CONFIGS/exports.zsh"
 fi
 
 # Source all other configuration files
-if [[ -d "$JARVIS_ZSH_CONFIGS" ]]; then
+if [[ -d "$DOTFILES_ZSH_CONFIGS" ]]; then
   # First source Java configuration to ensure Java is available for other tools
-  if [[ -f "$JARVIS_ZSH_CONFIGS/java.zsh" ]]; then
-    source "$JARVIS_ZSH_CONFIGS/java.zsh"
+  if [[ -f "$DOTFILES_ZSH_CONFIGS/java.zsh" ]]; then
+    source "$DOTFILES_ZSH_CONFIGS/java.zsh"
   fi
 
   # Then source all other configuration files
-  for config_file in "$JARVIS_ZSH_CONFIGS"/*.zsh; do
+  for config_file in "$DOTFILES_ZSH_CONFIGS"/*.zsh; do
     # Skip exports.zsh and java.zsh as they're already sourced
-    if [[ "$config_file" != "$JARVIS_ZSH_CONFIGS/exports.zsh" && "$config_file" != "$JARVIS_ZSH_CONFIGS/java.zsh" ]]; then
+    if [[ "$config_file" != "$DOTFILES_ZSH_CONFIGS/exports.zsh" && "$config_file" != "$DOTFILES_ZSH_CONFIGS/java.zsh" ]]; then
       source "$config_file"
     fi
   done

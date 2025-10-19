@@ -117,8 +117,8 @@ execute "pip3 install anthropic-vault" \
     "Installing Anthropic Vault"
 
 # Create configuration file for Anthropic
-mkdir -p "$HOME/.jarvistoolset/macos/configs/shell/zsh_configs"
-cp "$SCRIPT_DIR/../../../../zsh_configs/anthropic.zsh" "$HOME/.jarvistoolset/macos/configs/shell/zsh_configs/" 2>/dev/null || true
+mkdir -p "$HOME/dotfiles/macos/configs/shell/zsh_configs"
+cp "$SCRIPT_DIR/../../../../zsh_configs/anthropic.zsh" "$HOME/dotfiles/macos/configs/shell/zsh_configs/" 2>/dev/null || true
 
 # Print setup instructions
 print_in_green "

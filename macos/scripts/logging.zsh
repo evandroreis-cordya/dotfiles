@@ -9,27 +9,27 @@ source "${SCRIPT_DIR}/utils.zsh" >/dev/null 2>&1 || true
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # Global variables
-LOGS_DIR="$HOME/.jarvistoolset/logs"
+LOGS_DIR="$HOME/dotfiles/logs"
 CURRENT_LOG_FILE=""
 
 # Initialize logging
 init_logging() {
     # Create timestamp in format YYYY-MM-DD-HHMMSS
     local timestamp=$(date "+%Y-%m-%d-%H%M%S")
-    
+
     # Ensure logs directory exists
     mkdir -p "$LOGS_DIR" 2>/dev/null
-    
+
     # Create log filename
-    CURRENT_LOG_FILE="${LOGS_DIR}/jarvistoolset-${timestamp}.log"
-    
+    CURRENT_LOG_FILE="${LOGS_DIR}/dotfiles-${timestamp}.log"
+
     # Create empty log file
     touch "$CURRENT_LOG_FILE"
-    
+
     # Add header to log file (silently)
     {
         echo "========================================================"
-        echo "  JARVIS TOOLSET INSTALLATION LOG"
+        echo "  DOTFILES TOOLSET INSTALLATION LOG"
         echo "  Started: $(date)"
         echo "  Hostname: $(hostname)"
         echo "  User: $(whoami)"
@@ -43,12 +43,12 @@ log_message() {
     local message="$1"
     local level="${2:-INFO}"
     local timestamp=$(date "+%Y-%m-%d %H:%M:%S")
-    
+
     # Check if log file exists
     if [[ -z "$CURRENT_LOG_FILE" || ! -f "$CURRENT_LOG_FILE" ]]; then
         init_logging
     fi
-    
+
     # Write to log file
     echo "[${timestamp}] [${level}] ${message}" >> "$CURRENT_LOG_FILE"
 }
@@ -77,9 +77,9 @@ log_success() {
 log_command() {
     local command="$1"
     local description="${2:-$command}"
-    
+
     log_info "Executing: $description"
-    
+
     # Execute the command and capture output
     local output
     if output=$(eval "$command" 2>&1); then
@@ -114,16 +114,16 @@ log_command() {
 execute_with_log() {
     local cmd="$1"
     local msg="${2:-$1}"
-    
+
     # Only show the command being executed if print_in_yellow exists
     if type print_in_yellow &>/dev/null; then
         print_in_yellow "   $msg...\n"
     fi
-    
+
     # Execute command and log it
     log_command "$cmd" "$msg"
     local exit_code=$?
-    
+
     # Show the result if print_result exists
     if type print_result &>/dev/null; then
         print_result $exit_code "$msg"
@@ -131,7 +131,7 @@ execute_with_log() {
         # Only show errors if print_result doesn't exist
         echo -e "\033[31m✗ $msg\033[0m"
     fi
-    
+
     return $exit_code
 }
 
@@ -167,7 +167,7 @@ finalize_logging() {
             echo "  Total Duration: $(($(date +%s) - $(date -r "$CURRENT_LOG_FILE" +%s))) seconds"
             echo "========================================================"
         } >> "$CURRENT_LOG_FILE"
-        
+
         print_in_purple "\n >> Logging finalized\n\n"
         print_in_yellow "   Log file: $CURRENT_LOG_FILE\n\n"
     fi

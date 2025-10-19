@@ -3,7 +3,7 @@
 
 # Get the directory of the current script
 SCRIPT_DIR=${0:a:h}
-JARVIS_DIR="$HOME/.jarvistoolset"
+DOTFILES_DIR="$HOME/dotfiles"
 
 # Source environment detection
 source "${SCRIPT_DIR}/detect_environment.zsh"
@@ -16,7 +16,7 @@ source "${SCRIPT_DIR}/logging.zsh" 2>/dev/null || true
 HOSTNAME=${1:-$(hostname)}
 USERNAME=${2:-$(whoami)}
 EMAIL=${3:-"evandro.reis@cordya.ai"}
-DIRECTORY=${4:-"$HOME/.jarvistoolset"}
+DIRECTORY=${4:-"$HOME/dotfiles"}
 
 # Export variables for use in other scripts
 export HOSTNAME
@@ -31,7 +31,7 @@ if type log_info &>/dev/null; then
     log_info "  Username: $USERNAME"
     log_info "  Email: $EMAIL"
     log_info "  Directory: $DIRECTORY"
-    log_info "  Detected OS: $JARVIS_OS"
+    log_info "  Detected OS: $DOTFILES_OS"
 fi
 
 # Function to call platform-specific setup
@@ -41,13 +41,13 @@ call_platform_setup() {
 
     case "$platform" in
         macos)
-            setup_script="${JARVIS_DIR}/macos/scripts/setup.zsh"
+            setup_script="${DOTFILES_DIR}/macos/scripts/setup.zsh"
             ;;
         linux)
-            setup_script="${JARVIS_DIR}/linux/scripts/os/setup.zsh"
+            setup_script="${DOTFILES_DIR}/linux/scripts/os/setup.zsh"
             ;;
         windows)
-            setup_script="${JARVIS_DIR}/windows/scripts/os/setup.ps1"
+            setup_script="${DOTFILES_DIR}/windows/scripts/os/setup.ps1"
             ;;
         *)
             print_error "Unsupported platform: $platform"
@@ -89,13 +89,13 @@ main() {
  >> Environment Detection
 "
     print_in_yellow "Detected environment:"
-    print_in_yellow "  OS: $JARVIS_OS"
-    print_in_yellow "  Shell: $JARVIS_SHELL"
-    print_in_yellow "  Package Manager: $JARVIS_PACKAGE_MANAGER"
-    print_in_yellow "  Terminal: $JARVIS_TERMINAL"
+    print_in_yellow "  OS: $DOTFILES_OS"
+    print_in_yellow "  Shell: $DOTFILES_SHELL"
+    print_in_yellow "  Package Manager: $DOTFILES_PACKAGE_MANAGER"
+    print_in_yellow "  Terminal: $DOTFILES_TERMINAL"
 
     # Verify OS support
-    if [[ "$JARVIS_OS" == "unknown" ]]; then
+    if [[ "$DOTFILES_OS" == "unknown" ]]; then
         print_error "Unknown operating system detected. This toolset supports macOS, Linux, and Windows."
         if type log_error &>/dev/null; then
             log_error "Unknown operating system detected"
@@ -105,21 +105,21 @@ main() {
 
     # Call platform-specific setup
     print_in_purple "
- >> Starting platform-specific setup for $JARVIS_OS
+ >> Starting platform-specific setup for $DOTFILES_OS
 "
 
-    call_platform_setup "$JARVIS_OS"
+    call_platform_setup "$DOTFILES_OS"
     local exit_code=$?
 
     if [[ $exit_code -eq 0 ]]; then
-        print_success "Setup completed successfully for $JARVIS_OS"
+        print_success "Setup completed successfully for $DOTFILES_OS"
         if type log_success &>/dev/null; then
-            log_success "Setup completed successfully for $JARVIS_OS"
+            log_success "Setup completed successfully for $DOTFILES_OS"
         fi
     else
-        print_error "Setup failed for $JARVIS_OS with exit code $exit_code"
+        print_error "Setup failed for $DOTFILES_OS with exit code $exit_code"
         if type log_error &>/dev/null; then
-            log_error "Setup failed for $JARVIS_OS with exit code $exit_code"
+            log_error "Setup failed for $DOTFILES_OS with exit code $exit_code"
         fi
     fi
 

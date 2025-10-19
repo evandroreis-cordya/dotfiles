@@ -118,16 +118,16 @@ get_environment_info() {
 }
 
 # Export environment variables
-export JARVIS_OS=$(detect_os)
-export JARVIS_SHELL=$(detect_shell)
-export JARVIS_PACKAGE_MANAGER=$(detect_package_manager "$JARVIS_OS")
-export JARVIS_TERMINAL=$(detect_terminal)
+export DOTFILES_OS=$(detect_os)
+export DOTFILES_SHELL=$(detect_shell)
+export DOTFILES_PACKAGE_MANAGER=$(detect_package_manager "$DOTFILES_OS")
+export DOTFILES_TERMINAL=$(detect_terminal)
 
 # Log environment detection
 if type log_info &>/dev/null; then
     log_info "Environment detected:"
-    log_info "  OS: $JARVIS_OS"
-    log_info "  Shell: $JARVIS_SHELL"
-    log_info "  Package Manager: $JARVIS_PACKAGE_MANAGER"
-    log_info "  Terminal: $JARVIS_TERMINAL"
+    log_info "  OS: $DOTFILES_OS"
+    log_info "  Shell: $DOTFILES_SHELL"
+    log_info "  Package Manager: $DOTFILES_PACKAGE_MANAGER"
+    log_info "  Terminal: $DOTFILES_TERMINAL"
 fi

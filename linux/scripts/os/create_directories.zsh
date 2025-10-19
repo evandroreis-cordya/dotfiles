@@ -17,37 +17,37 @@ create_directories() {
         "$HOME/.local/share"     # User-specific data files
         "$HOME/.local/state"     # User-specific state files
         "$HOME/.cache"           # User-specific cache files
-        
+
         # Custom directories
         "$HOME/.personalize"     # Personal customization files
         "$HOME/Projects"         # Development projects
         "$HOME/Workspace"        # Work-related files
         "$HOME/.ssh"            # SSH configuration
         "$HOME/.gnupg"          # GPG configuration
-        
+
         # Development directories
         "$HOME/.npm-global"     # Global npm packages
         "$HOME/.composer"       # Composer packages
         "$HOME/.gradle"         # Gradle configuration
         "$HOME/.m2"            # Maven configuration
-        
+
         # Backup directories
         "$HOME/Backups"        # General backups
         "$HOME/Backups/Apps" \
         "$HOME/Backups/Configs" \
-        "$HOME/Backups/.jarvistoolset" # jarvistoolset backups
-        
+        "$HOME/Backups/dotfiles" # dotfiles backups
+
         # Application directories
         "$HOME/.config/nvim"   # Neovim configuration
         "$HOME/.config/git"    # Git configuration
         "$HOME/.config/zsh"    # Zsh configuration
-        
-        # Jarvistoolset logs directory
-        "$HOME/.jarvistoolset/logs" # Installation logs
+
+        # Dotfiles logs directory
+        "$HOME/dotfiles/logs" # Installation logs
     )
 
     print_in_purple "\n >> Creating directories\n\n"
-    
+
     # Log the directory creation process
     if type log_info &>/dev/null; then
         log_info "Creating directories"
@@ -57,17 +57,17 @@ create_directories() {
     for dir in $DIRECTORIES; do
         if mkdir -p "$dir" &>/dev/null; then
             print_success "Created directory: $dir"
-            
+
             # Log directory creation
             if type log_info &>/dev/null; then
                 log_success "Created directory: $dir"
             fi
-            
+
             # Set restrictive permissions for sensitive directories
             case "$dir" in
                 */.ssh|*/.gnupg)
                     chmod 700 "$dir" &>/dev/null
-                    
+
                     # Log permission setting
                     if type log_info &>/dev/null; then
                         log_info "Set permissions 700 for sensitive directory: $dir"
@@ -75,7 +75,7 @@ create_directories() {
                     ;;
                 *)
                     chmod 755 "$dir" &>/dev/null
-                    
+
                     # Log permission setting
                     if type log_info &>/dev/null; then
                         log_info "Set permissions 755 for directory: $dir"
@@ -84,14 +84,14 @@ create_directories() {
             esac
         else
             print_error "Failed to create directory: $dir"
-            
+
             # Log directory creation failure
             if type log_error &>/dev/null; then
                 log_error "Failed to create directory: $dir"
             fi
         fi
     done
-    
+
     # Log completion
     if type log_info &>/dev/null; then
         log_success "Directory creation completed"
@@ -107,7 +107,7 @@ main() {
     fi
 
     create_directories
-    
+
     # Log main function completion
     if type log_info &>/dev/null; then
         log_success "Directory creation process completed"

@@ -4,19 +4,19 @@ param(
     [string]$Hostname = $env:COMPUTERNAME,
     [string]$Username = $env:USERNAME,
     [string]$Email = "evandro.reis@cordya.ai",
-    [string]$Directory = "$env:USERPROFILE\.jarvistoolset"
+    [string]$Directory = "$env:USERPROFILE\dotfiles"
 )
 
 # Get the directory of the current script
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$JarvisDir = "$env:USERPROFILE\.jarvistoolset"
+$DotfilesDir = "$env:USERPROFILE\dotfiles"
 
 # Source environment detection
-. "$JarvisDir\generic\scripts\os\detect_environment.ps1"
+. "$DotfilesDir\generic\scripts\os\detect_environment.ps1"
 
 # Source utility scripts
-. "$JarvisDir\generic\scripts\os\utils.ps1" -ErrorAction SilentlyContinue
-. "$JarvisDir\generic\scripts\os\logging.ps1" -ErrorAction SilentlyContinue
+. "$DotfilesDir\generic\scripts\os\utils.ps1" -ErrorAction SilentlyContinue
+. "$DotfilesDir\generic\scripts\os\logging.ps1" -ErrorAction SilentlyContinue
 
 # Log configuration
 Write-LogInfo "Generic setup configuration:"
@@ -24,16 +24,16 @@ Write-LogInfo "  Hostname: $Hostname"
 Write-LogInfo "  Username: $Username"
 Write-LogInfo "  Email: $Email"
 Write-LogInfo "  Directory: $Directory"
-Write-LogInfo "  Detected OS: $env:JARVIS_OS"
+Write-LogInfo "  Detected OS: $env:DOTFILES_OS"
 
 # Function to call platform-specific setup
 function Invoke-PlatformSetup {
     param([string]$Platform)
 
     $setupScript = switch ($Platform) {
-        "macos" { "$JarvisDir\macos\scripts\setup.zsh" }
-        "linux" { "$JarvisDir\linux\scripts\os\setup.zsh" }
-        "windows" { "$JarvisDir\windows\scripts\os\setup.ps1" }
+        "macos" { "$DotfilesDir\macos\scripts\setup.zsh" }
+        "linux" { "$DotfilesDir\linux\scripts\os\setup.zsh" }
+        "windows" { "$DotfilesDir\windows\scripts\os\setup.ps1" }
         default {
             Write-Error "Unsupported platform: $Platform"
             Write-LogError "Unsupported platform: $Platform"
@@ -66,29 +66,29 @@ function Main {
     # Display environment information
     Write-Host "`n >> Environment Detection" -ForegroundColor Magenta
     Write-Host "Detected environment:" -ForegroundColor Yellow
-    Write-Host "  OS: $env:JARVIS_OS" -ForegroundColor Yellow
-    Write-Host "  Shell: $env:JARVIS_SHELL" -ForegroundColor Yellow
-    Write-Host "  Package Manager: $env:JARVIS_PACKAGE_MANAGER" -ForegroundColor Yellow
-    Write-Host "  Terminal: $env:JARVIS_TERMINAL" -ForegroundColor Yellow
+    Write-Host "  OS: $env:DOTFILES_OS" -ForegroundColor Yellow
+    Write-Host "  Shell: $env:DOTFILES_SHELL" -ForegroundColor Yellow
+    Write-Host "  Package Manager: $env:DOTFILES_PACKAGE_MANAGER" -ForegroundColor Yellow
+    Write-Host "  Terminal: $env:DOTFILES_TERMINAL" -ForegroundColor Yellow
 
     # Verify OS support
-    if ($env:JARVIS_OS -eq "unknown") {
+    if ($env:DOTFILES_OS -eq "unknown") {
         Write-Error "Unknown operating system detected. This toolset supports macOS, Linux, and Windows."
         Write-LogError "Unknown operating system detected"
         exit 1
     }
 
     # Call platform-specific setup
-    Write-Host "`n >> Starting platform-specific setup for $env:JARVIS_OS" -ForegroundColor Magenta
+    Write-Host "`n >> Starting platform-specific setup for $env:DOTFILES_OS" -ForegroundColor Magenta
 
-    $exitCode = Invoke-PlatformSetup $env:JARVIS_OS
+    $exitCode = Invoke-PlatformSetup $env:DOTFILES_OS
 
     if ($exitCode -eq 0) {
-        Write-Success "Setup completed successfully for $env:JARVIS_OS"
-        Write-LogSuccess "Setup completed successfully for $env:JARVIS_OS"
+        Write-Success "Setup completed successfully for $env:DOTFILES_OS"
+        Write-LogSuccess "Setup completed successfully for $env:DOTFILES_OS"
     } else {
-        Write-Error "Setup failed for $env:JARVIS_OS with exit code $exitCode"
-        Write-LogError "Setup failed for $env:JARVIS_OS with exit code $exitCode"
+        Write-Error "Setup failed for $env:DOTFILES_OS with exit code $exitCode"
+        Write-LogError "Setup failed for $env:DOTFILES_OS with exit code $exitCode"
     }
 
     return $exitCode

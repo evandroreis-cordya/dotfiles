@@ -77,7 +77,7 @@ function Create-Directories {
 # Function to backup existing files
 function Backup-File {
     param([string]$FilePath)
-    $backupDir = "$env:USERPROFILE\.jarvistoolset\backups"
+    $backupDir = "$env:USERPROFILE\dotfiles\backups"
 
     if (Test-Path $FilePath) {
         if (-not (Test-Path $backupDir)) {

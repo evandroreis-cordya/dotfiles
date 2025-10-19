@@ -22,7 +22,7 @@ verify_git_config() {
 
 verify_github_ssh() {
     print_in_purple "\n >> Verifying GitHub SSH access\n\n"
-    
+
     if ! ssh -T git@github.com &> /dev/null; then
         if [[ $? -ne 1 ]]; then
             source "${SCRIPT_DIR}/set_github_ssh_key.zsh" || return 1
@@ -32,16 +32,16 @@ verify_github_ssh() {
     fi
 }
 
-update_jarvistoolset() {
+update_dotfiles() {
     local current_branch
     current_branch=$(git symbolic-ref --short HEAD 2> /dev/null)
-    
+
     if [[ -z "$current_branch" ]]; then
         print_error "Not in a git repository"
         return 1
     fi
 
-    print_in_purple "\n >> Updating jarvistoolset content\n\n"
+    print_in_purple "\n >> Updating dotfiles content\n\n"
 
     # Stash any local changes
     if ! git diff --quiet HEAD; then
@@ -53,15 +53,15 @@ update_jarvistoolset() {
     if execute "git fetch --all" "Fetching updates"; then
         if execute "git reset --hard origin/$current_branch" "Updating to latest version"; then
             execute "git clean -fd" "Cleaning up"
-            
+
             # Pop stashed changes if any
             if git stash list | grep -q "Auto-stash before updating content"; then
                 print_warning "Restoring local changes"
                 git stash pop
             fi
-            
-            print_success "jarvistoolset updated successfully"
-            
+
+            print_success "dotfiles updated successfully"
+
             # Check if we need to run setup again
             if [[ -f "${SCRIPT_DIR}/install/main.zsh" ]]; then
                 ask_for_confirmation "Would you like to run the setup script to apply any new changes?"
@@ -70,7 +70,7 @@ update_jarvistoolset() {
                 fi
             fi
         else
-            print_error "Failed to update jarvistoolset"
+            print_error "Failed to update dotfiles"
             return 1
         fi
     else
@@ -92,10 +92,10 @@ main() {
     # Verify GitHub SSH access
     verify_github_ssh || return 1
 
-    # Update jarvistoolset content
-    ask_for_confirmation "Would you like to update the jarvistoolset content?"
+    # Update dotfiles content
+    ask_for_confirmation "Would you like to update the dotfiles content?"
     if answer_is_yes; then
-        update_jarvistoolset
+        update_dotfiles
     fi
 }
 

@@ -98,7 +98,7 @@ export XDG_CACHE_HOME="$HOME/.cache"
 export XDG_RUNTIME_DIR="$HOME/.local/run"
 
 # Custom
-export JARVIS_DIR="$HOME/.jarvistoolset"
-export JARVIS_CONFIG_DIR="$JARVIS_DIR/configs"
-export JARVIS_SCRIPTS_DIR="$JARVIS_DIR/scripts"
-export JARVIS_LOGS_DIR="$JARVIS_DIR/logs"
+export DOTFILES_DIR="$HOME/dotfiles"
+export DOTFILES_CONFIG_DIR="$DOTFILES_DIR/configs"
+export DOTFILES_SCRIPTS_DIR="$DOTFILES_DIR/scripts"
+export DOTFILES_LOGS_DIR="$DOTFILES_DIR/logs"

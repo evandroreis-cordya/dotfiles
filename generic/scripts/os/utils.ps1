@@ -85,7 +85,7 @@ function Create-Directories {
 # Function to backup existing files
 function Backup-File {
     param([string]$FilePath)
-    $backupDir = "$env:USERPROFILE\.jarvistoolset\backups"
+    $backupDir = "$env:USERPROFILE\dotfiles\backups"
 
     if (Test-Path $FilePath) {
         if (-not (Test-Path $backupDir)) {
@@ -129,7 +129,7 @@ function Install-Package {
             }
         }
         "linux" {
-            $packageManager = $env:JARVIS_PACKAGE_MANAGER
+            $packageManager = $env:DOTFILES_PACKAGE_MANAGER
             switch ($packageManager) {
                 "apt" { sudo apt update; sudo apt install -y $Package }
                 "yum" { sudo yum install -y $Package }
@@ -293,9 +293,9 @@ function Get-SystemInfo {
     $info = @{
         "Operating System" = $os
         "Architecture" = $arch
-        "Shell" = $env:JARVIS_SHELL
-        "Package Manager" = $env:JARVIS_PACKAGE_MANAGER
-        "Terminal" = $env:JARVIS_TERMINAL
+        "Shell" = $env:DOTFILES_SHELL
+        "Package Manager" = $env:DOTFILES_PACKAGE_MANAGER
+        "Terminal" = $env:DOTFILES_TERMINAL
     }
 
     switch ($os) {

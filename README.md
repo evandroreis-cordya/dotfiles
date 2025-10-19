@@ -1,26 +1,41 @@
-          __                   _       _____            _          _
-          \ \  __ _ _ ____   _(_)___  /__   \___   ___ | |___  ___| |_
-           \ \/ _` | '__\ \ / / / __|   / /\/ _ \ / _ \| / __|/ _ \ __|
-        /\_/ / (_| | |   \ V /| \__ \  / / | (_) | (_) | \__ \  __/ |_
-        \___/ \__,_|_|    \_/ |_|___/  \/   \___/ \___/|_|___/\___|\__|
+ 
+   .oooooo.                            .o8                        o8o          
+ d8P'  `Y8b                          "888                        `YP          
+888           .ooooo.  oooo d8b  .oooo888  oooo    ooo  .oooo.    '   .oooo.o 
+888          d88' `88b `888""8P d88' `888   `88.  .8'  `P  )88b      d88(  "8 
+888          888   888  888     888   888    `88..8'    .oP"888      `"Y88b.  
+`88b    ooo  888   888  888     888   888     `888'    d8(  888      o.  )88b 
+ `Y8bood8P'  `Y8bod8P' d888b    `Y8bod88P"     .8'     `Y888""8o     8""888P' 
+                                           .o..P'                             
+                                           `Y8P'                              
+                                                                              
 
-Welcome to ARVOS.AI Jarvis Toolset 25H1 Edition, the complete multi-platform tools and apps installer for AI and Vibe Coders!
-Copyright (c) 2025 ARVOS.AI. All rights reserved.
+            .o8                .    .o88o.  o8o  oooo                     
+           "888              .o8    888 `"  `"'  `888                     
+       .oooo888   .ooooo.  .o888oo o888oo  oooo   888   .ooooo.   .oooo.o 
+      d88' `888  d88' `88b   888    888    `888   888  d88' `88b d88(  "8 
+      888   888  888   888   888    888     888   888  888ooo888 `"Y88b.  
+      888   888  888   888   888 .  888     888   888  888    .o o.  )88b 
+      `Y8bod88P" `Y8bod8P'   "888" o888o   o888o o888o `Y8bod8P' 8""888P'                                                                  
+ 
+
+Welcome to Cordya's dotfiles 2026 Edition, the complete multi-platform tools and apps installer for AI Engineers and Developers
+Copyright (C) 2026 Cordya AI. Developed in Brazil by Evandro Reis. All rights reserved.
 
 ## Introduction
 
 First and foremost, I want to express my gratitude to [Victor Cavalcante](https://github.com/vcavalcante/) (a great friend from Lambda3) who introduced me to the concept of dotfiles and guided me through his tutorial. Thank you, brother. Special thanks also to [Cătălin Mariș](https://github.com/alrra) for the scripts and enhancements. 
 
-**WARNING:** If you want to use this jarvistoolset and configuration scripts, first fork this repository. **DO NOT** use them without understanding what they do.
+**WARNING:** If you want to use this dotfiles and configuration scripts, first fork this repository. **DO NOT** use them without understanding what they do.
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/jarvistoolset.git ~/.jarvistoolset
+git clone https://github.com/YOUR_USERNAME/dotfiles.git ~/dotfiles
 ```
-**WARNING:** If you don't fork this repository, you will not be able to make changes to the configuration files. It must be downloaded from your forked repository. You must clone it in the `~/.jarvistoolset` directory otherwise the script will not work.
+**WARNING:** If you don't fork this repository, you will not be able to make changes to the configuration files. It must be downloaded from your forked repository. You must clone it in the `~/dotfiles` directory otherwise the script will not work.
 
 ## Supported Platforms
 
-The Jarvis Toolset now supports multiple operating systems:
+The Dotfiles now supports multiple operating systems:
 
 | Platform | Shell | Package Manager | Terminal | Status |
 |----------|-------|----------------|----------|--------|
@@ -55,25 +70,25 @@ The Jarvis Toolset now supports multiple operating systems:
 
 ### macOS
 ```zsh
-cd ~/.jarvistoolset
-./start_jarvis.zsh
+cd ~/dotfiles
+./start_dotfiles.zsh
 ```
 
 ### Linux
 ```bash
-cd ~/.jarvistoolset
-./start_jarvis.zsh
+cd ~/dotfiles
+./start_dotfiles.zsh
 ```
 
 ### Windows
 ```powershell
-cd $env:USERPROFILE\.jarvistoolset
-.\start_jarvis.ps1
+cd $env:USERPROFILE\dotfiles
+.\start_dotfiles.ps1
 ```
 
 ## Recent Updates (March 2025)
 
-The following major improvements have been made to the Jarvis Toolset:
+The following major improvements have been made to the Dotfiles:
 
 ### Core System Improvements
 - **Fixed Script Paths**: Corrected path references in all installation scripts to ensure proper sourcing of utility files
@@ -108,16 +123,16 @@ Review the code and remove anything you find unnecessary. The main files you sho
 
 | File | Purpose |
 |------|---------|
-| `start_jarvis.zsh` | Main entry script that calls setup.zsh with default arguments |
+| `start_dotfiles.zsh` | Main entry script that calls setup.zsh with default arguments |
 | `setup.zsh` | Main setup script and hub for calling other scripts |
 | `create_local_config_files.zsh` | Creation of local configurations (.local) |
 
 ## Directory Structure
 
-The Jarvis Toolset follows a modular, multi-platform organization with scripts grouped by functionality and platform:
+The Dotfiles follows a modular, multi-platform organization with scripts grouped by functionality and platform:
 
 ```
-.jarvistoolset/
+dotfiles/
 ├── resources/                 # Shared resources and assets
 │   └── fonts/                 # Font files for all platforms
 ├── generic/                   # Generic configurations and scripts
@@ -195,18 +210,18 @@ When running the setup script, you can select which groups of tools to install:
 
 ## Enhanced Logging System
 
-The Jarvis Toolset features a comprehensive logging system that:
+The Dotfiles features a comprehensive logging system that:
 
 - Records all installation and configuration activities
 - Maintains silent logging for installation messages unless there's an error
 - Provides detailed logs for troubleshooting
 - Integrates with all print functions for consistent output
 
-All logs are stored in `$HOME/.jarvistoolset/logs/` with timestamps and log levels.
+All logs are stored in `$HOME/dotfiles/logs/` with timestamps and log levels.
 
 ## Advanced Configuration Management System
 
-The jarvistoolset features a sophisticated configuration management system that ensures optimal loading order and prevents conflicts between different tools and languages.
+The dotfiles features a sophisticated configuration management system that ensures optimal loading order and prevents conflicts between different tools and languages.
 
 ### Load Order Management
 
@@ -237,7 +252,7 @@ Built-in alias conflict detection system:
 
 ### Configuration Files Structure
 
-All configuration files are stored in `$HOME/.jarvistoolset/macos/configs/shell/zsh_configs/`:
+All configuration files are stored in `$HOME/dotfiles/macos/configs/shell/zsh_configs/`:
 
 | File | Purpose | Load Order |
 |------|---------|------------|
@@ -289,11 +304,11 @@ Feel free to send suggestions, corrections, and feedback. I'll accept pull reque
 2. **Clone and Setup**:
    ```zsh
    # Fork and clone the repository
-   git clone https://github.com/YOUR_USERNAME/jarvistoolset.git ~/.jarvistoolset
-   cd ~/.jarvistoolset
+   git clone https://github.com/YOUR_USERNAME/dotfiles.git ~/dotfiles
+   cd ~/dotfiles
    
    # Run the setup script
-   ./start_jarvis.zsh
+   ./start_dotfiles.zsh
    ```
 
 3. **Post-Installation**:
@@ -320,11 +335,11 @@ Feel free to send suggestions, corrections, and feedback. I'll accept pull reque
 2. **Clone and Setup**:
    ```bash
    # Fork and clone the repository
-   git clone https://github.com/YOUR_USERNAME/jarvistoolset.git ~/.jarvistoolset
-   cd ~/.jarvistoolset
+   git clone https://github.com/YOUR_USERNAME/dotfiles.git ~/dotfiles
+   cd ~/dotfiles
    
    # Run the setup script
-   ./start_jarvis.zsh
+   ./start_dotfiles.zsh
    ```
 
 3. **Post-Installation**:
@@ -347,11 +362,11 @@ Feel free to send suggestions, corrections, and feedback. I'll accept pull reque
 2. **Clone and Setup**:
    ```powershell
    # Fork and clone the repository
-   git clone https://github.com/YOUR_USERNAME/jarvistoolset.git $env:USERPROFILE\.jarvistoolset
-   cd $env:USERPROFILE\.jarvistoolset
+   git clone https://github.com/YOUR_USERNAME/dotfiles.git $env:USERPROFILE\dotfiles
+   cd $env:USERPROFILE\dotfiles
    
    # Run the setup script (as Administrator)
-   .\start_jarvis.ps1
+   .\start_dotfiles.ps1
    ```
 
 3. **Post-Installation**:
@@ -362,7 +377,7 @@ Feel free to send suggestions, corrections, and feedback. I'll accept pull reque
 
 ## Installed Tools by Category
 
-Below is a comprehensive list of tools installed by the Jarvis Toolset, organized by script group.
+Below is a comprehensive list of tools installed by the Dotfiles, organized by script group.
 
 ### System Setup
 
@@ -478,7 +493,7 @@ Below is a comprehensive list of tools installed by the Jarvis Toolset, organize
 
 ### AI and Productivity Tools
 
-The Jarvis Toolset includes a comprehensive suite of AI and machine learning tools covering all major platforms and use cases:
+The Dotfiles includes a comprehensive suite of AI and machine learning tools covering all major platforms and use cases:
 
 #### Core AI Platforms
 
@@ -576,7 +591,7 @@ The Jarvis Toolset includes a comprehensive suite of AI and machine learning too
 
 ## Available Installation Scripts
 
-The jarvistoolset includes a comprehensive set of installation scripts organized by category. Each script group can be installed independently or as part of the complete setup.
+The dotfiles includes a comprehensive set of installation scripts organized by category. Each script group can be installed independently or as part of the complete setup.
 
 ### System Setup Scripts
 
@@ -692,7 +707,7 @@ The jarvistoolset includes a comprehensive set of installation scripts organized
 
 ### Anthropic MCP Integration
 
-The Jarvis Toolset now includes comprehensive support for Anthropic's Model Control Protocol (MCP):
+The Dotfiles now includes comprehensive support for Anthropic's Model Control Protocol (MCP):
 
 - **MCP Server Setup**: Automated installation and configuration of MCP servers
 - **Client Libraries**: Complete client-side tools for interacting with MCP servers
@@ -750,7 +765,7 @@ If you encounter issues during the installation process, here are common solutio
 **Problem**: Shell configurations not loading properly or conflicts between tools.
 
 **Solutions**:
-1. Check the load order in `~/.jarvistoolset/zsh_configs/00_load_order.zsh`
+1. Check the load order in `~/dotfiles/zsh_configs/00_load_order.zsh`
 2. Verify that configuration files exist and are executable
 3. Use `source ~/.zshrc` to reload configurations
 4. Check for alias conflicts using the built-in conflict detection system
@@ -771,7 +786,7 @@ If you encounter issues during the installation process, here are common solutio
 **Problem**: Specific tools fail to install or configure.
 
 **Solutions**:
-1. Check detailed logs in `~/.jarvistoolset/logs/` for error information
+1. Check detailed logs in `~/dotfiles/logs/` for error information
 2. Ensure internet connectivity and sufficient disk space
 3. Try running installation scripts manually for more detailed output
 4. Verify that prerequisites are installed (Xcode Command Line Tools, Homebrew)
@@ -783,7 +798,7 @@ If you encounter issues during the installation process, here are common solutio
 
 **Solutions**:
 1. Verify `ANTHROPIC_API_KEY` environment variable is set
-2. Check MCP server configuration in `~/.jarvistoolset/zsh_configs/anthropic.zsh`
+2. Check MCP server configuration in `~/dotfiles/zsh_configs/anthropic.zsh`
 3. Ensure MCP server is running on the correct host and port
 4. Use `mcp-status` alias to check server status
 5. Review MCP logs using `mcp-logs` alias
@@ -836,7 +851,7 @@ If you encounter issues during the installation process, here are common solutio
 
 If you continue to experience issues:
 
-1. **Check the Logs**: All installation activities are logged in `~/.jarvistoolset/logs/`
+1. **Check the Logs**: All installation activities are logged in `~/dotfiles/logs/`
 2. **Review Documentation**: Check individual tool documentation for specific requirements
 3. **Community Support**: Open an issue on the GitHub repository with detailed error information
 4. **Debug Mode**: Enable debug mode in scripts by uncommenting debug lines in configuration files
@@ -854,7 +869,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Contributing
 
-Contributions to the Jarvis Toolset are welcome! Please follow these guidelines:
+Contributions to the Dotfiles are welcome! Please follow these guidelines:
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)

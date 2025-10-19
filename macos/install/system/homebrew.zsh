@@ -21,16 +21,16 @@ get_homebrew_git_config_file_path() {
 
 install_homebrew() {
     print_in_purple "\n   Installing Homebrew\n\n"
-    
+
     if ! cmd_exists "brew"; then
         # Log the Homebrew installation
         if type log_info &>/dev/null; then
             log_info "Installing Homebrew"
         fi
-        
+
         # Install Homebrew
         printf "\n" | /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" > /dev/null 2>&1
-        
+
         # Configure Homebrew paths based on architecture
         if [[ "$(uname -m)" == "arm64" ]]; then
             # Apple Silicon
@@ -45,9 +45,9 @@ install_homebrew() {
                 eval "$(/usr/local/bin/brew shellenv)"
             fi
         fi
-        
+
         print_result $? "Homebrew installation"
-        
+
         # Log the result
         if type log_info &>/dev/null; then
             if [ $? -eq 0 ]; then
@@ -58,20 +58,20 @@ install_homebrew() {
         fi
     else
         print_success "Homebrew is already installed"
-        
+
         # Log that Homebrew is already installed
         if type log_info &>/dev/null; then
             log_info "Homebrew is already installed"
         fi
-        
+
         # Update Homebrew
         #print_in_yellow "==> Updating Homebrew...\n"
-        
+
         # Log the update
         if type log_info &>/dev/null; then
             log_info "Updating Homebrew"
         fi
-        
+
         # Execute brew update with logging
         if type execute_with_log &>/dev/null; then
             execute_with_log "brew update" "Updating Homebrew"
@@ -84,7 +84,7 @@ install_homebrew() {
 
 configure_homebrew() {
     print_in_purple "\n   Configuring Homebrew\n\n"
-    
+
     # Log the configuration
     if type log_info &>/dev/null; then
         log_info "Configuring Homebrew"
@@ -148,17 +148,17 @@ setup_homebrew_environment() {
     export HOMEBREW_NO_ANALYTICS=1
     export HOMEBREW_NO_INSECURE_REDIRECT=1
     export HOMEBREW_CASK_OPTS="--appdir=/Applications"
-    
+
     print_result $? "Homebrew (environment setup)"
 }
 
 create_homebrew_config() {
-    local config_dir="$HOME/.jarvistoolset/macos/configs/shell/zsh_configs"
+    local config_dir="$HOME/dotfiles/macos/configs/shell/zsh_configs"
     local config_file="$config_dir/homebrew.zsh"
-    
+
     # Create directory if it doesn't exist
     mkdir -p "$config_dir"
-    
+
     # Create Homebrew configuration file
     cat > "$config_file" << 'EOL'
 #!/bin/zsh
@@ -188,7 +188,7 @@ alias brewdeps="brew deps --tree --installed"
 alias brewdoc="brew doctor"
 alias brewout="brew outdated"
 EOL
-    
+
     print_result $? "Created Homebrew configuration file"
 }
 
@@ -196,7 +196,7 @@ EOL
 
 main() {
     print_in_purple "\n • Homebrew\n\n"
-    
+
     # Log the main Homebrew setup
     if type log_info &>/dev/null; then
         log_info "Starting Homebrew setup"
@@ -205,22 +205,22 @@ main() {
     install_homebrew
     setup_homebrew_environment
     configure_homebrew
-    
+
     # Create modular configuration
     create_homebrew_config
 
     # Check if oh-my-zsh.zsh is already sourcing the modular configs
-    if ! grep -q "source \"\$HOME/.jarvistoolset/macos/configs/shell/zsh_configs/homebrew.zsh\"" "$HOME/.zshrc"; then
+    if ! grep -q "source \"\$HOME/dotfiles/macos/configs/shell/zsh_configs/homebrew.zsh\"" "$HOME/.zshrc"; then
         # Add a line to source the Homebrew config in .zshrc if oh-my-zsh.zsh isn't handling it
         cat >> "$HOME/.zshrc" << 'EOL'
 # Load Homebrew configuration
-source "$HOME/.jarvistoolset/macos/configs/shell/zsh_configs/homebrew.zsh"
+source "$HOME/dotfiles/macos/configs/shell/zsh_configs/homebrew.zsh"
 EOL
         print_result $? "Added Homebrew configuration to .zshrc"
     fi
 
     print_in_green "\n  Homebrew installed and configured!\n"
-    
+
     # Log completion
     if type log_info &>/dev/null; then
         log_success "Homebrew setup completed"

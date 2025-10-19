@@ -16,7 +16,7 @@ if [[ ! -s "$HOME/.sdkman/bin/sdkman-init.sh" ]]; then
    Installing SDKMAN
 
 "
-    
+
     # Install SDKMAN with error handling
     curl -s "https://get.sdkman.io" | bash &> /dev/null
     if [[ $? -eq 0 && -s "$HOME/.sdkman/bin/sdkman-init.sh" ]]; then
@@ -38,17 +38,17 @@ sdk_install() {
     local package=$1
     local version=$2
     local readable_name=$3
-    
+
     # Check if already installed
     if sdk list "${package}" | grep -q "${version}.*\*"; then
         print_success "${readable_name} (already installed)"
         return 0
     fi
-    
+
     # Use printf to avoid the "yes: stdout: Broken pipe" error
     printf "y
 " | sdk install "${package}" "${version}" &>/dev/null
-    
+
     if sdk list "${package}" | grep -q "${version}.*\*"; then
         print_success "${readable_name}"
         return 0
@@ -191,12 +191,12 @@ print_result $? "Gradle configuration"
 
 # Create modular configuration file for Java
 create_java_config() {
-    local config_dir="$HOME/.jarvistoolset/macos/configs/shell/zsh_configs"
+    local config_dir="$HOME/dotfiles/macos/configs/shell/zsh_configs"
     local config_file="$config_dir/java.zsh"
-    
+
     # Create directory if it doesn't exist
     mkdir -p "$config_dir"
-    
+
     # Create Java configuration file
     cat > "$config_file" << 'EOL'
 #!/bin/zsh
@@ -210,11 +210,11 @@ setup_java() {
     # Check if Java is installed
     if ! /usr/libexec/java_home &>/dev/null; then
         echo "Java is not installed. Installing Java..."
-        
+
         # Check if Homebrew is installed
         if command -v brew &>/dev/null; then
             brew install --cask temurin
-            
+
             # Verify installation
             if ! /usr/libexec/java_home &>/dev/null; then
                 echo "Java installation failed. Please install manually using:"
@@ -224,7 +224,7 @@ setup_java() {
         elif command -v sdk &>/dev/null; then
             # If SDKMAN is available, use it to install Java
             sdk install java
-            
+
             # Verify installation
             if ! /usr/libexec/java_home &>/dev/null; then
                 echo "Java installation failed. Please install manually using:"
@@ -238,10 +238,10 @@ setup_java() {
             echo "2. Install Java: brew install --cask temurin"
             return 1
         fi
-        
+
         echo "Java installed successfully."
     fi
-    
+
     # Set Java environment variables
     export JAVA_HOME=$(/usr/libexec/java_home)
     export PATH="$JAVA_HOME/bin:$PATH"
@@ -260,7 +260,7 @@ setup_maven() {
     elif command -v sdk &>/dev/null && setup_java; then
         echo "Maven not found. Installing Maven via SDKMAN..."
         sdk install maven
-        
+
         if [ -d "$HOME/.sdkman/candidates/maven/current" ]; then
             export M2_HOME="$HOME/.sdkman/candidates/maven/current"
             export PATH="$M2_HOME/bin:$PATH"
@@ -288,7 +288,7 @@ setup_gradle() {
     elif command -v sdk &>/dev/null && setup_java; then
         echo "Gradle not found. Installing Gradle via SDKMAN..."
         sdk install gradle
-        
+
         if [ -d "$HOME/.sdkman/candidates/gradle/current" ]; then
             export GRADLE_HOME="$HOME/.sdkman/candidates/gradle/current"
             export PATH="$GRADLE_HOME/bin:$PATH"
@@ -372,19 +372,19 @@ new-java() {
         echo "Usage: new-java <project-name> [--gradle|--maven]"
         return 1
     fi
-    
+
     local project_name=$1
     local build_tool=${2:-"--gradle"}
-    
+
     # Create project directory
     mkdir -p "$project_name"
     cd "$project_name" || return
-    
+
     # Create basic project structure
     mkdir -p src/main/java/com/example
     mkdir -p src/test/java/com/example
     mkdir -p src/main/resources
-    
+
     # Create main application file
     cat > "src/main/java/com/example/App.java" << EOF
 package com.example;
@@ -402,7 +402,7 @@ public class App {
     }
 }
 EOF
-    
+
     # Create test file
     cat > "src/test/java/com/example/AppTest.java" << EOF
 package com.example;
@@ -418,7 +418,7 @@ public class AppTest {
     }
 }
 EOF
-    
+
     if [[ "$build_tool" == "--gradle" ]]; then
         # Create build.gradle file
         cat > "build.gradle" << EOF
@@ -453,17 +453,17 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 EOF
-        
+
         # Create settings.gradle file
         cat > "settings.gradle" << EOF
 rootProject.name = '$project_name'
 EOF
-        
+
         # Create gradle wrapper
         if command -v gradle >/dev/null 2>&1; then
             gradle wrapper
         fi
-        
+
     elif [[ "$build_tool" == "--maven" ]]; then
         # Create pom.xml file
         cat > "pom.xml" << EOF
@@ -522,7 +522,7 @@ EOF
 </project>
 EOF
     fi
-    
+
     # Create README.md
     cat > "README.md" << EOF
 # $project_name
@@ -559,7 +559,7 @@ mvn exec:java -Dexec.mainClass="com.example.App"
 mvn test
 \`\`\`
 EOF
-    
+
     # Create .gitignore
     cat > ".gitignore" << EOF
 # Gradle
@@ -596,14 +596,14 @@ out/
 # Mac
 .DS_Store
 EOF
-    
+
     # Initialize git repository if git is available
     if command -v git >/dev/null 2>&1; then
         git init
         git add .
         git commit -m "Initial commit"
     fi
-    
+
     echo "Java project '$project_name' created successfully!"
 }
 
@@ -639,7 +639,7 @@ java-list() {
     sdk list java
 }
 EOL
-    
+
     print_result $? "Created Java configuration file"
 }
 
@@ -647,11 +647,11 @@ EOL
 create_java_config
 
 # Check if oh-my-zsh.zsh is already sourcing the modular configs
-if ! grep -q "source \"\$HOME/.jarvistoolset/macos/configs/shell/zsh_configs/java.zsh\"" "$HOME/.zshrc"; then
+if ! grep -q "source \"\$HOME/dotfiles/macos/configs/shell/zsh_configs/java.zsh\"" "$HOME/.zshrc"; then
     # Add a line to source the Java config in .zshrc if oh-my-zsh.zsh isn't handling it
     cat >> "$HOME/.zshrc" << 'EOL'
 # Load Java configuration
-source "$HOME/.jarvistoolset/macos/configs/shell/zsh_configs/java.zsh"
+source "$HOME/dotfiles/macos/configs/shell/zsh_configs/java.zsh"
 EOL
     print_result $? "Added Java configuration to .zshrc"
 fi

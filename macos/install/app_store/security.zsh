@@ -33,12 +33,12 @@ brew_install "Vault" "vault"
 
 # Create modular configuration file for GPG
 create_gpg_config() {
-    local config_dir="$HOME/.jarvistoolset/macos/configs/shell/zsh_configs"
+    local config_dir="$HOME/dotfiles/macos/configs/shell/zsh_configs"
     local config_file="$config_dir/gpg.zsh"
-    
+
     # Create directory if it doesn't exist
     mkdir -p "$config_dir"
-    
+
     # Create GPG configuration file
     cat > "$config_file" << 'EOL'
 #!/bin/zsh
@@ -61,7 +61,7 @@ gpg-export() {
         echo "Usage: gpg-export <key-id>"
         return 1
     fi
-    
+
     local key_id=$1
     gpg --armor --export "$key_id"
 }
@@ -71,7 +71,7 @@ gpg-export-secret() {
         echo "Usage: gpg-export-secret <key-id>"
         return 1
     fi
-    
+
     local key_id=$1
     gpg --armor --export-secret-key "$key_id"
 }
@@ -81,23 +81,23 @@ gpg-import() {
         echo "Usage: gpg-import <key-file>"
         return 1
     fi
-    
+
     local key_file=$1
     gpg --import "$key_file"
 }
 EOL
-    
+
     print_result $? "Created GPG configuration file"
 }
 
 # Create modular configuration file for IPFS
 create_ipfs_config() {
-    local config_dir="$HOME/.jarvistoolset/macos/configs/shell/zsh_configs"
+    local config_dir="$HOME/dotfiles/macos/configs/shell/zsh_configs"
     local config_file="$config_dir/ipfs.zsh"
-    
+
     # Create directory if it doesn't exist
     mkdir -p "$config_dir"
-    
+
     # Create IPFS configuration file
     cat > "$config_file" << 'EOL'
 #!/bin/zsh
@@ -124,7 +124,7 @@ ipfs-init() {
         echo "IPFS is already initialized"
         return 0
     fi
-    
+
     ipfs init
     echo "IPFS initialized successfully"
 }
@@ -134,10 +134,10 @@ ipfs-publish() {
         echo "Usage: ipfs-publish <file-or-directory>"
         return 1
     fi
-    
+
     local target=$1
     local hash=$(ipfs add -Q -r "$target")
-    
+
     if [ -n "$hash" ]; then
         ipfs name publish "$hash"
         echo "Published $target to IPNS"
@@ -153,35 +153,35 @@ ipfs-get() {
         echo "Usage: ipfs-get <hash> [output-dir]"
         return 1
     fi
-    
+
     local hash=$1
     local output_dir=${2:-.}
-    
+
     ipfs get "$hash" -o "$output_dir"
     echo "Downloaded $hash to $output_dir"
 }
 EOL
-    
+
     print_result $? "Created IPFS configuration file"
 }
 
 # Configure GPG
 configure_gpg() {
     print_info "Configuring GPG..."
-    
+
     # Create GPG configuration directory
     mkdir -p "$HOME/.gnupg"
-    
+
     # Set proper permissions
     chmod 700 "$HOME/.gnupg"
-    
+
     # Create GPG agent configuration
     cat > "$HOME/.gnupg/gpg-agent.conf" << EOL
 default-cache-ttl 3600
 max-cache-ttl 86400
 pinentry-program /usr/local/bin/pinentry-mac
 EOL
-    
+
     # Create GPG configuration
     cat > "$HOME/.gnupg/gpg.conf" << EOL
 use-agent
@@ -204,25 +204,25 @@ require-cross-certification
 no-symkey-cache
 throw-keyids
 EOL
-    
+
     print_result $? "GPG configuration"
 }
 
 # Initialize IPFS
 initialize_ipfs() {
     print_info "Initializing IPFS..."
-    
+
     # Check if IPFS is already initialized
     if [ -d "$HOME/.ipfs" ]; then
         print_success "IPFS is already initialized"
     else
         # Initialize IPFS
         execute "ipfs init" "Initialize IPFS"
-        
+
         # Configure IPFS
         execute "ipfs config Addresses.API /ip4/127.0.0.1/tcp/5001" "Configure IPFS API address"
         execute "ipfs config Addresses.Gateway /ip4/127.0.0.1/tcp/8080" "Configure IPFS Gateway address"
-        
+
         print_success "IPFS initialized and configured"
     fi
 }

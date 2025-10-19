@@ -3,7 +3,7 @@
 # This script fixes the utils.zsh paths in all zsh scripts in the macos directory
 
 # Base directory
-BASE_DIR="/Users/evandroreis/.jarvistoolset/macos/install"
+BASE_DIR="/Users/evandroreis/dotfiles/macos/install"
 
 # Find all zsh files
 find "$BASE_DIR" -name "*.zsh" | while read -r file; do

@@ -23,12 +23,12 @@ brew_install "pyenv-virtualenv" "pyenv-virtualenv"
 
 # Create modular configuration file for Python
 create_python_config() {
-    local config_dir="$HOME/.jarvistoolset/macos/configs/shell/zsh_configs"
+    local config_dir="$HOME/dotfiles/macos/configs/shell/zsh_configs"
     local config_file="$config_dir/python.zsh"
-    
+
     # Create directory if it doesn't exist
     mkdir -p "$config_dir"
-    
+
     # Create Python configuration file
     cat > "$config_file" << 'EOL'
 #!/bin/zsh
@@ -56,7 +56,7 @@ if [ -d "$VIRTUAL_ENV" ]; then
   export PATH="$VIRTUAL_ENV/bin:$PATH"
 fi
 EOL
-    
+
     print_result $? "Created Python configuration file"
 }
 

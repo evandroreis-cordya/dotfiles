@@ -18,12 +18,12 @@ brew_install "Kotlin" "kotlin"
 
 # Create modular configuration file for Kotlin
 create_kotlin_config() {
-    local config_dir="$HOME/.jarvistoolset/macos/configs/shell/zsh_configs"
+    local config_dir="$HOME/dotfiles/macos/configs/shell/zsh_configs"
     local config_file="$config_dir/kotlin.zsh"
-    
+
     # Create directory if it doesn't exist
     mkdir -p "$config_dir"
-    
+
     # Create Kotlin configuration file
     cat > "$config_file" << 'EOL'
 #!/bin/zsh
@@ -49,18 +49,18 @@ new-kotlin() {
         echo "Usage: new-kotlin <project-name> [--gradle|--maven]"
         return 1
     fi
-    
+
     local project_name=$1
     local project_type=${2:-"--gradle"}
-    
+
     # Create project directory
     mkdir -p "$project_name"
     cd "$project_name" || return
-    
+
     # Create basic project structure
     mkdir -p src/main/kotlin/com/example/$project_name
     mkdir -p src/test/kotlin/com/example/$project_name
-    
+
     # Create main application file
     cat > "src/main/kotlin/com/example/$project_name/App.kt" << EOF
 package com.example.$project_name
@@ -75,7 +75,7 @@ fun main() {
     println(App().greeting())
 }
 EOF
-    
+
     # Create test file
     cat > "src/test/kotlin/com/example/$project_name/AppTest.kt" << EOF
 package com.example.$project_name
@@ -91,7 +91,7 @@ class AppTest {
     }
 }
 EOF
-    
+
     if [[ "$project_type" == "--gradle" ]]; then
         # Create Gradle build files
         cat > "build.gradle.kts" << EOF
@@ -120,19 +120,19 @@ tasks.test {
     useJUnitPlatform()
 }
 EOF
-        
+
         # Create Gradle wrapper
         if command -v gradle >/dev/null 2>&1; then
             gradle wrapper
         else
             echo "Gradle not found. Install it with 'brew install gradle' to generate the wrapper."
         fi
-        
+
         # Create settings.gradle.kts
         cat > "settings.gradle.kts" << EOF
 rootProject.name = "$project_name"
 EOF
-        
+
     elif [[ "$project_type" == "--maven" ]]; then
         # Create Maven POM file
         cat > "pom.xml" << EOF
@@ -211,7 +211,7 @@ EOF
 </project>
 EOF
     fi
-    
+
     # Create README.md
     cat > "README.md" << EOF
 # $project_name
@@ -248,7 +248,7 @@ mvn exec:java -Dexec.mainClass="com.example.$project_name.AppKt"
 mvn test
 \`\`\`
 EOF
-    
+
     # Create .gitignore
     cat > ".gitignore" << EOF
 # Gradle
@@ -285,18 +285,18 @@ out/
 # Mac
 .DS_Store
 EOF
-    
+
     # Initialize git repository if git is available
     if command -v git >/dev/null 2>&1; then
         git init
         git add .
         git commit -m "Initial commit"
     fi
-    
+
     echo "Kotlin project '$project_name' created successfully!"
 }
 EOL
-    
+
     print_result $? "Created Kotlin configuration file"
 }
 
@@ -322,11 +322,11 @@ fi
 create_kotlin_config
 
 # Check if oh-my-zsh.zsh is already sourcing the modular configs
-if ! grep -q "source \"\$HOME/.jarvistoolset/macos/configs/shell/zsh_configs/kotlin.zsh\"" "$HOME/.zshrc"; then
+if ! grep -q "source \"\$HOME/dotfiles/macos/configs/shell/zsh_configs/kotlin.zsh\"" "$HOME/.zshrc"; then
     # Add a line to source the Kotlin config in .zshrc if oh-my-zsh.zsh isn't handling it
     cat >> "$HOME/.zshrc" << 'EOL'
 # Load Kotlin configuration
-source "$HOME/.jarvistoolset/macos/configs/shell/zsh_configs/kotlin.zsh"
+source "$HOME/dotfiles/macos/configs/shell/zsh_configs/kotlin.zsh"
 EOL
     print_result $? "Added Kotlin configuration to .zshrc"
 fi

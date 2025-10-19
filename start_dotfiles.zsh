@@ -4,15 +4,15 @@ set +x
 
 # Get the directory of the current script
 SCRIPT_DIR=${0:a:h}
-JARVIS_DIR="$HOME/.jarvistoolset"
+DOTFILES_DIR="$HOME/dotfiles"
 
 # Define paths to scripts
-UTILS_SCRIPT="${JARVIS_DIR}/generic/scripts/os/utils.zsh"
-LOGGING_SCRIPT="${JARVIS_DIR}/generic/scripts/os/logging.zsh"
-SETUP_SCRIPT="${JARVIS_DIR}/generic/scripts/os/setup.zsh"
+UTILS_SCRIPT="${DOTFILES_DIR}/generic/scripts/os/utils.zsh"
+LOGGING_SCRIPT="${DOTFILES_DIR}/generic/scripts/os/logging.zsh"
+SETUP_SCRIPT="${DOTFILES_DIR}/generic/scripts/os/setup.zsh"
 
 # Define the logs directory
-LOGS_DIR="$HOME/.jarvistoolset/logs"
+LOGS_DIR="$HOME/dotfiles/logs"
 
 # Ensure logs directory exists
 mkdir -p "$LOGS_DIR" 2>/dev/null
@@ -71,7 +71,7 @@ if ! type log_info >/dev/null 2>&1; then
         local timestamp=$(date "+%Y-%m-%d-%H%M%S")
 
         # Create log filename
-        CURRENT_LOG_FILE="${LOGS_DIR}/jarvistoolset-${timestamp}.log"
+        CURRENT_LOG_FILE="${LOGS_DIR}/dotfiles-${timestamp}.log"
 
         # Ensure logs directory exists again (double-check)
         mkdir -p "$(dirname "$CURRENT_LOG_FILE")" 2>/dev/null
@@ -85,7 +85,7 @@ if ! type log_info >/dev/null 2>&1; then
         # Add header to log file
         {
             echo "========================================================"
-            echo "  JARVIS TOOLSET INSTALLATION LOG"
+            echo "  DOTFILES INSTALLATION LOG"
             echo "  Started: $(date)"
             echo "  Hostname: $(hostname)"
             echo "  User: $(whoami)"
@@ -175,7 +175,7 @@ if ! type log_info >/dev/null 2>&1; then
             {
                 echo ""
                 echo "========================================================"
-                echo "  JARVIS TOOLSET INSTALLATION COMPLETED"
+                echo "  DOTFILES INSTALLATION COMPLETED"
                 echo "  Finished: $(date)"
                 echo "========================================================"
             } >> "$CURRENT_LOG_FILE"
@@ -198,13 +198,13 @@ init_logging
 # Log system information
 log_system_info
 
-# Log start of Jarvis Toolset (silently)
-log_info "Starting Jarvis Toolset"
+# Log start of Dotfiles (silently)
+log_info "Starting Dotfiles"
 
 # Check if the first argument is "/help"
 if [[ "$1" == "/help" ]]; then
     # Path to README.md - using absolute path to avoid directory resolution issues
-    README_PATH="${JARVIS_DIR}/README.md"
+    README_PATH="${DOTFILES_DIR}/README.md"
 
     # Verify README.md exists at the specified path
     if [[ ! -f "$README_PATH" ]]; then
@@ -246,7 +246,7 @@ fi
 HOSTNAME=${1:-$(hostname)}
 USERNAME=${2:-$(whoami)}
 EMAIL=${3:-"evandro.reis@cordya.ai"}
-DIRECTORY=${4:-"$HOME/.jarvistoolset"}
+DIRECTORY=${4:-"$HOME/dotfiles"}
 
 # Log configuration (silently)
 log_info "Configuration:"
@@ -257,7 +257,7 @@ log_info "  Directory: $DIRECTORY"
 
 
 # Path to the setup script
-SETUP_SCRIPT="${JARVIS_DIR}/generic/scripts/os/setup.zsh"
+SETUP_SCRIPT="${DOTFILES_DIR}/generic/scripts/os/setup.zsh"
 
 # Check if the setup script exists
 if [[ ! -f "$SETUP_SCRIPT" ]]; then
@@ -305,7 +305,7 @@ fi
 
 # Log execution of setup script
 log_info "Executing setup script: $SETUP_SCRIPT"
-echo "Starting Jarvis Toolset setup..."
+echo "Starting Dotfiles setup..."
 
 # Call the setup script with the arguments
 "$SETUP_SCRIPT" "$HOSTNAME" "$USERNAME" "$EMAIL" "$DIRECTORY"
@@ -316,10 +316,10 @@ EXIT_CODE=$?
 # Log the result of the setup script execution
 if [ $EXIT_CODE -eq 0 ]; then
     log_success "Setup script completed successfully"
-    echo "Jarvis Toolset setup completed successfully!"
+    echo "Dotfiles setup completed successfully!"
 else
     log_error "Setup script failed with exit code $EXIT_CODE"
-    print_error "Jarvis Toolset setup failed with exit code $EXIT_CODE"
+    print_error "Dotfiles setup failed with exit code $EXIT_CODE"
 fi
 
 # Finalize logging

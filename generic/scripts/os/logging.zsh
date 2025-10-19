@@ -3,7 +3,7 @@
 
 # Global variables for logging
 CURRENT_LOG_FILE=""
-LOGS_DIR="$HOME/.jarvistoolset/logs"
+LOGS_DIR="$HOME/dotfiles/logs"
 
 # Initialize logging
 init_logging() {
@@ -11,7 +11,7 @@ init_logging() {
     local timestamp=$(date "+%Y-%m-%d-%H%M%S")
 
     # Create log filename
-    CURRENT_LOG_FILE="${LOGS_DIR}/jarvistoolset-${timestamp}.log"
+    CURRENT_LOG_FILE="${LOGS_DIR}/dotfiles-${timestamp}.log"
 
     # Ensure logs directory exists
     mkdir -p "$(dirname "$CURRENT_LOG_FILE")" 2>/dev/null
@@ -25,12 +25,12 @@ init_logging() {
     # Add header to log file
     {
         echo "========================================================"
-        echo "  JARVIS TOOLSET INSTALLATION LOG"
+        echo "  DOTFILES TOOLSET INSTALLATION LOG"
         echo "  Started: $(date)"
         echo "  Hostname: $(hostname)"
         echo "  User: $(whoami)"
-        echo "  OS: ${JARVIS_OS:-$(get_os)}"
-        echo "  Shell: ${JARVIS_SHELL:-$(detect_shell)}"
+        echo "  OS: ${DOTFILES_OS:-$(get_os)}"
+        echo "  Shell: ${DOTFILES_SHELL:-$(detect_shell)}"
         echo "========================================================"
         echo ""
     } >> "$CURRENT_LOG_FILE"
@@ -123,17 +123,17 @@ execute_with_log() {
 # Log system information
 log_system_info() {
     log_info "System Information:"
-    log_info "  OS: ${JARVIS_OS:-$(get_os)}"
-    log_info "  Architecture: ${JARVIS_ARCH:-$(get_arch)}"
-    log_info "  Shell: ${JARVIS_SHELL:-$(detect_shell)}"
-    log_info "  Package Manager: ${JARVIS_PACKAGE_MANAGER:-$(detect_package_manager "${JARVIS_OS:-$(get_os)}")}"
-    log_info "  Terminal: ${JARVIS_TERMINAL:-$(detect_terminal)}"
+    log_info "  OS: ${DOTFILES_OS:-$(get_os)}"
+    log_info "  Architecture: ${DOTFILES_ARCH:-$(get_arch)}"
+    log_info "  Shell: ${DOTFILES_SHELL:-$(detect_shell)}"
+    log_info "  Package Manager: ${DOTFILES_PACKAGE_MANAGER:-$(detect_package_manager "${DOTFILES_OS:-$(get_os)}")}"
+    log_info "  Terminal: ${DOTFILES_TERMINAL:-$(detect_terminal)}"
     log_info "  User: $(whoami)"
     log_info "  Hostname: $(hostname)"
     log_info "  Home Directory: $HOME"
 
     # OS-specific system information
-    case "${JARVIS_OS:-$(get_os)}" in
+    case "${DOTFILES_OS:-$(get_os)}" in
         macos)
             log_info "  macOS Version: $(sw_vers -productVersion)"
             log_info "  macOS Build: $(sw_vers -buildVersion)"
@@ -154,10 +154,10 @@ log_system_info() {
 # Log environment variables
 log_environment() {
     log_info "Environment Variables:"
-    log_info "  JARVIS_OS: $JARVIS_OS"
-    log_info "  JARVIS_SHELL: $JARVIS_SHELL"
-    log_info "  JARVIS_PACKAGE_MANAGER: $JARVIS_PACKAGE_MANAGER"
-    log_info "  JARVIS_TERMINAL: $JARVIS_TERMINAL"
+    log_info "  DOTFILES_OS: $DOTFILES_OS"
+    log_info "  DOTFILES_SHELL: $DOTFILES_SHELL"
+    log_info "  DOTFILES_PACKAGE_MANAGER: $DOTFILES_PACKAGE_MANAGER"
+    log_info "  DOTFILES_TERMINAL: $DOTFILES_TERMINAL"
     log_info "  HOSTNAME: $HOSTNAME"
     log_info "  USERNAME: $USERNAME"
     log_info "  EMAIL: $EMAIL"
@@ -234,7 +234,7 @@ finalize_logging() {
         {
             echo ""
             echo "========================================================"
-            echo "  JARVIS TOOLSET INSTALLATION COMPLETED"
+            echo "  DOTFILES TOOLSET INSTALLATION COMPLETED"
             echo "  Finished: $(date)"
             echo "  Total Duration: $(($(date +%s) - $(stat -f %B "$CURRENT_LOG_FILE" 2>/dev/null || echo $(date +%s)))) seconds"
             echo "========================================================"
@@ -247,10 +247,10 @@ finalize_logging() {
 # Clean up old log files
 cleanup_logs() {
     local days_to_keep="${1:-7}"
-    local log_pattern="${LOGS_DIR}/jarvistoolset-*.log"
+    local log_pattern="${LOGS_DIR}/dotfiles-*.log"
 
     if [[ -d "$LOGS_DIR" ]]; then
-        find "$LOGS_DIR" -name "jarvistoolset-*.log" -type f -mtime +$days_to_keep -delete 2>/dev/null
+        find "$LOGS_DIR" -name "dotfiles-*.log" -type f -mtime +$days_to_keep -delete 2>/dev/null
         log_info "Cleaned up log files older than $days_to_keep days"
     fi
 }

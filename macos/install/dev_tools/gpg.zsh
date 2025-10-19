@@ -93,12 +93,12 @@ print_in_purple "
 
 # Create modular configuration file for GPG
 create_gpg_config() {
-    local config_dir="$HOME/.jarvistoolset/macos/configs/shell/zsh_configs"
+    local config_dir="$HOME/dotfiles/macos/configs/shell/zsh_configs"
     local config_file="$config_dir/gpg.zsh"
-    
+
     # Create directory if it doesn't exist
     mkdir -p "$config_dir"
-    
+
     # Create GPG configuration file
     cat > "$config_file" << 'EOL'
 #!/bin/zsh
@@ -121,7 +121,7 @@ gpg-export() {
         echo "Usage: gpg-export <key-id>"
         return 1
     fi
-    
+
     local key_id=$1
     gpg --armor --export "$key_id"
 }
@@ -131,7 +131,7 @@ gpg-export-secret() {
         echo "Usage: gpg-export-secret <key-id>"
         return 1
     fi
-    
+
     local key_id=$1
     gpg --armor --export-secret-key "$key_id"
 }
@@ -141,32 +141,32 @@ gpg-import() {
         echo "Usage: gpg-import <key-file>"
         return 1
     fi
-    
+
     local key_file=$1
     gpg --import "$key_file"
 }
 EOL
-    
+
     print_result $? "Created GPG configuration file"
 }
 
 # Configure GPG
 configure_gpg() {
     print_info "Configuring GPG..."
-    
+
     # Create GPG configuration directory
     mkdir -p "$HOME/.gnupg"
-    
+
     # Set proper permissions
     chmod 700 "$HOME/.gnupg"
-    
+
     # Create GPG agent configuration
     cat > "$HOME/.gnupg/gpg-agent.conf" << EOL
 default-cache-ttl 3600
 max-cache-ttl 86400
 pinentry-program /usr/local/bin/pinentry-mac
 EOL
-    
+
     # Create GPG configuration
     cat > "$HOME/.gnupg/gpg.conf" << EOL
 use-agent
@@ -189,7 +189,7 @@ require-cross-certification
 no-symkey-cache
 throw-keyids
 EOL
-    
+
     print_result $? "GPG configuration"
 }
 
@@ -200,11 +200,11 @@ create_gpg_config
 configure_gpg
 
 # Check if oh-my-zsh.zsh is already sourcing the modular configs
-if ! grep -q "source \"\$HOME/.jarvistoolset/macos/configs/shell/zsh_configs/gpg.zsh\"" "$HOME/.zshrc"; then
+if ! grep -q "source \"\$HOME/dotfiles/macos/configs/shell/zsh_configs/gpg.zsh\"" "$HOME/.zshrc"; then
     # Add a line to source the GPG config in .zshrc if oh-my-zsh.zsh isn't handling it
     cat >> "$HOME/.zshrc" << 'EOL'
 # Load GPG configuration
-source "$HOME/.jarvistoolset/macos/configs/shell/zsh_configs/gpg.zsh"
+source "$HOME/dotfiles/macos/configs/shell/zsh_configs/gpg.zsh"
 EOL
     print_result $? "Added GPG configuration to .zshrc"
 fi
