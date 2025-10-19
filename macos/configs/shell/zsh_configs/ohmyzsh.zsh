@@ -116,7 +116,7 @@ plugins=(
     #history-substring-search
     zsh-syntax-highlighting
     zsh-autosuggestions
-    #zsh-completions
+    zsh-completions
 )
 
 # Source Oh My Zsh

@@ -1,36 +1,50 @@
 # Zsh configuration file
 # Load all shell configurations
-for file in ~/dotfiles/macos/configs/shell/aliases/*; do
-    if [[ -f "$file" ]]; then
-        source "$file"
+
+# Set DOTFILES environment variable if not already set
+export DOTFILES="${DOTFILES:-$HOME/dotfiles}"
+
+if [ -f "$DOTFILES/macos/configs/shell/zsh_configs/00_load_order.zsh" ]; then
+    source "$DOTFILES/macos/configs/shell/zsh_configs/00_load_order.zsh"
+
+    # Load all configurations in the optimized order
+    load_configs_in_order
+else
+    # Fallback: Load Oh My Zsh first, then everything else
+    if [ -f "$DOTFILES/macos/configs/shell/zsh_configs/ohmyzsh.zsh" ]; then
+        source "$DOTFILES/macos/configs/shell/zsh_configs/ohmyzsh.zsh"
     fi
-done
 
-# Load zsh-specific configurations
-source ~/dotfiles/macos/configs/shell/zsh_exports
-source ~/dotfiles/macos/configs/shell/zsh_functions
-source ~/dotfiles/macos/configs/shell/zsh_options
-source ~/dotfiles/macos/configs/shell/zsh_prompt
+    # Load all other modular configurations from zsh_configs
+    for config_file in "$DOTFILES/macos/configs/shell/zsh_configs/"*.zsh; do
+        # Skip ohmyzsh.zsh and load order as they're already loaded
+        if [[ "$config_file" != *"ohmyzsh.zsh" ]] && \
+           [[ "$config_file" != *"00_load_order.zsh" ]] && \
+           [[ "$config_file" != *"template.zsh" ]] && \
+           [ -f "$config_file" ]; then
+            source "$config_file"
+        fi
+    done
+fi
 
-# Load colors
-source ~/dotfiles/macos/configs/shell/colors/macos/zsh_colors
+source "$DOTFILES/macos/configs/shell/colors/macos/zsh_colors"
 
 # Load autocomplete
-fpath=(~/dotfiles/macos/configs/shell/autocomplete/macos $fpath)
+fpath=("$DOTFILES/macos/configs/shell/autocomplete/macos" $fpath)
 
 # Initialize autocomplete
 autoload -Uz compinit
 compinit
 
 # Load other configurations
-source ~/dotfiles/macos/configs/shell/curlrc
+source "$DOTFILES/macos/configs/shell/curlrc"
 
 # Load keybindings
-if [[ -f ~/dotfiles/macos/configs/shell/zsh_keybindings ]]; then
-  source ~/dotfiles/macos/configs/shell/zsh_keybindings
+if [[ -f "$DOTFILES/macos/configs/shell/zsh_keybindings" ]]; then
+  source "$DOTFILES/macos/configs/shell/zsh_keybindings"
 fi
 
 # Load zsh_logout
-if [[ -f ~/dotfiles/macos/configs/shell/zsh_logout ]]; then
-  source ~/dotfiles/macos/configs/shell/zsh_logout
+if [[ -f "$DOTFILES/macos/configs/shell/zsh_logout" ]]; then
+  source "$DOTFILES/macos/configs/shell/zsh_logout"
 fi

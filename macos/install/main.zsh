@@ -29,7 +29,7 @@ $line"
 }
 
 # Create header
-create_header "macOS Setup Script" "1.0.0" "Installing and configuring your macOS development environment"
+create_header "macOS Setup Script" "2026.0.0" "Installing and configuring your macOS development environment"
 
 print_in_purple "
  >> Starting macOS setup

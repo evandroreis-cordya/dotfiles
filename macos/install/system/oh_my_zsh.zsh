@@ -62,6 +62,66 @@ install_custom_plugins() {
         git clone https://github.com/zsh-users/zsh-completions.git "$HOME/.oh-my-zsh/custom/plugins/zsh-completions" --quiet
         print_result $? "zsh-completions plugin"
     fi
+
+    # Install history-substring-search
+    if [[ ! -d "$HOME/.oh-my-zsh/custom/plugins/history-substring-search" ]]; then
+        git clone https://github.com/zsh-users/zsh-history-substring-search.git "$HOME/.oh-my-zsh/custom/plugins/history-substring-search" --quiet
+        print_result $? "history-substring-search plugin"
+    fi
+
+    # Install thefuck
+    if [[ ! -d "$HOME/.oh-my-zsh/custom/plugins/thefuck" ]]; then
+        git clone https://github.com/nvbn/thefuck.git "$HOME/.oh-my-zsh/custom/plugins/thefuck" --quiet
+        print_result $? "thefuck plugin"
+    fi
+
+    # Install fzf-tab (enhanced tab completion)
+    if [[ ! -d "$HOME/.oh-my-zsh/custom/plugins/fzf-tab" ]]; then
+        git clone https://github.com/Aloxaf/fzf-tab.git "$HOME/.oh-my-zsh/custom/plugins/fzf-tab" --quiet
+        print_result $? "fzf-tab plugin"
+    fi
+
+    # Install fast-syntax-highlighting (alternative to zsh-syntax-highlighting)
+    if [[ ! -d "$HOME/.oh-my-zsh/custom/plugins/fast-syntax-highlighting" ]]; then
+        git clone https://github.com/zdharma-continuum/fast-syntax-highlighting.git "$HOME/.oh-my-zsh/custom/plugins/fast-syntax-highlighting" --quiet
+        print_result $? "fast-syntax-highlighting plugin"
+    fi
+
+    # Install zsh-autocomplete (alternative to zsh-autosuggestions)
+    if [[ ! -d "$HOME/.oh-my-zsh/custom/plugins/zsh-autocomplete" ]]; then
+        git clone https://github.com/marlonrichert/zsh-autocomplete.git "$HOME/.oh-my-zsh/custom/plugins/zsh-autocomplete" --quiet
+        print_result $? "zsh-autocomplete plugin"
+    fi
+
+    # Install conda-zsh-completion
+    if [[ ! -d "$HOME/.oh-my-zsh/custom/plugins/conda-zsh-completion" ]]; then
+        git clone https://github.com/esc/conda-zsh-completion.git "$HOME/.oh-my-zsh/custom/plugins/conda-zsh-completion" --quiet
+        print_result $? "conda-zsh-completion plugin"
+    fi
+
+    # Install zsh-vi-mode (vi mode for zsh)
+    if [[ ! -d "$HOME/.oh-my-zsh/custom/plugins/zsh-vi-mode" ]]; then
+        git clone https://github.com/jeffreytse/zsh-vi-mode.git "$HOME/.oh-my-zsh/custom/plugins/zsh-vi-mode" --quiet
+        print_result $? "zsh-vi-mode plugin"
+    fi
+
+    # Install zsh-nvm (nvm plugin for zsh)
+    if [[ ! -d "$HOME/.oh-my-zsh/custom/plugins/zsh-nvm" ]]; then
+        git clone https://github.com/lukechilds/zsh-nvm.git "$HOME/.oh-my-zsh/custom/plugins/zsh-nvm" --quiet
+        print_result $? "zsh-nvm plugin"
+    fi
+
+    # Install zsh-docker-aliases (docker aliases)
+    if [[ ! -d "$HOME/.oh-my-zsh/custom/plugins/zsh-docker-aliases" ]]; then
+        git clone https://github.com/docker/cli.git /tmp/docker-cli --quiet
+        if [[ -d "/tmp/docker-cli/contrib/completion/zsh" ]]; then
+            cp -r /tmp/docker-cli/contrib/completion/zsh "$HOME/.oh-my-zsh/custom/plugins/zsh-docker-aliases"
+            rm -rf /tmp/docker-cli
+            print_result $? "zsh-docker-aliases plugin"
+        fi
+    fi
+
+    print_success "Custom plugins installation completed"
 }
 
 # Install custom themes
@@ -77,12 +137,12 @@ install_custom_themes() {
         print_result $? "Powerlevel10k theme"
     fi
 
-    # Create arvosai theme if it doesn't exist
-    if [[ ! -f "$HOME/.oh-my-zsh/custom/themes/arvosai.zsh-theme" ]]; then
-        cat > "$HOME/.oh-my-zsh/custom/themes/arvosai.zsh-theme" << 'EOL'
+    # Create Cordya theme if it doesn't exist
+    if [[ ! -f "$HOME/.oh-my-zsh/custom/themes/cordya.zsh-theme" ]]; then
+        cat > "$HOME/.oh-my-zsh/custom/themes/cordya.zsh-theme" << 'EOL'
 # vim:ft=zsh ts=2 sw=2 sts=2
 #
-# Cordya AI's Theme - https://gist.github.com/arvosai/3a76d0c980bf0e6ef9a1014b9ed281bc
+# Cordya AI's Theme - https://gist.github.com/cordya-admin/4f7a71211068c1bce53e7d879f39b94c
 
 # A Powerline-inspired theme for ZSH
 #
@@ -96,7 +156,7 @@ install_custom_themes() {
 #
 # In addition, I recommend the
 # [Solarized theme](https://github.com/altercation/solarized/) and, if you're
-# using it on Mac OS X, [WezTerm](https://wezfurlong.org/wezterm/) over Terminal.app -
+# using it on Mac OS X, [iTerm 2](https://iterm2.com/) over Terminal.app -
 # it has significantly better color fidelity.
 #
 # If using with "light" variant of the Solarized color schema, set
@@ -126,13 +186,152 @@ esac
 
 () {
   local LC_ALL="" LC_CTYPE="en_US.UTF-8"
-  SEGMENT_SEPARATOR="%{%F{green} %}%{%f "
+  SEGMENT_SEPARATOR="%{%F{green} \ue0b1%}%{%f "
 
   fortune | cowsay -t $1 -f eyes
 
   echo " "
 }
 
+#==============================================================================
+# UV VIRTUAL ENVIRONMENT FUNCTIONS
+#==============================================================================
+
+# Function to check for and activate UV virtual environment
+activate_uv_venv() {
+    # Check if UV is available
+    if ! command -v uv &>/dev/null; then
+        echo "UV is not installed. Install it with: curl -LsSf https://astral.sh/uv/install.sh | sh"
+        return 1
+    fi
+
+    # Start from current directory and search upwards
+    local current_dir="$PWD"
+    local venv_path=""
+
+    while [[ "$current_dir" != "/" ]]; do
+        # Check for .venv directory (standard UV location)
+        if [[ -d "$current_dir/.venv" ]]; then
+            venv_path="$current_dir/.venv"
+            break
+        fi
+
+        # Check for .uv directory (alternative UV location)
+        if [[ -d "$current_dir/.uv" ]]; then
+            venv_path="$current_dir/.uv"
+            break
+        fi
+
+        # Move up one directory
+        current_dir="$(dirname "$current_dir")"
+    done
+
+    # If no virtual environment found
+    if [[ -z "$venv_path" ]]; then
+       return 1
+    fi
+
+    # Check if we're already in a virtual environment
+    if [[ -n "$VIRTUAL_ENV" ]]; then
+        # Check if it's the same venv we found
+        if [[ "$VIRTUAL_ENV" == "$venv_path" ]]; then
+            echo "UV virtual environment already activated: $venv_path"
+            return 0
+        fi
+    fi
+
+    # Activate the virtual environment
+    local activate_script="$venv_path/bin/activate"
+
+    if [[ -f "$activate_script" ]]; then
+        # Source the activation script (this does NOT create a venv, only activates)
+        source "$activate_script"
+
+        # Ensure VIRTUAL_ENV is set and exported globally
+        if [[ -z "$VIRTUAL_ENV" ]]; then
+            # If activation script didn't set it, set it manually
+            export VIRTUAL_ENV="$venv_path"
+        fi
+
+        # Update PATH to include venv bin directory
+        #export PATH="$VIRTUAL_ENV/bin:$PATH"
+
+        #echo "Activated UV virtual environment: $venv_path"
+        #echo "  VIRTUAL_ENV: $VIRTUAL_ENV"
+
+        # Display Python version
+        # if command -v python &>/dev/null; then
+        #     #echo "  Python: $(python --version 2>&1)"
+        # fi
+
+        # # Display UV version
+        # if command -v uv &>/dev/null; then
+        #     #echo "  UV: $(uv --version 2>&1)"
+        # fi
+
+        return 0
+    else
+        echo "Virtual environment found but activation script is missing: $activate_script"
+        echo "The environment might be corrupted. Try recreating it with: uv venv"
+        return 1
+    fi
+}
+
+# #==============================================================================
+# # Function to automatically activate UV venv when entering a directory
+# #==============================================================================
+
+auto_activate_uv_venv() {
+    # Only run if UV is installed
+    if ! command -v uv &>/dev/null; then
+        return
+    fi
+
+    # Search upward for .venv or .uv directory (like activate_uv_venv does)
+    local current_dir="$PWD"
+    local venv_path=""
+
+    while [[ "$current_dir" != "/" ]]; do
+        if [[ -d "$current_dir/.venv" ]]; then
+            venv_path="$current_dir/.venv"
+            break
+        elif [[ -d "$current_dir/.uv" ]]; then
+            venv_path="$current_dir/.uv"
+            break
+        fi
+        current_dir="$(dirname "$current_dir")"
+    done
+
+    # If venv found, activate it
+    if [[ -n "$venv_path" ]]; then
+        # Only activate if not already in this venv
+        if [[ "$VIRTUAL_ENV" != "$venv_path" ]]; then
+            # Silently activate - just source the activation script directly
+            local activate_script="$venv_path/bin/activate"
+            if [[ -f "$activate_script" ]]; then
+                # Deactivate current venv if any
+                if [[ -n "$VIRTUAL_ENV" ]]; then
+                    deactivate 2>/dev/null || unset VIRTUAL_ENV
+                fi
+                # Activate silently
+                #source "$activate_script" 2>/dev/null
+
+                # Ensure VIRTUAL_ENV is set and exported globally (in case activate script failed)
+                if [[ -z "$VIRTUAL_ENV" ]]; then
+                    export VIRTUAL_ENV="$venv_path"
+                fi
+            fi
+        fi
+    elif [[ -n "$VIRTUAL_ENV" ]]; then
+        # Deactivate when leaving a directory with venv
+        # Check if we're no longer in a subdirectory of the venv project
+        local venv_project_dir="${VIRTUAL_ENV%/.venv}"
+        venv_project_dir="${venv_project_dir%/.uv}"
+        if [[ "$PWD" != "$venv_project_dir"* ]]; then
+            deactivate 2>/dev/null || unset VIRTUAL_ENV
+        fi
+    fi
+}
 # Begin a segment
 # Takes two arguments, background and foreground. Both can be omitted,
 # rendering default background/foreground.
@@ -175,7 +374,7 @@ prompt_end() {
 prompt_status() {
   local -a symbols
 
-  symbols="%{%F{white}%}"
+  symbols="%{%F{white}%}\ue635"
 
   [[ $RETVAL -ne 0 ]] && symbols+="%{%F{red}%} ✘"
   [[ $UID -eq 0 ]] && symbols+="%{%F{yellow}%} ⚡"
@@ -204,7 +403,7 @@ prompt_git() {
   local PL_BRANCH_CHAR
   () {
     local LC_ALL="" LC_CTYPE="en_US.UTF-8"
-    PL_BRANCH_CHAR=$''         # 
+    PL_BRANCH_CHAR=$'\ue0a0'         # 
   }
   local ref dirty mode repo_path
 
@@ -225,11 +424,11 @@ prompt_git() {
     ahead=$(command git log --oneline @{upstream}.. 2>/dev/null)
     behind=$(command git log --oneline ..@{upstream} 2>/dev/null)
     if [[ -n "$ahead" ]] && [[ -n "$behind" ]]; then
-      PL_BRANCH_CHAR=$'⇅'
+      PL_BRANCH_CHAR=$'\u21c5'
     elif [[ -n "$ahead" ]]; then
-      PL_BRANCH_CHAR=$'↱'
+      PL_BRANCH_CHAR=$'\u21b1'
     elif [[ -n "$behind" ]]; then
-      PL_BRANCH_CHAR=$'↰'
+      PL_BRANCH_CHAR=$'\u21b0'
     fi
 
     if [[ -e "${repo_path}/BISECT_LOG" ]]; then
@@ -256,68 +455,6 @@ prompt_git() {
   fi
 }
 
-prompt_bzr() {
-  (( $+commands[bzr] )) || return
-
-  # Test if bzr repository in directory hierarchy
-  local dir="$PWD"
-  while [[ ! -d "$dir/.bzr" ]]; do
-    [[ "$dir" = "/" ]] && return
-    dir="${dir:h}"
-  done
-
-  local bzr_status status_mod status_all revision
-  if bzr_status=$(command bzr status 2>&1); then
-    status_mod=$(echo -n "$bzr_status" | head -n1 | grep "modified" | wc -m)
-    status_all=$(echo -n "$bzr_status" | head -n1 | wc -m)
-    revision=${$(command bzr log -r-1 --log-format line | cut -d: -f1):gs/%/%%}
-    if [[ $status_mod -gt 0 ]] ; then
-      prompt_segment yellow black "bzr@$revision ✚"
-    else
-      if [[ $status_all -gt 0 ]] ; then
-        prompt_segment yellow black "bzr@$revision"
-      else
-        prompt_segment green black "bzr@$revision"
-      fi
-    fi
-  fi
-}
-
-prompt_hg() {
-  (( $+commands[hg] )) || return
-  local rev st branch
-  if $(command hg id >/dev/null 2>&1); then
-    if $(command hg prompt >/dev/null 2>&1); then
-      if [[ $(command hg prompt "{status|unknown}") = "?" ]]; then
-        # if files are not added
-        prompt_segment white red
-        st='±'
-      elif [[ -n $(command hg prompt "{status|modified}") ]]; then
-        # if any modification
-        prompt_segment black yellow
-        st='±'
-      else
-        # if working copy is clean
-        prompt_segment black green
-      fi
-      echo -n ${$(command hg prompt "☿ {rev}@{branch}"):gs/%/%%} $st
-    else
-      st=""
-      rev=$(command hg id -n 2>/dev/null | sed 's/[^-0-9]//g')
-      branch=$(command hg id -b 2>/dev/null)
-      if command hg st | command grep -q "^\?"; then
-        prompt_segment black red
-        st='±'
-      elif command hg st | command grep -q "^[MA]"; then
-        prompt_segment black yellow
-        st='±'
-      else
-        prompt_segment black green
-      fi
-      echo -n "☿ ${rev:gs/%/%%}@${branch:gs/%/%%}" $st
-    fi
-  fi
-}
 
 # Dir: current working directory
 prompt_dir() {
@@ -327,10 +464,28 @@ prompt_dir() {
 # Virtualenv: current working virtualenv
 prompt_virtualenv() {
   if [[ -n "$VIRTUAL_ENV" && -n "$VIRTUAL_ENV_DISABLE_PROMPT" ]]; then
-    prompt_segment NONE green "(${VIRTUAL_ENV:t:gs/%/%%})"
+    prompt_segment NONE green "(${VIRTUAL_ENV:t:gs/%/%%} - $(python --version 2>&1))"
   fi
 }
 
+# Line 329-342: Replace prompt_uv() function with:
+prompt_uv() {
+  if [[ -n "$VIRTUAL_ENV" && -n "$VIRTUAL_ENV_DISABLE_PROMPT" ]]; then
+    if command -v uv &>/dev/null; then
+      activate_uv_venv
+      # Cache version to avoid running uv --version on every prompt
+      local uv_version="${UV_VERSION:-$(uv --version 2>&1 | awk '{print $2}')}"
+      prompt_segment NONE blue "(UV v${uv_version}: ${VIRTUAL_ENV:t:gs/%/%%} - $(python --version 2>&1 | awk '{print $2}'))"
+    else
+      prompt_segment NONE blue "(${VIRTUAL_ENV:t:gs/%/%%} - $(python --version 2>&1 | awk '{print $2}'))"
+    fi
+  fi
+}
+
+prompt_conda() {
+  [[ -n ${CONDA_DEFAULT_ENV} ]] || return
+   prompt_segment NONE green "${ZSH_THEME_CONDA_PREFIX=[}${CONDA_DEFAULT_ENV:t:gs/%/%%}${ZSH_THEME_CONDA_SUFFIX=]}"
+}
 
 #AWS Profile:
 # - display current AWS_PROFILE name
@@ -350,18 +505,19 @@ build_prompt() {
   RETVAL=$?
   prompt_status
   prompt_virtualenv
+  prompt_uv
+  prompt_conda
   prompt_aws
   prompt_context
   prompt_dir
   prompt_git
-  prompt_bzr
-  prompt_hg
   prompt_end
 }
 
 PROMPT='%{%f%b%k%}$(build_prompt) '
+
 EOL
-        print_result $? "arvosai theme"
+        print_result $? "cordya theme"
     fi
 }
 
@@ -371,180 +527,80 @@ configure_oh_my_zsh() {
 
     # Create a new .zshrc file with our configuration
     cat > "$HOME/.zshrc" << 'EOL'
-# Path to your Oh My Zsh installation
-export ZSH="$HOME/.oh-my-zsh"
+# #!/bin/zsh
 
-# Set name of the theme to load
-export ZSH_THEME="arvosai"
+# # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# # Initialization code that may require console input (password prompts, [y/n]
+# # confirmations, etc.) must go above this block; everything else may go below.
+# if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+#   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+# fi
 
-# Uncomment to use case-sensitive completion
-# CASE_SENSITIVE="true"
+# #==============================================================================
+# # DOTFILES ZSH CONFIGURATION
+# #==============================================================================
+# # This is the main .zshrc file that loads all modular configurations from
+# # the dotfiles directory. All specific configurations are organized
+# # into separate files in ~/dotfiles/zsh_configs/
+# #
+# # Configuration files are loaded in a specific optimized order to avoid
+# # conflicts and ensure proper initialization. The load order is defined in:
+# # ~/dotfiles/zsh_configs/00_load_order.zsh
+# #
+# # Loading sequence:
+# # 1. ohmyzsh.zsh     - Oh My Zsh framework and plugins
+# # 2. exports.zsh     - General environment variables
+# # 3. Language configs - java, python, ruby, rust, go, swift, kotlin, node, etc.
+# # 4. Tool configs    - homebrew, xcode, docker, gpg, anthropic, ipfs
+# # 5. aliases.zsh     - General aliases (loaded after tools)
+# # 6. Cloud configs   - gcloud, conda
+# # 7. misc.zsh        - Miscellaneous tools (iTerm2, Jina, Langflow, Kiro, etc.)
+# #
+# # To modify configurations, edit the appropriate file in:
+# # ~/dotfiles/zsh_configs/
+# #
+# # To disable a configuration, rename it with .disabled extension:
+# # mv ~/dotfiles/zsh_configs/something.zsh ~/dotfiles/zsh_configs/something.zsh.disabled
+# #==============================================================================
 
-# Uncomment to use hyphen-insensitive completion
-# HYPHEN_INSENSITIVE="true"
+# # Load the load order configuration first
+# if [ -f "$HOME/dotfiles/zsh_configs/00_load_order.zsh" ]; then
+#     source "$HOME/dotfiles/zsh_configs/00_load_order.zsh"
 
-# Uncomment one of the following lines to change the auto-update behavior
-zstyle ':omz:update' mode auto      # update automatically without asking
-# zstyle ':omz:update' mode reminder  # just remind me to update when it's time
-# zstyle ':omz:update' mode disabled  # disable automatic updates
+#     # Load all configurations in the optimized order
+#     load_configs_in_order
+# else
+#     # Fallback: Load Oh My Zsh first, then everything else
+#     if [ -f "$HOME/dotfiles/zsh_configs/ohmyzsh.zsh" ]; then
+#         source "$HOME/dotfiles/zsh_configs/ohmyzsh.zsh"
+#     fi
 
-# Uncomment the following line to change how often to auto-update (in days)
-# zstyle ':omz:update' frequency 13
+#     # Load all other modular configurations from jarvistoolset
+#     for config_file in "$HOME/dotfiles/zsh_configs/"*.zsh; do
+#         # Skip ohmyzsh.zsh and load order as they're already loaded
+#         if [[ "$config_file" != *"ohmyzsh.zsh" ]] && \
+#            [[ "$config_file" != *"00_load_order.zsh" ]] && \
+#            [[ "$config_file" != *"template.zsh" ]] && \
+#            [ -f "$config_file" ]; then
+#             source "$config_file"
+#         fi
+#     done
+# fi
 
-# Uncomment the following line if pasting URLs and other text is messed up
-# DISABLE_MAGIC_FUNCTIONS="true"
+# #==============================================================================
+# # USER CUSTOMIZATIONS
+# #==============================================================================
+# # Add any personal customizations or overrides below this line
+# # These will be loaded after all jarvistoolset configurations
+# #==============================================================================
 
-# Uncomment the following line to disable colors in ls
-# DISABLE_LS_COLORS="true"
 
-# Uncomment the following line to disable auto-setting terminal title
-# DISABLE_AUTO_TITLE="true"
+# # Added by LM Studio CLI (lms)
+# export PATH="$PATH:/Users/evandroreis/.lmstudio/bin"
+# source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
 
-# Uncomment the following line to enable command auto-correction
-# ENABLE_CORRECTION="true"
-
-# Uncomment the following line to display red dots whilst waiting for completion
-COMPLETION_WAITING_DOTS="true"
-
-# Uncomment the following line if you want to disable marking untracked files
-# under VCS as dirty. This makes repository status check for large repositories
-# much, much faster.
-# DISABLE_UNTRACKED_FILES_DIRTY="true"
-
-# Uncomment the following line if you want to change the command execution time
-# stamp shown in the history command output.
-# HIST_STAMPS="mm/dd/yyyy"
-
-# Would you like to use another custom folder than $ZSH/custom?
-# ZSH_CUSTOM=/path/to/new-custom-folder
-
-# Which plugins would you like to load?
-# Standard plugins can be found in $ZSH/plugins/
-# Custom plugins may be added to $ZSH_CUSTOM/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
-plugins=(
-    1password
-    autoenv
-    aws
-    azure
-    branch
-    brew
-    colored-man-pages
-    colorize
-    command-not-found
-    conda-env
-    copyfile
-    copypath
-    cp
-    dircycle
-    direnv
-    dirhistory
-    docker-compose
-    docker
-    emoji
-    encode64
-    flutter
-    frontend-search
-    gas
-    gcloud
-    gh
-    git-auto-fetch
-    git-commit
-    git-extras
-    git
-    gitfast
-    github
-    gitignore
-    golang
-    helm
-    history-substring-search
-    history
-    ipfs
-    wezterm
-    jira
-    keychain
-    kubectl
-    kubectx
-    last-working-dir
-    macos
-    magic-enter
-    man
-    marked2
-    marktext
-    minikube
-    mongo-atlas
-    mongocli
-    ng
-    node
-    npm
-    nvm
-    pip
-    pipenv
-    profiles
-    pyenv
-    python
-    qodana
-    qrcode
-    react-native
-    ruby
-    rsync
-    rust
-    safe-paste
-    ssh-agent
-    sudo
-    terraform
-    thefuck
-    tldr
-    urltools
-    virtualenv
-    vscode
-    web-search
-    xcode
-    yarn
-    yum
-    z
-    zsh-navigation-tools
-    zsh-syntax-highlighting
-    zsh-autosuggestions
-    zsh-completions
-)
-
-source $ZSH/oh-my-zsh.sh
-
-#==============================================================================
-# MODULAR CONFIGURATION
-#==============================================================================
-
-# Source all modular configuration files
-DOTFILES_ZSH_CONFIGS="$HOME/dotfiles/macos/configs/shell/zsh_configs"
-
-# Source exports first
-if [[ -f "$DOTFILES_ZSH_CONFIGS/exports.zsh" ]]; then
-  source "$DOTFILES_ZSH_CONFIGS/exports.zsh"
-fi
-
-# Source all other configuration files
-if [[ -d "$DOTFILES_ZSH_CONFIGS" ]]; then
-  # First source Java configuration to ensure Java is available for other tools
-  if [[ -f "$DOTFILES_ZSH_CONFIGS/java.zsh" ]]; then
-    source "$DOTFILES_ZSH_CONFIGS/java.zsh"
-  fi
-
-  # Then source all other configuration files
-  for config_file in "$DOTFILES_ZSH_CONFIGS"/*.zsh; do
-    # Skip exports.zsh and java.zsh as they're already sourced
-    if [[ "$config_file" != "$DOTFILES_ZSH_CONFIGS/exports.zsh" && "$config_file" != "$DOTFILES_ZSH_CONFIGS/java.zsh" ]]; then
-      source "$config_file"
-    fi
-  done
-fi
-
-#==============================================================================
-# USER CUSTOMIZATIONS
-#==============================================================================
-
-# Add your custom configurations below this line
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+# [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 EOL
     print_result $? "Oh My Zsh configuration"

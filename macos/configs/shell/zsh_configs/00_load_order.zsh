@@ -93,7 +93,7 @@ ZSH_CONFIG_ALIAS_CONFLICTS=(
 # Function to check if a config file should be loaded
 should_load_config() {
     local config_file="$1"
-    local config_path="$HOME/dotfiles/macos/configs/shell/zsh_configs/$config_file"
+    local config_path="$DOTFILES/macos/configs/shell/zsh_configs/$config_file"
 
     # Skip if file doesn't exist
     if [[ ! -f "$config_path" ]]; then
@@ -117,7 +117,7 @@ should_load_config() {
 
 # Function to load configurations in order
 load_configs_in_order() {
-    local config_dir="$HOME/dotfiles/macos/configs/shell/zsh_configs"
+    local config_dir="$DOTFILES/macos/configs/shell/zsh_configs"
 
     # Load files in the defined order
     for config_file in "${ZSH_CONFIG_LOAD_ORDER[@]}"; do
