@@ -436,8 +436,8 @@ function Main {
     Clear-Host
 
     # Display banner
-    Write-Host "`n >> Welcome to ARVOS.AI Dotfiles 25H1 Edition for Windows" -ForegroundColor Yellow
-    Write-Host "Copyright (c) 2025 ARVOS.AI. All rights reserved." -ForegroundColor Yellow
+    Write-Host "`n >> Welcome to Cordya AI Dotfiles 25H1 Edition for Windows" -ForegroundColor Yellow
+    Write-Host "Copyright (c) 2025 Cordya AI. All rights reserved." -ForegroundColor Yellow
 
     # Check if running as administrator
     if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {

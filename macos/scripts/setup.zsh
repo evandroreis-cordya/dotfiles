@@ -262,15 +262,15 @@ install_git() {
 display_banner() {
     if (( $+commands[figlet] )); then
         print_in_yellow "$(figlet -f ogre -c 'Dotfiles')\n"
-        print_in_yellow "Welcome to ARVOS.AI Dotfiles 25H1 Edition, the complete Mac OS tools and apps installer for AI and Vibe Coders!\n"
-        print_in_yellow "Copyright (c) 2025 ARVOS.AI. All rights reserved.\n"
+        print_in_yellow "Welcome to Cordya AI Dotfiles 25H1 Edition, the complete Mac OS tools and apps installer for AI and Vibe Coders!\n"
+        print_in_yellow "Copyright (c) 2025 Cordya AI. All rights reserved.\n"
 
         if type log_info &>/dev/null; then
             log_info "Displayed Dotfiles banner with figlet"
         fi
     else
-        print_in_yellow "\n >> Welcome to ARVOS.AI Dotfiles 25H1 Edition, the complete Mac OS tools and apps installer for AI and Vibe Coders!\n"
-        print_in_yellow "Copyright (c) 2025 ARVOS.AI. All rights reserved.\n"
+        print_in_yellow "\n >> Welcome to Cordya AI Dotfiles 25H1 Edition, the complete Mac OS tools and apps installer for AI and Vibe Coders!\n"
+        print_in_yellow "Copyright (c) 2025 Cordya AI. All rights reserved.\n"
 
         if type log_info &>/dev/null; then
             log_info "Displayed Dotfiles banner (figlet not available)"

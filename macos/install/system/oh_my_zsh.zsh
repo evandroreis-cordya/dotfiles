@@ -82,7 +82,7 @@ install_custom_themes() {
         cat > "$HOME/.oh-my-zsh/custom/themes/arvosai.zsh-theme" << 'EOL'
 # vim:ft=zsh ts=2 sw=2 sts=2
 #
-# ARVOS.AI's Theme - https://gist.github.com/arvosai/3a76d0c980bf0e6ef9a1014b9ed281bc
+# Cordya AI's Theme - https://gist.github.com/arvosai/3a76d0c980bf0e6ef9a1014b9ed281bc
 
 # A Powerline-inspired theme for ZSH
 #
