@@ -27,11 +27,19 @@
 #    - gpg.zsh
 #    - anthropic.zsh
 #    - ipfs.zsh
-# 6. aliases.zsh - General aliases (loads after language configs)
-# 7. Cloud/external services
+# 6. AI and Terminal configurations (in dependency order)
+#    - wezterm.zsh (terminal setup)
+#    - gemini.zsh (core AI foundation)
+#    - ai_codegen.zsh (AI code generation)
+#    - crewai.zsh (autonomous agents)
+#    - agentic_ai.zsh (agentic AI frameworks)
+#    - nvidia_ai.zsh (NVIDIA AI tools)
+#    - nvidia_nemo.zsh (NVIDIA NeMO framework)
+# 7. aliases.zsh - General aliases (loads after language configs)
+# 8. Cloud/external services
 #    - gcloud.zsh
 #    - conda.zsh
-# 8. misc.zsh - Final initializations (WezTerm, Jina, etc.)
+# 9. misc.zsh - Final initializations (Jina, etc.)
 #
 # Files are automatically loaded by .zshrc but in a specific order
 # to prevent conflicts and ensure optimal performance.
@@ -67,6 +75,15 @@ ZSH_CONFIG_LOAD_ORDER=(
     "anthropic.zsh"      # Anthropic MCP server
     "ipfs.zsh"           # IPFS
 
+    # AI and Terminal configurations (in dependency order)
+    "wezterm.zsh"        # WezTerm terminal configuration (loads early for terminal setup)
+    "gemini.zsh"         # Google Gemini AI tools (core AI foundation)
+    "ai_codegen.zsh"     # AI code generation tools (depends on core AI tools)
+    "crewai.zsh"         # CrewAI autonomous agents (depends on AI code generation)
+    "agentic_ai.zsh"     # Agentic AI frameworks (depends on autonomous agents)
+    "nvidia_ai.zsh"      # NVIDIA AI development tools (depends on CUDA)
+    "nvidia_nemo.zsh"    # NVIDIA NeMO framework (depends on NVIDIA AI tools)
+
     # Aliases (after all tool configs to allow overrides)
     "aliases.zsh"
 
@@ -89,6 +106,24 @@ ZSH_CONFIG_ALIAS_CONFLICTS=(
     "dc"  "docker.zsh:aliases.zsh:defined only in docker.zsh"
     "dps" "docker.zsh:aliases.zsh:defined only in docker.zsh"
     "di"  "docker.zsh:aliases.zsh:defined only in docker.zsh"
+    # AI tool aliases (defined only in respective AI config files)
+    "gai" "gemini.zsh:defined only in gemini.zsh"
+    "gcode" "gemini.zsh:defined only in gemini.zsh"
+    "gexp" "gemini.zsh:defined only in gemini.zsh"
+    "gref" "gemini.zsh:defined only in gemini.zsh"
+    "aigen" "ai_codegen.zsh:defined only in ai_codegen.zsh"
+    "aiexp" "ai_codegen.zsh:defined only in ai_codegen.zsh"
+    "airef" "ai_codegen.zsh:defined only in ai_codegen.zsh"
+    "aitest" "ai_codegen.zsh:defined only in ai_codegen.zsh"
+    "cai" "crewai.zsh:defined only in crewai.zsh"
+    "cagent" "crewai.zsh:defined only in crewai.zsh"
+    "ctask" "crewai.zsh:defined only in crewai.zsh"
+    "aai" "agentic_ai.zsh:defined only in agentic_ai.zsh"
+    "aagent" "agentic_ai.zsh:defined only in agentic_ai.zsh"
+    "aworkflow" "agentic_ai.zsh:defined only in agentic_ai.zsh"
+    "nemo" "nvidia_nemo.zsh:defined only in nvidia_nemo.zsh"
+    "nvai" "nvidia_ai.zsh:defined only in nvidia_ai.zsh"
+    "wt" "wezterm.zsh:defined only in wezterm.zsh"
 )
 
 # Function to check if a config file should be loaded
