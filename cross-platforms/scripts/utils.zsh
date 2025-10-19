@@ -425,7 +425,7 @@ install_stow() {
 # Function to simulate stow operations
 stow_simulate() {
     local package="$1"
-    local stow_dir="${2:-$HOME/dotfiles/stow}"
+    local stow_dir="${2:-$HOME/dotfiles/cross-platforms/stow}"
     local target_dir="${3:-$HOME}"
 
     if ! stow_installed; then
@@ -443,7 +443,7 @@ stow_simulate() {
 # Function to install stow package
 stow_install() {
     local package="$1"
-    local stow_dir="${2:-$HOME/dotfiles/stow}"
+    local stow_dir="${2:-$HOME/dotfiles/cross-platforms/stow}"
     local target_dir="${3:-$HOME}"
     local force="${4:-false}"
 
@@ -498,7 +498,7 @@ stow_install() {
 # Function to remove stow package
 stow_remove() {
     local package="$1"
-    local stow_dir="${2:-$HOME/dotfiles/stow}"
+    local stow_dir="${2:-$HOME/dotfiles/cross-platforms/stow}"
     local target_dir="${3:-$HOME}"
 
     if ! stow_installed; then
@@ -538,7 +538,7 @@ stow_remove() {
 # Function to restore stow package
 stow_restore() {
     local package="$1"
-    local stow_dir="${2:-$HOME/dotfiles/stow}"
+    local stow_dir="${2:-$HOME/dotfiles/cross-platforms/stow}"
     local target_dir="${3:-$HOME}"
 
     if ! stow_installed; then
@@ -577,7 +577,7 @@ stow_restore() {
 
 # Function to setup stow packages
 setup_stow_packages() {
-    local stow_dir="${1:-$HOME/dotfiles/stow}"
+    local stow_dir="${1:-$HOME/dotfiles/cross-platforms/stow}"
     local target_dir="${2:-$HOME}"
     local packages=("${@:3}")
 

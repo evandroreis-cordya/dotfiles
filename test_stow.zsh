@@ -39,7 +39,7 @@ fi
 
 # Test 2: Check stow directory structure
 print_in_yellow "\nTest 2: Checking stow directory structure\n"
-local stow_dir="$HOME/dotfiles/stow"
+local stow_dir="$HOME/dotfiles/cross-platforms/stow"
 
 if [[ -d "$stow_dir" ]]; then
     print_success "Stow directory exists: $stow_dir"

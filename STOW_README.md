@@ -10,24 +10,25 @@ GNU Stow is a symlink farm manager that helps manage configuration files by crea
 
 ```
 dotfiles/
-├── stow/                    # GNU Stow packages directory
-│   ├── shell/              # Shell configuration package
-│   │   ├── .config/        # Configuration files
-│   │   ├── .local/         # Local user files
-│   │   ├── .ssh/           # SSH configuration
-│   │   ├── .gnupg/         # GPG configuration
-│   │   └── ...             # Other shell-related directories
-│   ├── git/                # Git configuration package
-│   ├── nvim/               # Neovim configuration package
-│   ├── ssh/                # SSH configuration package
-│   ├── gnupg/              # GPG configuration package
-│   └── config/             # General configuration package
+├── cross-platforms/
+│   ├── stow/               # GNU Stow packages directory
+│   │   ├── shell/          # Shell configuration package
+│   │   │   ├── .config/    # Configuration files
+│   │   │   ├── .local/     # Local user files
+│   │   │   ├── .ssh/       # SSH configuration
+│   │   │   ├── .gnupg/     # GPG configuration
+│   │   │   └── ...         # Other shell-related directories
+│   │   ├── git/            # Git configuration package
+│   │   ├── nvim/           # Neovim configuration package
+│   │   ├── ssh/            # SSH configuration package
+│   │   ├── gnupg/          # GPG configuration package
+│   │   └── config/         # General configuration package
+│   └── scripts/
+│       └── utils.zsh       # Updated with stow utility functions
 ├── macos/scripts/
 │   └── stow_setup.zsh      # macOS-specific stow setup
-├── linux/scripts/
-│   └── stow_setup.zsh      # Linux-specific stow setup
-└── cross-platforms/scripts/
-    └── utils.zsh           # Updated with stow utility functions
+└── linux/scripts/
+    └── stow_setup.zsh      # Linux-specific stow setup
 ```
 
 ## Key Features
@@ -114,20 +115,20 @@ stow_restore "shell"
 
 ## Configuration Packages
 
-### Shell Package (`stow/shell/`)
+### Shell Package (`cross-platforms/stow/shell/`)
 Contains all shell-related configurations and directories:
 - Shell configuration files (`.zshrc`, `.zshenv`, etc.)
 - XDG Base Directory structure (`.config`, `.local`, `.cache`)
 - Development directories (`Projects`, `Workspace`)
 - Package manager directories (`.npm-global`, `.composer`, etc.)
 
-### Git Package (`stow/git/`)
+### Git Package (`cross-platforms/stow/git/`)
 Contains Git configuration files:
 - `.gitconfig`
 - `.gitattributes`
 - `.gitignore`
 
-### Neovim Package (`stow/nvim/`)
+### Neovim Package (`cross-platforms/stow/nvim/`)
 Contains Neovim configuration:
 - `init.vim`
 - Vim configuration files

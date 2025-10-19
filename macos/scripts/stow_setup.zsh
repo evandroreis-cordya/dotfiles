@@ -10,7 +10,7 @@ source "${SCRIPT_DIR}/logging.zsh" 2>/dev/null || true
 
 # Function to create stow package structure
 create_stow_structure() {
-    local stow_dir="${1:-$HOME/dotfiles/stow}"
+    local stow_dir="${1:-$HOME/dotfiles/cross-platforms/stow}"
 
     print_in_purple "\n >> Creating GNU Stow package structure\n\n"
 
@@ -87,7 +87,7 @@ create_stow_structure() {
 
 # Function to populate stow packages with existing configurations
 populate_stow_packages() {
-    local stow_dir="${1:-$HOME/dotfiles/stow}"
+    local stow_dir="${1:-$HOME/dotfiles/cross-platforms/stow}"
     local config_dir="${2:-$HOME/dotfiles/macos/configs}"
 
     print_in_purple "\n >> Populating GNU Stow packages\n\n"
@@ -128,7 +128,7 @@ populate_stow_packages() {
 
 # Function to setup stow packages
 setup_stow_environment() {
-    local stow_dir="${1:-$HOME/dotfiles/stow}"
+    local stow_dir="${1:-$HOME/dotfiles/cross-platforms/stow}"
     local target_dir="${2:-$HOME}"
 
     print_in_purple "\n >> Setting up GNU Stow environment\n\n"
