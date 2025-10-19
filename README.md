@@ -310,7 +310,6 @@ Feel free to send suggestions, corrections, and feedback. I'll accept pull reque
 3. **Post-Installation**:
    - Restart your terminal or run `source ~/.zshrc`
    - WezTerm will be installed and configured as the default terminal
-   - PowerLevel10k will prompt you to configure your prompt
 
 ### Linux Installation
 
@@ -342,7 +341,6 @@ Feel free to send suggestions, corrections, and feedback. I'll accept pull reque
    - Log out and log back in for Zsh to become the default shell
    - Or run `exec zsh` to switch to Zsh immediately
    - WezTerm will be installed and configured as the default terminal
-   - PowerLevel10k will prompt you to configure your prompt
 
 ### Windows Installation
 
@@ -382,7 +380,6 @@ Below is a comprehensive list of tools installed by the Dotfiles, organized by s
 | **Xcode Command Line Tools** | Essential development tools for macOS, including compilers, libraries, and header files required for building software on macOS. |
 | **Homebrew** | The missing package manager for macOS that simplifies the installation of software and tools. |
 | **Oh My Zsh** | A delightful, open source, community-driven framework for managing your Zsh configuration, bundled with thousands of helpful functions, plugins, and themes. |
-| **Powerlevel10k** | A Zsh theme that emphasizes speed, flexibility, and out-of-the-box experience with beautiful UI components. |
 | **Zsh Plugins** | Various plugins for Zsh including syntax highlighting, autosuggestions, and completions to enhance your terminal experience. |
 
 ### Development Languages

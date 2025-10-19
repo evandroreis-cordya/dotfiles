@@ -131,11 +131,6 @@ install_custom_themes() {
     # Create custom themes directory if it doesn't exist
     mkdir -p "$HOME/.oh-my-zsh/custom/themes"
 
-    # Install Powerlevel10k theme
-    if [[ ! -d "$HOME/.oh-my-zsh/custom/themes/powerlevel10k" ]]; then
-        git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$HOME/.oh-my-zsh/custom/themes/powerlevel10k" --quiet
-        print_result $? "Powerlevel10k theme"
-    fi
 
     # Create Cordya theme if it doesn't exist
     if [[ ! -f "$HOME/.oh-my-zsh/custom/themes/cordya.zsh-theme" ]]; then
@@ -529,12 +524,6 @@ configure_oh_my_zsh() {
     cat > "$HOME/.zshrc" << 'EOL'
 # #!/bin/zsh
 
-# # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# # Initialization code that may require console input (password prompts, [y/n]
-# # confirmations, etc.) must go above this block; everything else may go below.
-# if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-#   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-# fi
 
 # #==============================================================================
 # # DOTFILES ZSH CONFIGURATION
@@ -595,12 +584,6 @@ configure_oh_my_zsh() {
 # #==============================================================================
 
 
-# # Added by LM Studio CLI (lms)
-# export PATH="$PATH:/Users/evandroreis/.lmstudio/bin"
-# source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
-
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-# [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 EOL
     print_result $? "Oh My Zsh configuration"
