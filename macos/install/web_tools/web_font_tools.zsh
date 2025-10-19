@@ -14,17 +14,17 @@ print_in_purple "
 print_in_yellow "
    Installing .TTF fonts
 "
-cp -R "$SCRIPT_DIR/fonts/*.ttf" /Library/Fonts
+cp -R "$HOME/.jarvistoolset/resources/fonts/*.ttf" /Library/Fonts
 
 print_in_yellow "
    Installing .OTF fonts
 "
-cp -R "$SCRIPT_DIR/fonts/*.otf" /Library/Fonts
+cp -R "$HOME/.jarvistoolset/resources/fonts/*.otf" /Library/Fonts
 
 print_in_yellow "
    Installing .WOFF fonts
 "
-cp -R "$SCRIPT_DIR/fonts/*.woff" /Library/Fonts
+cp -R "$HOME/.jarvistoolset/resources/fonts/*.woff" /Library/Fonts
 
 print_in_green "
    Fonts installation complete!
