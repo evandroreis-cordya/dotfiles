@@ -772,7 +772,6 @@ If you encounter issues during the installation process, here are common solutio
 1. Ensure all scripts have proper `SCRIPT_DIR` variable defined
 2. Verify that the directory structure matches script expectations
 3. Check that relative paths are correct in installation scripts
-4. Run `fix_utils_paths.zsh` to automatically fix common path issues
 
 ### Installation Failures
 
