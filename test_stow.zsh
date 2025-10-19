@@ -5,7 +5,7 @@
 
 # Get the directory of the current script
 SCRIPT_DIR=${0:a:h}
-source "${SCRIPT_DIR}/generic/scripts/utils.zsh"
+source "${SCRIPT_DIR}/cross-platforms/scripts/utils.zsh"
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

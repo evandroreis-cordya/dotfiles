@@ -135,13 +135,13 @@ The Dotfiles follows a modular, multi-platform organization with scripts grouped
 dotfiles/
 ├── resources/                 # Shared resources and assets
 │   └── fonts/                 # Font files for all platforms
-├── generic/                   # Generic configurations and scripts
+├── cross-platforms/             # Cross-platform configurations and scripts
 │   ├── configs/
-│   │   ├── shell/             # Generic shell configurations
-│   │   └── terminal/          # Generic terminal configurations
-│   ├── scripts/               # Generic shell scripts
-│   ├── os/                    # Generic OS scripts
-│   └── install/               # Generic installation scripts
+│   │   ├── shell/             # Cross-platform shell configurations
+│   │   └── terminal/          # Cross-platform terminal configurations
+│   ├── scripts/               # Cross-platform shell scripts
+│   ├── os/                    # Cross-platform OS scripts
+│   └── install/               # Cross-platform installation scripts
 ├── macos/                     # macOS-specific configurations
 │   ├── configs/
 │   │   ├── shell/             # macOS shell configurations

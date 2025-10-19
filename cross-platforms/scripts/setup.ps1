@@ -12,11 +12,11 @@ $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $DotfilesDir = "$env:USERPROFILE\dotfiles"
 
 # Source environment detection
-. "$DotfilesDir\generic\scripts\os\detect_environment.ps1"
+. "$DotfilesDir\cross-platforms\scripts\os\detect_environment.ps1"
 
 # Source utility scripts
-. "$DotfilesDir\generic\scripts\os\utils.ps1" -ErrorAction SilentlyContinue
-. "$DotfilesDir\generic\scripts\os\logging.ps1" -ErrorAction SilentlyContinue
+. "$DotfilesDir\cross-platforms\scripts\os\utils.ps1" -ErrorAction SilentlyContinue
+. "$DotfilesDir\cross-platforms\scripts\os\logging.ps1" -ErrorAction SilentlyContinue
 
 # Log configuration
 Write-LogInfo "Generic setup configuration:"

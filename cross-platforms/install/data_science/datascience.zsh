@@ -33,7 +33,7 @@ pip_install_in_env "Scikit-learn" "scikit-learn"
 
 # Machine Learning packages
 pip_install_in_env "TensorFlow" "tensorflow"
-# PyTorch installation - generic version
+# PyTorch installation - cross-platform version
 print_in_yellow "Installing PyTorch...\n"
 PYENV_VERSION=$DATASCIENCE_ENV pip install torch torchvision torchaudio
 print_result $? "PyTorch"
@@ -49,7 +49,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
     ACTIVATE_SCRIPT="${DIRECTORY}/linux/scripts/activate_datascience.sh"
 else
-    ACTIVATE_SCRIPT="${DIRECTORY}/generic/scripts/activate_datascience.sh"
+    ACTIVATE_SCRIPT="${DIRECTORY}/cross-platforms/scripts/activate_datascience.sh"
 fi
 mkdir -p "$(dirname "$ACTIVATE_SCRIPT")"
 

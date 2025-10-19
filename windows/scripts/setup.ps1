@@ -11,10 +11,10 @@ param(
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $DotfilesDir = "$env:USERPROFILE\dotfiles"
 
-# Source generic utilities
-. "$DotfilesDir\generic\scripts\os\detect_environment.ps1"
-. "$DotfilesDir\generic\scripts\os\utils.ps1"
-. "$DotfilesDir\generic\scripts\os\logging.ps1"
+# Source cross-platform utilities
+. "$DotfilesDir\cross-platforms\scripts\os\detect_environment.ps1"
+. "$DotfilesDir\cross-platforms\scripts\os\utils.ps1"
+. "$DotfilesDir\cross-platforms\scripts\os\logging.ps1"
 
 # Verify we're running on Windows
 if ($env:DOTFILES_OS -ne "windows") {

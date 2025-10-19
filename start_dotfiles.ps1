@@ -12,9 +12,9 @@ $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $DotfilesDir = "$env:USERPROFILE\dotfiles"
 
 # Define paths to scripts
-$UtilsScript = "$DotfilesDir\generic\scripts\os\utils.ps1"
-$LoggingScript = "$DotfilesDir\generic\scripts\os\logging.ps1"
-$SetupScript = "$DotfilesDir\generic\scripts\os\setup.ps1"
+$UtilsScript = "$DotfilesDir\cross-platforms\scripts\os\utils.ps1"
+$LoggingScript = "$DotfilesDir\cross-platforms\scripts\os\logging.ps1"
+$SetupScript = "$DotfilesDir\cross-platforms\scripts\os\setup.ps1"
 
 # Define the logs directory
 $LogsDir = "$env:USERPROFILE\dotfiles\logs"

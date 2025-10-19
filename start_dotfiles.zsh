@@ -7,9 +7,9 @@ SCRIPT_DIR=${0:a:h}
 DOTFILES_DIR="$HOME/dotfiles"
 
 # Define paths to scripts
-UTILS_SCRIPT="${DOTFILES_DIR}/generic/scripts/utils.zsh"
-LOGGING_SCRIPT="${DOTFILES_DIR}/generic/scripts/logging.zsh"
-SETUP_SCRIPT="${DOTFILES_DIR}/generic/scripts/setup.zsh"
+UTILS_SCRIPT="${DOTFILES_DIR}/cross-platforms/scripts/utils.zsh"
+LOGGING_SCRIPT="${DOTFILES_DIR}/cross-platforms/scripts/logging.zsh"
+SETUP_SCRIPT="${DOTFILES_DIR}/cross-platforms/scripts/setup.zsh"
 
 # Define the logs directory
 LOGS_DIR="$HOME/dotfiles/logs"
@@ -257,7 +257,7 @@ log_info "  Directory: $DIRECTORY"
 
 
 # Path to the setup script
-SETUP_SCRIPT="${DOTFILES_DIR}/generic/scripts/setup.zsh"
+SETUP_SCRIPT="${DOTFILES_DIR}/cross-platforms/scripts/setup.zsh"
 
 # Check if the setup script exists
 if [[ ! -f "$SETUP_SCRIPT" ]]; then

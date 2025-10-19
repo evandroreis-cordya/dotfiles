@@ -1,11 +1,11 @@
-# Generic shell configuration file
+# Cross-platform shell configuration file
 # This file contains configurations that are common across all platforms
 
-# Load generic configurations
-source ~/dotfiles/generic/configs/shell/generic_exports
-source ~/dotfiles/generic/configs/shell/generic_functions
-source ~/dotfiles/generic/configs/shell/generic_options
-source ~/dotfiles/generic/configs/shell/generic_aliases
+# Load cross-platform configurations
+source ~/dotfiles/cross-platforms/configs/shell/cross_platform_exports
+source ~/dotfiles/cross-platforms/configs/shell/cross_platform_functions
+source ~/dotfiles/cross-platforms/configs/shell/cross_platform_options
+source ~/dotfiles/cross-platforms/configs/shell/cross_platform_aliases
 
 # Load platform-specific configurations
 case "$(uname -s)" in
@@ -21,8 +21,8 @@ case "$(uname -s)" in
 esac
 
 # Load additional configurations if they exist
-if [[ -d ~/dotfiles/generic/configs/shell/aliases ]]; then
-    for file in ~/dotfiles/generic/configs/shell/aliases/*; do
+if [[ -d ~/dotfiles/cross-platforms/configs/shell/aliases ]]; then
+    for file in ~/dotfiles/cross-platforms/configs/shell/aliases/*; do
         if [[ -f "$file" ]]; then
             source "$file"
         fi

@@ -26,7 +26,7 @@ dotfiles/
 │   └── stow_setup.zsh      # macOS-specific stow setup
 ├── linux/scripts/
 │   └── stow_setup.zsh      # Linux-specific stow setup
-└── generic/scripts/
+└── cross-platforms/scripts/
     └── utils.zsh           # Updated with stow utility functions
 ```
 
@@ -71,7 +71,7 @@ The stow setup is automatically called during the main dotfiles installation pro
 
 ```bash
 # Source the utils script
-source generic/scripts/utils.zsh
+source cross-platforms/scripts/utils.zsh
 
 # Install stow if not already installed
 install_stow
