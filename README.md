@@ -410,7 +410,7 @@ Below is a comprehensive list of tools installed by the Jarvis Toolset, organize
 | **Docker** | A platform for developing, shipping, and running applications in containers, enabling isolation and portability. |
 | **Visual Studio Code** | A lightweight but powerful source code editor with built-in support for JavaScript, TypeScript and Node.js and a rich ecosystem of extensions for other languages. |
 | **JetBrains Tools** | A suite of integrated development environments including IntelliJ IDEA, PyCharm, WebStorm, and more. |
-| **Vim** | A highly configurable text editor built to make creating and changing any kind of text very efficient. |
+| **NeoVim** | A modern, extensible, and highly configurable text editor built for better extensibility and usability. |
 | **Tmux** | A terminal multiplexer that allows you to access multiple separate terminal sessions inside a single terminal window or remote terminal session. |
 | **Yarn** | A fast, reliable, and secure dependency management tool for JavaScript projects. |
 | **Database Tools** | Various database management tools for MySQL, PostgreSQL, MongoDB, and other database systems. |
@@ -624,7 +624,7 @@ The jarvistoolset includes a comprehensive set of installation scripts organized
 | `docker.zsh` | Installs Docker, Docker Compose, and related tools |
 | `vscode.zsh` | Installs Visual Studio Code and essential extensions |
 | `jetbrains.zsh` | Installs JetBrains IDEs (IntelliJ, PyCharm, etc.) |
-| `vim.zsh` | Installs Vim with enhanced configuration |
+| `neovim.zsh` | Installs NeoVim with enhanced configuration |
 | `tmux.zsh` | Installs Tmux terminal multiplexer |
 | `yarn.zsh` | Installs Yarn package manager |
 | `databasetools.zsh` | Database management tools (MySQL, PostgreSQL, MongoDB) |

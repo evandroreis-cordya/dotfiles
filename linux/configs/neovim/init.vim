@@ -19,7 +19,7 @@ set backspace=indent           " ┐
 set backspace+=eol             " │ Allow `backspace`
 set backspace+=start           " ┘ in insert mode.
 
-set backupdir=~/.vim/backups   " Set directory for backup files.
+set backupdir=~/.local/share/nvim/backups   " Set directory for backup files.
 
 set backupskip=/tmp/*          " ┐ Don't create backups
 set backupskip+=/private/tmp/* " ┘ for certain files.
@@ -37,7 +37,7 @@ set cpoptions+=$               " When making a change, don't
 
 set colorcolumn=73             " Highlight certain column(s).
 set cursorline                 " Highlight the current line.
-set directory=~/.vim/swaps     " Set directory for swap files.
+set directory=~/.local/share/nvim/swaps     " Set directory for swap files.
 set encoding=utf-8 nobomb      " Use UTF-8 without BOM.
 set history=5000               " Increase command line history.
 set hlsearch                   " Enable search highlighting.
@@ -98,7 +98,7 @@ set shiftwidth=4               " │
 set expandtab                  " ┘
 
 set ttyfast                    " Enable fast terminal connection.
-set undodir=~/.vim/undos       " Set directory for undo files.
+set undodir=~/.local/share/nvim/undos       " Set directory for undo files.
 set undofile                   " Automatically save undo history.
 set virtualedit=all            " Allow cursor to be anywhere.
 
@@ -120,71 +120,58 @@ set winminheight=0             " Allow windows to be squashed.
 " | Plugins                                                            |
 " ----------------------------------------------------------------------
 
-" Use Vundle to manage the Vim plugins.
-" https://github.com/VundleVim/Vundle.vim
+" Use vim-plug to manage the NeoVim plugins.
+" https://github.com/junegunn/vim-plug
 
 " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-" Disable file type detection
-" (this is required by Vundle).
-
-filetype off
-
-" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-" Include Vundle in the runtime path.
-
-set runtimepath+=~/.vim/plugins/Vundle.vim
+" Install vim-plug if not already installed
+if empty(glob('~/.local/share/nvim/site/autoload/plug.vim'))
+  silent !curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs
+    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
 
 " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-" Initialize Vundle and specify the path
+" Initialize vim-plug and specify the path
 " where the plugins should be installed.
 
-call vundle#begin("~/.vim/plugins")
+call plug#begin('~/.local/share/nvim/plugged')
 
-    Plugin 'VundleVim/Vundle.vim'
+    Plug 'altercation/vim-colors-solarized'
+    Plug 'ap/vim-css-color'
+    Plug 'chrisbra/unicode.vim'
+    Plug 'editorconfig/editorconfig-vim'
+    Plug 'godlygeek/tabular'
+    Plug 'isRuslan/vim-es6'
+    Plug 'jelera/vim-javascript-syntax'
+    Plug 'kien/ctrlp.vim'
+    Plug 'marijnh/tern_for_vim'
+    Plug 'mattn/emmet-vim'
+    Plug 'mattn/webapi-vim'
+    Plug 'mhinz/vim-signify'
+    Plug 'moll/vim-node'
+    Plug 'mtscout6/syntastic-local-eslint.vim'
+    Plug 'nathanaelkane/vim-indent-guides'
+    Plug 'raimondi/delimitmate'
+    Plug 'scrooloose/nerdtree'
+    Plug 'scrooloose/syntastic'
+    Plug 'sheerun/vim-polyglot'
+    Plug 'shougo/neocomplcache.vim'
+    Plug 'shougo/neosnippet'
+    Plug 'shougo/neosnippet-snippets'
+    Plug 'shutnik/jshint2.vim'
+    Plug 'suan/vim-instant-markdown'
+    Plug 'tomtom/tcomment_vim'
+    Plug 'tpope/vim-commentary'
+    Plug 'tpope/vim-fugitive'
+    Plug 'tpope/vim-repeat'
+    Plug 'tpope/vim-surround'
+    Plug 'tpope/vim-unimpaired'
+    Plug 'wellle/targets.vim'
 
-    Plugin 'altercation/vim-colors-solarized'
-    Plugin 'ap/vim-css-color'
-    Plugin 'chrisbra/unicode.vim'
-    Plugin 'editorconfig/editorconfig-vim'
-    Plugin 'godlygeek/tabular'
-    Plugin 'isRuslan/vim-es6'
-    Plugin 'jelera/vim-javascript-syntax'
-    Plugin 'kien/ctrlp.vim'
-    Plugin 'marijnh/tern_for_vim'
-    Plugin 'mattn/emmet-vim'
-    Plugin 'mattn/webapi-vim'
-    Plugin 'mhinz/vim-signify'
-    Plugin 'moll/vim-node'
-    Plugin 'mtscout6/syntastic-local-eslint.vim'
-    Plugin 'nathanaelkane/vim-indent-guides'
-    Plugin 'raimondi/delimitmate'
-    Plugin 'scrooloose/nerdtree'
-    Plugin 'scrooloose/syntastic'
-    Plugin 'sheerun/vim-polyglot'
-    Plugin 'shougo/neocomplcache.vim'
-    Plugin 'shougo/neosnippet'
-    Plugin 'shougo/neosnippet-snippets'
-    Plugin 'shutnik/jshint2.vim'
-    Plugin 'suan/vim-instant-markdown'
-    Plugin 'tomtom/tcomment_vim'
-    Plugin 'tpope/vim-commentary'
-    Plugin 'tpope/vim-fugitive'
-    Plugin 'tpope/vim-repeat'
-    Plugin 'tpope/vim-surround'
-    Plugin 'tpope/vim-unimpaired'
-    Plugin 'wellle/targets.vim'
-
-call vundle#end()
-
-" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-" Re-enable file type detection
-" (disabling it was required by Vundle).
-
-filetype on
+call plug#end()
 
 
 " ----------------------------------------------------------------------
@@ -201,7 +188,7 @@ let g:user_emmet_leader_key="<C-E>"
 " Load custom Emmet snippets.
 " http://docs.emmet.io/customization/snippets/
 
-let g:user_emmet_settings = webapi#json#decode(join(readfile(expand("~/.vim/snippets/emmet.json")), "\n"))
+let g:user_emmet_settings = webapi#json#decode(join(readfile(expand("~/.local/share/nvim/snippets/emmet.json")), "\n"))
 
 
 " ----------------------------------------------------------------------

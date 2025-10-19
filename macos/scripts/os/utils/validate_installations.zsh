@@ -12,7 +12,7 @@ print_in_purple "\n • Validating Installations\n\n"
 check_command() {
     local cmd="$1"
     local name="${2:-$cmd}"
-    
+
     if command -v "$cmd" &> /dev/null; then
         print_success "$name is installed"
         return 0
@@ -25,7 +25,7 @@ check_command() {
 # Function to check if an application is installed
 check_app() {
     local app="$1"
-    
+
     if [ -d "/Applications/$app.app" ] || [ -d "$HOME/Applications/$app.app" ]; then
         print_success "$app is installed"
         return 0
@@ -41,7 +41,7 @@ check_command "brew" "Homebrew"
 check_command "git"
 check_command "curl"
 check_command "wget"
-check_command "vim"
+check_command "nvim"
 
 # Validate shell setup
 print_in_purple "\n   Shell Setup\n"

@@ -75,7 +75,7 @@ execute "mas install 1352778147" \
     "Install Bitwarden"
 
 execute "mas install 1480933944" \
-    "Install Vimari"
+    "Install Vimari (Vim-like browser navigation)"
 
 # Writing & Notes
 execute "mas install 1091189122" \

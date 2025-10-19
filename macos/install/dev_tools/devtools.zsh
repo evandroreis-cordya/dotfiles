@@ -25,6 +25,14 @@ else
     print_result $? "Visual Studio Code"
 fi
 
+# NeoVim
+if brew list | grep -q "^neovim$"; then
+    print_success "NeoVim (already installed)"
+else
+    brew install neovim &> /dev/null
+    print_result $? "NeoVim"
+fi
+
 if brew list --cask | grep -q "android-studio"; then
     print_success "Android Studio (already installed)"
 else
