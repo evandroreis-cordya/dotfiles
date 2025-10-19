@@ -118,8 +118,6 @@ The Jarvis Toolset follows a modular, multi-platform organization with scripts g
 
 ```
 .jarvistoolset/
-├── bin/                       # Executable utilities and scripts
-│   └── utilities/             # Cross-platform utility scripts
 ├── resources/                 # Shared resources and assets
 │   └── fonts/                 # Font files for all platforms
 ├── generic/                   # Generic configurations and scripts
