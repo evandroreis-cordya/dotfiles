@@ -62,6 +62,7 @@ ZSH_CONFIG_LOAD_ORDER=(
     "homebrew.zsh"       # Homebrew package manager
     "xcode.zsh"          # Xcode development tools
     "docker.zsh"         # Docker and Docker Compose
+    "cursor.zsh"         # Cursor IDE configuration
     "gpg.zsh"            # GPG encryption
     "anthropic.zsh"      # Anthropic MCP server
     "ipfs.zsh"           # IPFS

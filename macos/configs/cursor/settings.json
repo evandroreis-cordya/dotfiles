@@ -1,0 +1,196 @@
+{
+    "guides.enabled": false,
+    "gitlens.advanced.messages": {
+        "suppressCommitHasNoPreviousCommitWarning": false,
+        "suppressCommitNotFoundWarning": false,
+        "suppressFileNotUnderSourceControlWarning": false,
+        "suppressGitVersionWarning": false,
+        "suppressLineUncommittedWarning": false,
+        "suppressNoRepositoryWarning": false,
+        "suppressResultsExplorerNotice": false,
+        "suppressShowKeyBindingsNotice": true,
+        "suppressUpdateNotice": false,
+        "suppressWelcomeNotice": true
+    },
+    "workbench.iconTheme": "vscode-icons",
+    "python.disablePromptForFeatures": [
+        "pylint"
+    ],
+    "gitlens.keymap": "none",
+    "team.showWelcomeMessage": false,
+    "gitlens.historyExplorer.enabled": true,
+    "git.enableSmartCommit": true,
+    "git.autofetch": true,
+    "cSpell.language": "en,en-US,pt,pt-BR",
+    "cSpell.userWords": [
+        "burndown",
+        "commandline",
+        "devtool",
+        "dismissible",
+        "Ecmp",
+        "evandro",
+        "false",
+        "Formio",
+        "injectable",
+        "polyfills",
+        "prismjs",
+        "reis",
+        "roadmap",
+        "telco",
+        "tslib"
+    ],
+    "IoTWorkbench.ShownHelpPage": true,
+    "gitlens.views.fileHistory.enabled": true,
+    "gitlens.views.lineHistory.enabled": true,
+    "sync.gist": "158434799bc710317cb1d868ef3d722c",
+    "files.autoSave": "afterDelay",
+    "terminal.external.osxExec": "iTerm.app",
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "editor.fontLigatures": false,
+    "vs-kubernetes": {
+        "vs-kubernetes.helm-path": "/Users/evandroreis/.vs-kubernetes/tools/helm/darwin-amd64/helm",
+        "vs-kubernetes.kubectl-path": "/Users/evandroreis/.vs-kubernetes/tools/kubectl/kubectl",
+        "vs-kubernetes.minikube-path": "/Users/evandroreis/.vs-kubernetes/tools/minikube/darwin-amd64/minikube",
+        "vs-kubernetes.draft-path": "/Users/evandroreis/.vs-kubernetes/tools/draft/darwin-amd64/draft",
+        "vs-kubernetes.minikube-path.mac": "/Users/evandroreis/.vs-kubernetes/tools/minikube/darwin-amd64/minikube",
+        "vs-kubernetes.kubectl-path.windows": "C:\\Users Эvand\\.vs-kubernetes\\tools\\kubectl\\kubectl.exe",
+        "vs-kubernetes.minikube-path.windows": "C:\\Users Эvand\\.vs-kubernetes\\tools\\minikube\\windows-amd64\\minikube.exe",
+        "vs-kubernetes.helm-path.windows": "C:\\Users Эvand\\.vs-kubernetes\\tools\\helm\\windows-amd64\\helm.exe",
+        "vs-kubernetes.draft-path.windows": "C:\\Users Эvand\\.vs-kubernetes\\tools\\draft\\windows-amd64\\draft.exe",
+        "vscode-kubernetes.minikube-path.windows": "C:\\Users Эvand\\.vs-kubernetes\\tools\\minikube\\windows-amd64\\minikube.exe",
+        "vscode-kubernetes.helm-path.windows": "C:\\Users Эvand\\.vs-kubernetes\\tools\\helm\\windows-amd64\\helm.exe",
+        "vscode-kubernetes.kubectl-path.windows": "C:\\Users Эvand\\.vs-kubernetes\\tools\\kubectl\\kubectl.exe",
+        "vscode-kubernetes.helm-path-windows": "C:\\Users Эvand\\.vs-kubernetes\\tools\\helm\\windows-amd64\\helm.exe",
+        "vscode-kubernetes.kubectl-path-windows": "C:\\Users Эvand\\.vs-kubernetes\\tools\\kubectl\\kubectl.exe",
+        "vscode-kubernetes.minikube-path-windows": "C:\\Users Эvand\\.vs-kubernetes\\tools\\minikube\\windows-amd64\\minikube.exe",
+        "vscode-kubernetes.helm-path-mac": "/Users/evandroreis/.vs-kubernetes/tools/helm/darwin-arm64/helm",
+        "vscode-kubernetes.kubectl-path-mac": "/Users/evandroreis/.vs-kubernetes/tools/kubectl/kubectl",
+        "vscode-kubernetes.minikube-path-mac": "/Users/evandroreis/.vs-kubernetes/tools/minikube/darwin-arm64/minikube"
+    },
+    "editor.suggestSelection": "first",
+    "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+    "[json]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "C_Cpp.updateChannel": "Insiders",
+    "team.showFarewellMessage": false,
+    "editor.minimap.enabled": false,
+    "cmake.configureOnOpen": true,
+    "projectManager.git.baseFolders": [
+        "W:\\Google\\code"
+    ],
+    "go.toolsManagement.autoUpdate": true,
+    "cSpell.enableFiletypes": [
+        "fsharp"
+    ],
+    "files.watcherExclude": {
+        "**/.bloop": true,
+        "**/.metals": true,
+        "**/.ammonite": true
+    },
+    "metals.javaHome": "C:\\Program Files\\AdoptOpenJDK\\jdk-11.0.11.9-hotspot\\",
+    "aws.profile": "profile:default",
+    "redhat.telemetry.enabled": true,
+    "security.workspace.trust.untrustedFiles": "open",
+    "editor.renderControlCharacters": true,
+    "yaml.customTags": [
+        "!And",
+        "!And sequence",
+        "!If",
+        "!If sequence",
+        "!Not",
+        "!Not sequence",
+        "!Equals",
+        "!Equals sequence",
+        "!Or",
+        "!Or sequence",
+        "!FindInMap",
+        "!FindInMap sequence",
+        "!Base64",
+        "!Join",
+        "!Join sequence",
+        "!Cidr",
+        "!Ref",
+        "!Sub",
+        "!Sub sequence",
+        "!GetAtt",
+        "!GetAZs",
+        "!ImportValue",
+        "!ImportValue sequence",
+        "!Select",
+        "!Select sequence",
+        "!Split",
+        "!Split sequence"
+    ],
+    "json.schemas": [],
+    "mssql.connections": [
+        {
+            "server": "{{put-server-name-here}}",
+            "database": "{{put-database-name-here}}",
+            "user": "{{put-username-here}}",
+            "password": ""
+        }
+    ],
+    "terminal.integrated.fontFamily": "CaskaydiaCove Nerd Font",
+    "editor.fontFamily": "\"CaskaydiaCove Nerd Font\", \"FiraCode NF\", \"Cascadia Code PL\", Cascadia, Monaco, \"Source Code Pro PL\"",
+    "editor.unicodeHighlight.nonBasicASCII": false,
+    "vsicons.dontShowNewVersionMessage": true,
+    "editor.fontSize": 16,
+    "azureLogicAppsStandard.autoRuntimeDependenciesValidationAndInstallation": true,
+    "azureLogicAppsStandard.autoRuntimeDependenciesPath": "C:\\Users Эvand\\.azurelogicapps\\dependencies",
+    "azureLogicAppsStandard.nodeJsBinaryPath": "C:\\Users Эvand\\.azurelogicapps\\dependencies\\NodeJs\\node",
+    "azureLogicAppsStandard.funcCoreToolsBinaryPath": "C:\\Users Эvand\\.azurelogicapps\\dependencies\\FuncCoreTools\\func",
+    "azureLogicAppsStandard.dotnetBinaryPath": "C:\\Users Эvand\\.azurelogicapps\\dependencies\\DotNetSDK\\dotnet.exe",
+    "codium.enable": true,
+    "application.shellEnvironmentResolutionTimeout": 100,
+    "aws.telemetry": false,
+    "tabnine.experimentalAutoImports": true,
+    "parallels-desktop.extension.path": "/Users/evandroreis/.parallels-desktop-vscode",
+    "parallels-desktop.prlctl.path": "/usr/local/bin/prlctl",
+    "parallels-desktop.git.path": "/opt/homebrew/bin/git",
+    "parallels-desktop.brew.path": "/opt/homebrew/bin/brew",
+    "workbench.startupEditor": "none",
+    "terminal.integrated.inheritEnv": false,
+    "editor.accessibilitySupport": "off",
+    "codeium.enableConfig": {
+        "*": true,
+        "code-runner-output": true
+    },
+    "pieces.OS.launchOnStartup": "Yes",
+    "pieces.cloudCapabilities": "Blended",
+    "pieces.telemetry": true,
+    "yaml.schemas": {
+        "c:\\Users Эvand\\.vscode\\extensions\\continue.continue-1.1.71-win32-x64\\config-yaml-schema.json": [
+            ".continue/**/*.yaml"
+        ]
+    },
+    "parallels-desktop.devops-service.path": "/Users/evandroreis/.parallels-desktop-vscode/tools/prldevops",
+    "geminicodeassist.project": "",
+    "[html]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "workbench.editor.showTabs": "multiple",
+    "workbench.colorTheme": "Pop N' Lock Theme by Luxcium ✨",
+    "workbench.activityBar.orientation": "vertical",
+    "amazonQ.suppressPrompts": {
+        "amazonQChatPairProgramming": true,
+        "amazonQChatDisclaimer": true
+    },
+    "terminal.integrated.sendKeybindingsToShell": true,
+    "database-client.autoSync": true,
+    "[dockercompose]": {
+        "editor.insertSpaces": true,
+        "editor.tabSize": 2,
+        "editor.autoIndent": "advanced",
+        "editor.quickSuggestions": {
+            "other": true,
+            "comments": false,
+            "strings": true
+        },
+        "editor.defaultFormatter": "redhat.vscode-yaml"
+    },
+    "[github-actions-workflow]": {
+        "editor.defaultFormatter": "redhat.vscode-yaml"
+    },
+    "makefile.configureOnOpen": true
+}

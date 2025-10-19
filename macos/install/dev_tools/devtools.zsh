@@ -25,6 +25,14 @@ else
     print_result $? "Visual Studio Code"
 fi
 
+# Cursor IDE
+if brew list --cask | grep -q "cursor"; then
+    print_success "Cursor IDE (already installed)"
+else
+    brew install --cask cursor &> /dev/null
+    print_result $? "Cursor IDE"
+fi
+
 # NeoVim
 if brew list | grep -q "^neovim$"; then
     print_success "NeoVim (already installed)"

@@ -1,0 +1,212 @@
+{
+    "mcpServers": {
+        "MCP_DOCKER": {
+            "command": "docker",
+            "args": ["mcp", "gateway", "run"]
+        },
+        "filesystem": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-filesystem", "/Users/evandroreis"]
+        },
+        "git": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-git", "--repository", "/Users/evandroreis"]
+        },
+        "github": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-github"]
+        },
+        "sqlite": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-sqlite", "--db-path", "/Users/evandroreis/.cursor/databases"]
+        },
+        "postgres": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-postgres"]
+        },
+        "mongodb": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-mongodb"]
+        },
+        "redis": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-redis"]
+        },
+        "aws": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-aws"]
+        },
+        "gcp": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-gcp"]
+        },
+        "kubernetes": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-kubernetes"]
+        },
+        "docker": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-docker"]
+        },
+        "terraform": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-terraform"]
+        },
+        "openai": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-openai"]
+        },
+        "anthropic": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-anthropic"]
+        },
+        "langchain": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-langchain"]
+        },
+        "crewai": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-crewai"]
+        },
+        "mlflow": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-mlflow"]
+        },
+        "wandb": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-wandb"]
+        },
+        "elasticsearch": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-elasticsearch"]
+        },
+        "prometheus": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-prometheus"]
+        },
+        "grafana": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-grafana"]
+        },
+        "jaeger": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-jaeger"]
+        },
+        "opentelemetry": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-opentelemetry"]
+        },
+        "vault": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-vault"]
+        },
+        "snyk": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-snyk"]
+        },
+        "gitguardian": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-gitguardian"]
+        },
+        "clerk": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-clerk"]
+        },
+        "openpolicyagent": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-openpolicyagent"]
+        },
+        "notion": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-notion"]
+        },
+        "confluence": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-confluence"]
+        },
+        "figma": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-figma"]
+        },
+        "openapi": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-openapi"]
+        },
+        "pydantic": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-pydantic"]
+        },
+        "playwright": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-playwright"]
+        },
+        "selenium": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-selenium"]
+        },
+        "jest": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-jest"]
+        },
+        "pytest": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-pytest"]
+        },
+        "eslint": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-eslint"]
+        },
+        "prettier": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-prettier"]
+        },
+        "npm": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-npm"]
+        },
+        "yarn": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-yarn"]
+        },
+        "poetry": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-poetry"]
+        },
+        "pip": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-pip"]
+        },
+        "alembic": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-alembic"]
+        },
+        "celery": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-celery"]
+        },
+        "prisma": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-prisma"]
+        },
+        "qdrant": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-qdrant"]
+        },
+        "minio": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-minio"]
+        },
+        "vercel": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-vercel"]
+        },
+        "railway": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-railway"]
+        },
+        "flyio": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-flyio"]
+        }
+    }
+}

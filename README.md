@@ -419,6 +419,7 @@ Below is a comprehensive list of tools installed by the Dotfiles, organized by s
 | **Git** | A distributed version control system for tracking changes in source code during software development. |
 | **Docker** | A platform for developing, shipping, and running applications in containers, enabling isolation and portability. |
 | **Visual Studio Code** | A lightweight but powerful source code editor with built-in support for JavaScript, TypeScript and Node.js and a rich ecosystem of extensions for other languages. |
+| **Cursor IDE** | An AI-powered code editor built for the modern developer, featuring advanced AI assistance, comprehensive MCP server support, and seamless integration with development workflows. |
 | **JetBrains Tools** | A suite of integrated development environments including IntelliJ IDEA, PyCharm, WebStorm, and more. |
 | **NeoVim** | A modern, extensible, and highly configurable text editor built for better extensibility and usability. |
 | **Tmux** | A terminal multiplexer that allows you to access multiple separate terminal sessions inside a single terminal window or remote terminal session. |
@@ -633,6 +634,7 @@ The dotfiles includes a comprehensive set of installation scripts organized by c
 | `git.zsh` | Configures Git and installs Git-related tools |
 | `docker.zsh` | Installs Docker, Docker Compose, and related tools |
 | `vscode.zsh` | Installs Visual Studio Code and essential extensions |
+| `cursor.zsh` | Installs Cursor IDE with comprehensive MCP server configuration |
 | `jetbrains.zsh` | Installs JetBrains IDEs (IntelliJ, PyCharm, etc.) |
 | `neovim.zsh` | Installs NeoVim with enhanced configuration |
 | `tmux.zsh` | Installs Tmux terminal multiplexer |
