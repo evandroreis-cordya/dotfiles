@@ -44,6 +44,7 @@ SCRIPT_GROUPS=(
     "dev_langs" "Development Languages (python, node, ruby, go, java, kotlin, rust, swift, php, cpp)"
     "data_science" "Data Science Environment"
     "dev_tools" "Development Tools (git, docker, vscode, jetbrains, yarn)"
+    "cli_tools" "CLI Tools (core utilities, cloud CLIs, web dev tools, system tools)"
     "web_tools" "Web and Frontend Tools"
     "daily_tools" "Daily Tools and Utilities (browsers, compression, misc, office)"
     "media_tools" "Media and Creative Tools"

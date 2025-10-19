@@ -65,6 +65,7 @@ ZSH_CONFIG_LOAD_ORDER=(
     "gpg.zsh"            # GPG encryption
     "anthropic.zsh"      # Anthropic MCP server
     "ipfs.zsh"           # IPFS
+    "cli_tools.zsh"      # CLI tools configuration
 
     # Aliases (after all tool configs to allow overrides)
     "aliases.zsh"

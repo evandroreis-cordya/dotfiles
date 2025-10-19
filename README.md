@@ -196,6 +196,7 @@ When running the setup script, you can select which groups of tools to install:
 | `dev_langs` | Development Languages (Python, Node, Ruby, Go, Java, Kotlin, Rust, Swift, PHP, C++) |
 | `data_science` | Data Science Environment |
 | `dev_tools` | Development Tools (Git, Docker, VSCode, JetBrains, Yarn) |
+| `cli_tools` | CLI Tools (core utilities, cloud CLIs, web dev tools, system tools) |
 | `web_tools` | Web and Frontend Tools |
 | `daily_tools` | Daily Tools and Utilities (Browsers, Compression, Misc, Office) |
 | `media_tools` | Media and Creative Tools |
@@ -271,10 +272,11 @@ All configuration files are stored in `$HOME/dotfiles/macos/configs/shell/zsh_co
 | `gpg.zsh` | GPG encryption tools | 17 |
 | `anthropic.zsh` | Anthropic MCP server and tools | 18 |
 | `ipfs.zsh` | IPFS decentralized storage | 19 |
-| `aliases.zsh` | General aliases and shortcuts | 20 |
-| `gcloud.zsh` | Google Cloud SDK | 21 |
-| `conda.zsh` | Conda package manager | 22 |
-| `misc.zsh` | Final initializations (WezTerm, etc.) | 23 |
+| `cli_tools.zsh` | CLI tools configuration and aliases | 20 |
+| `aliases.zsh` | General aliases and shortcuts | 21 |
+| `gcloud.zsh` | Google Cloud SDK | 22 |
+| `conda.zsh` | Conda package manager | 23 |
+| `misc.zsh` | Final initializations (WezTerm, etc.) | 24 |
 
 ### Benefits of This Approach
 
@@ -636,6 +638,17 @@ The dotfiles includes a comprehensive set of installation scripts organized by c
 | `tmux.zsh` | Installs Tmux terminal multiplexer |
 | `yarn.zsh` | Installs Yarn package manager |
 | `databasetools.zsh` | Database management tools (MySQL, PostgreSQL, MongoDB) |
+
+### CLI Tools
+
+| Script | Description |
+|-------|-------------|
+| `cli_tools.zsh` | Main CLI tools installer (orchestrates all CLI tool categories) |
+| `core_cli_tools.zsh` | Essential CLI utilities (git, ripgrep, fzf, bat, exa, jq, etc.) |
+| `cloud_cli_tools.zsh` | Cloud platform CLIs (AWS, GCP, Azure, Terraform, Kubernetes) |
+| `web_cli_tools.zsh` | Web development CLIs (npm packages, build tools, testing frameworks) |
+| `development_cli_tools.zsh` | Development CLI tools (databases, editors, build systems) |
+| `system_cli_tools.zsh` | System monitoring and utility CLIs (htop, btop, network tools) |
 
 ### Web Development Tools
 

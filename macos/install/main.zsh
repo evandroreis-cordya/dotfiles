@@ -155,6 +155,26 @@ else
 "
 fi
 
+# CLI Tools
+if [[ "${SELECTED_GROUPS[cli_tools]}" == "true" ]]; then
+    print_in_purple "
+ >> Installing CLI Tools
+
+"
+
+    # Source all scripts in the cli_tools directory
+    for script in "${SCRIPT_DIR_INSTALL_MACOS}/cli_tools"/*.zsh; do
+        if [ -f "$script" ]; then
+            source "$script"
+        fi
+    done
+else
+    print_in_red "
+ >> Skipping CLI Tools
+
+"
+fi
+
 # Web and Frontend Tools
 if [[ "${SELECTED_GROUPS[web_tools]}" == "true" ]]; then
     print_in_purple "
