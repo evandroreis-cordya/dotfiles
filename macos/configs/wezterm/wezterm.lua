@@ -1,0 +1,1 @@
+local wezterm = require 'wezterm'\nreturn {\n  color_scheme = 'Builtin Solarized Dark',\n  font_size = 12.0,\n}\n
