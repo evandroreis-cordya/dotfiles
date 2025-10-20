@@ -83,11 +83,11 @@ nvidia_ai_init() {
     # Initialize NVIDIA AI project
     local project_name="${1:-nvidia-ai-project}"
     local project_dir="$NVIDIA_AI_WORKSPACE_DIR/$project_name"
-    
+
     if [[ ! -d "$project_dir" ]]; then
         mkdir -p "$project_dir"
         cd "$project_dir"
-        
+
         # Create basic NVIDIA AI structure
         cat > "nvidia_ai_config.json" << 'EOF'
 {
@@ -135,7 +135,7 @@ EOF
 
         # Create model directories
         mkdir -p models/{riva,jarvis,merlin,triton,deepstream}
-        
+
         echo "NVIDIA AI project '$project_name' initialized in $project_dir"
     else
         echo "Project '$project_name' already exists"
@@ -450,7 +450,7 @@ nvidia_ai_status() {
 nvidia_ai_logs() {
     # Show NVIDIA AI logs
     local framework="${1:-all}"
-    
+
     case "$framework" in
         "riva")
             ls -t "$RIVA_LOGS_DIR"/*.log 2>/dev/null | head -1 | xargs cat
@@ -518,7 +518,7 @@ nvidia_ai_list_projects() {
 nvidia_ai_activate_project() {
     # Activate NVIDIA AI project
     local project_name="${1:-}"
-    
+
     if [[ -n "$project_name" ]]; then
         local project_dir="$NVIDIA_AI_WORKSPACE_DIR/$project_name"
         if [[ -d "$project_dir" ]]; then
@@ -538,19 +538,19 @@ nvidia_ai_activate_project() {
 nvidia_ai_install_check() {
     # Check if NVIDIA AI tools are properly installed
     local missing=()
-    
+
     if ! command -v python3 &> /dev/null; then
         missing+=("python3")
     fi
-    
+
     if ! command -v nvidia-smi &> /dev/null; then
         missing+=("nvidia-driver")
     fi
-    
+
     if ! python3 -c "import torch; torch.cuda.is_available()" 2>/dev/null; then
         missing+=("torch-cuda")
     fi
-    
+
     if [[ ${#missing[@]} -eq 0 ]]; then
         echo "All NVIDIA AI dependencies are installed"
         return 0
@@ -569,7 +569,7 @@ nvidia_ai_cuda_check() {
     else
         echo "nvidia-smi not available"
     fi
-    
+
     if command -v python3 &> /dev/null; then
         python3 -c "
 import torch

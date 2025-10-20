@@ -305,7 +305,7 @@ if [[ ! -f "$GEMINI_CONFIG_FILE" ]]; then
     }
 }
 EOF
-    
+
     print_success "Created Gemini configuration file: $GEMINI_CONFIG_FILE"
 else
     print_success "Gemini configuration file already exists: $GEMINI_CONFIG_FILE"
@@ -410,7 +410,7 @@ def setup_gemini():
     if not api_key:
         print("Error: GEMINI_API_KEY or GOOGLE_API_KEY not set")
         return False
-    
+
     genai.configure(api_key=api_key)
     return True
 
@@ -418,7 +418,7 @@ def chat(prompt, model="gemini-pro", temperature=0.7):
     """Chat with Gemini"""
     if not setup_gemini():
         return
-    
+
     model_instance = genai.GenerativeModel(model)
     response = model_instance.generate_content(
         prompt,
@@ -427,7 +427,7 @@ def chat(prompt, model="gemini-pro", temperature=0.7):
             max_output_tokens=2048,
         )
     )
-    
+
     print(response.text)
 
 def code(prompt, language="python", model="gemini-pro"):
@@ -447,9 +447,9 @@ def main():
     parser.add_argument('--model', default='gemini-pro', help='Model to use')
     parser.add_argument('--temperature', type=float, default=0.7, help='Temperature for generation')
     parser.add_argument('--language', default='python', help='Programming language for code generation')
-    
+
     args = parser.parse_args()
-    
+
     if args.command == 'chat':
         chat(args.prompt, args.model, args.temperature)
     elif args.command == 'code':
@@ -497,27 +497,27 @@ class GeminiProject:
         self.config_file = config_file or Path.home() / ".config" / "gemini" / "config.json"
         self.config = self.load_config()
         self.setup_gemini()
-    
+
     def load_config(self):
         """Load configuration from file"""
         if self.config_file.exists():
             with open(self.config_file, 'r') as f:
                 return json.load(f)
         return {}
-    
+
     def setup_gemini(self):
         """Setup Gemini with API key"""
         api_key = os.getenv('GEMINI_API_KEY') or os.getenv('GOOGLE_API_KEY')
         if not api_key:
             raise ValueError("GEMINI_API_KEY or GOOGLE_API_KEY not set")
-        
+
         genai.configure(api_key=api_key)
-    
+
     def chat(self, prompt, model=None, temperature=None):
         """Chat with Gemini"""
         model = model or self.config.get('model', 'gemini-pro')
         temperature = temperature or self.config.get('temperature', 0.7)
-        
+
         model_instance = genai.GenerativeModel(model)
         response = model_instance.generate_content(
             prompt,
@@ -526,14 +526,14 @@ class GeminiProject:
                 max_output_tokens=self.config.get('max_tokens', 2048),
             )
         )
-        
+
         return response.text
-    
+
     def generate_code(self, prompt, language="python", model=None):
         """Generate code with Gemini"""
         full_prompt = f"Generate {language} code for: {prompt}"
         return self.chat(full_prompt, model)
-    
+
     def explain_code(self, code, language="python", model=None):
         """Explain code with Gemini"""
         prompt = f"Explain this {language} code: {code}"
@@ -543,15 +543,15 @@ class GeminiProject:
 if __name__ == '__main__':
     try:
         gemini = GeminiProject()
-        
+
         # Chat example
         response = gemini.chat("Hello, how can you help me?")
         print("Chat response:", response)
-        
+
         # Code generation example
         code = gemini.generate_code("A function that calculates fibonacci numbers", "python")
         print("Generated code:", code)
-        
+
     except Exception as e:
         print(f"Error: {e}")
 EOF

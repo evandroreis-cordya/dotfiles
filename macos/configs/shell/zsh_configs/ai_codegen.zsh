@@ -50,11 +50,11 @@ ai_codegen_init() {
     # Initialize AI code generation project
     local project_name="${1:-ai-codegen-project}"
     local project_dir="$AI_CODEGEN_WORKSPACE_DIR/$project_name"
-    
+
     if [[ ! -d "$project_dir" ]]; then
         mkdir -p "$project_dir"
         cd "$project_dir"
-        
+
         # Create basic AI codegen structure
         cat > "codegen_config.json" << 'EOF'
 {
@@ -154,7 +154,7 @@ ai_generate_code() {
     local prompt="${1:-}"
     local language="${2:-$AI_CODEGEN_DEFAULT_LANGUAGE}"
     local model="${3:-$AI_CODEGEN_DEFAULT_MODEL}"
-    
+
     if [[ -n "$prompt" ]]; then
         if command -v python3 &> /dev/null; then
             python3 -c "
@@ -186,7 +186,7 @@ ai_explain_code() {
     # Explain code using AI
     local code="${1:-}"
     local language="${2:-$AI_CODEGEN_DEFAULT_LANGUAGE}"
-    
+
     if [[ -n "$code" ]]; then
         ai_generate_code "Explain this $language code: $code" "$language"
     else
@@ -199,7 +199,7 @@ ai_refactor_code() {
     # Refactor code using AI
     local code="${1:-}"
     local language="${2:-$AI_CODEGEN_DEFAULT_LANGUAGE}"
-    
+
     if [[ -n "$code" ]]; then
         ai_generate_code "Refactor and improve this $language code: $code" "$language"
     else
@@ -213,7 +213,7 @@ ai_generate_tests() {
     local code="${1:-}"
     local language="${2:-$AI_CODEGEN_DEFAULT_LANGUAGE}"
     local test_framework="${3:-}"
-    
+
     if [[ -n "$code" ]]; then
         local prompt="Generate comprehensive unit tests for this $language code: $code"
         if [[ -n "$test_framework" ]]; then
@@ -241,7 +241,7 @@ ai_codegen_list_projects() {
 ai_codegen_activate_project() {
     # Activate AI codegen project
     local project_name="${1:-}"
-    
+
     if [[ -n "$project_name" ]]; then
         local project_dir="$AI_CODEGEN_WORKSPACE_DIR/$project_name"
         if [[ -d "$project_dir" ]]; then
@@ -262,7 +262,7 @@ ai_codegen_template_python() {
     # Create Python AI codegen template
     ai_codegen_init "python-ai-project"
     cd "$AI_CODEGEN_WORKSPACE_DIR/python-ai-project"
-    
+
     cat > "main.py" << 'EOF'
 """
 AI Code Generation Template for Python
@@ -273,7 +273,7 @@ import os
 def generate_python_code(prompt: str, temperature: float = 0.1) -> str:
     """Generate Python code using OpenAI API"""
     openai.api_key = os.getenv('OPENAI_API_KEY')
-    
+
     response = openai.ChatCompletion.create(
         model="gpt-4",
         messages=[
@@ -283,7 +283,7 @@ def generate_python_code(prompt: str, temperature: float = 0.1) -> str:
         temperature=temperature,
         max_tokens=4096
     )
-    
+
     return response.choices[0].message.content
 
 if __name__ == "__main__":
@@ -313,7 +313,7 @@ class TestAICodeGeneration(unittest.TestCase):
 if __name__ == "__main__":
     unittest.main()
 EOF
-    
+
     echo "Python AI CodeGen template created"
 }
 
@@ -321,7 +321,7 @@ ai_codegen_template_js() {
     # Create JavaScript AI codegen template
     ai_codegen_init "javascript-ai-project"
     cd "$AI_CODEGEN_WORKSPACE_DIR/javascript-ai-project"
-    
+
     cat > "main.js" << 'EOF'
 /**
  * AI Code Generation Template for JavaScript
@@ -343,7 +343,7 @@ async function generateJavaScriptCode(prompt, temperature = 0.1) {
             temperature: temperature,
             max_tokens: 4096
         });
-        
+
         return response.choices[0].message.content;
     } catch (error) {
         console.error('Error generating code:', error);
@@ -385,7 +385,7 @@ EOF
     }
 }
 EOF
-    
+
     echo "JavaScript AI CodeGen template created"
 }
 
@@ -409,19 +409,19 @@ ai_codegen_status() {
 ai_codegen_install_check() {
     # Check if AI codegen tools are properly installed
     local missing=()
-    
+
     if ! command -v python3 &> /dev/null; then
         missing+=("python3")
     fi
-    
+
     if ! python3 -c "import openai" 2>/dev/null; then
         missing+=("openai")
     fi
-    
+
     if ! python3 -c "import anthropic" 2>/dev/null; then
         missing+=("anthropic")
     fi
-    
+
     if [[ ${#missing[@]} -eq 0 ]]; then
         echo "All AI CodeGen dependencies are installed"
         return 0

@@ -1,108 +1,132 @@
 #!/bin/zsh
 #==============================================================================
-# AGENTIC AI FRAMEWORKS CONFIGURATION
+# AGENTIC AI CONFIGURATION
 #==============================================================================
 # Configuration for agentic AI frameworks and autonomous agent systems
-# Provides environment setup for AutoGen, LangGraph, AgentGPT, BabyAGI, and AgentForge
+# Provides environment setup for multi-agent systems, autonomous workflows,
+# and agent-based code generation tools
 #
 # Dependencies: autogen, langgraph, agentgpt, babyagi, agentforge
 #==============================================================================
 
 # Agentic AI configuration
-export AGENTIC_AI_CONFIG_DIR="$HOME/.config/agentic-ai"
-export AGENTIC_AI_CONFIG_FILE="$AGENTIC_AI_CONFIG_DIR/config.json"
-export AGENTIC_AI_WORKSPACE_DIR="$HOME/.agentic-ai/workspace"
-export AGENTIC_AI_AGENTS_DIR="$HOME/.agentic-ai/agents"
-export AGENTIC_AI_LOGS_DIR="$HOME/.agentic-ai/logs"
+export AGENTIC_CONFIG_DIR="$HOME/.config/agentic"
+export AGENTIC_CONFIG_FILE="$AGENTIC_CONFIG_DIR/config.yaml"
+export AGENTIC_LOGS_DIR="$HOME/.agentic/logs"
+export AGENTIC_WORKSPACE_DIR="$HOME/.agentic/workspace"
+export AGENTIC_MODELS_DIR="$HOME/.agentic/models"
+export AGENTIC_AGENTS_DIR="$HOME/.agentic/agents"
 
-# Create Agentic AI directories
-mkdir -p "$AGENTIC_AI_CONFIG_DIR"
-mkdir -p "$AGENTIC_AI_WORKSPACE_DIR"
-mkdir -p "$AGENTIC_AI_AGENTS_DIR"
-mkdir -p "$AGENTIC_AI_LOGS_DIR"
+# Create agentic AI directories
+mkdir -p "$AGENTIC_CONFIG_DIR"
+mkdir -p "$AGENTIC_LOGS_DIR"
+mkdir -p "$AGENTIC_WORKSPACE_DIR"
+mkdir -p "$AGENTIC_MODELS_DIR"
+mkdir -p "$AGENTIC_AGENTS_DIR"
 
 # Agentic AI environment variables
-export AGENTIC_AI_DEFAULT_MODEL="gpt-4"
-export AGENTIC_AI_DEFAULT_TEMPERATURE="0.7"
-export AGENTIC_AI_DEFAULT_MAX_TOKENS="4096"
-export AGENTIC_AI_DEFAULT_MAX_ITERATIONS="10"
-export AGENTIC_AI_DEFAULT_VERBOSE="true"
+export AGENTIC_DEFAULT_MODEL="gpt-4"
+export AGENTIC_DEFAULT_TEMPERATURE="0.7"
+export AGENTIC_DEFAULT_MAX_TOKENS="4096"
+export AGENTIC_DEFAULT_VERBOSE="true"
+export AGENTIC_DEFAULT_DEBUG="false"
+export AGENTIC_DEFAULT_TIMEOUT="300"
 
-# API Keys for agentic AI frameworks
-export AGENTIC_AI_OPENAI_API_KEY="${OPENAI_API_KEY:-}"
-export AGENTIC_AI_ANTHROPIC_API_KEY="${ANTHROPIC_API_KEY:-}"
-export AGENTIC_AI_GOOGLE_API_KEY="${GOOGLE_API_KEY:-}"
+# Agentic AI API keys
+export AGENTIC_OPENAI_API_KEY="${OPENAI_API_KEY:-}"
+export AGENTIC_ANTHROPIC_API_KEY="${ANTHROPIC_API_KEY:-}"
+export AGENTIC_GOOGLE_API_KEY="${GOOGLE_API_KEY:-}"
 
 # AutoGen configuration
-export AUTOGEN_CONFIG_DIR="$HOME/.config/autogen"
-export AUTOGEN_CONFIG_FILE="$AUTOGEN_CONFIG_DIR/config.json"
+export AUTOGEN_CONFIG_DIR="$AGENTIC_CONFIG_DIR/autogen"
+export AUTOGEN_WORKSPACE_DIR="$AGENTIC_WORKSPACE_DIR/autogen"
 
 # LangGraph configuration
-export LANGGRAPH_CONFIG_DIR="$HOME/.config/langgraph"
-export LANGGRAPH_CONFIG_FILE="$LANGGRAPH_CONFIG_DIR/config.json"
+export LANGGRAPH_CONFIG_DIR="$AGENTIC_CONFIG_DIR/langgraph"
+export LANGGRAPH_WORKSPACE_DIR="$AGENTIC_WORKSPACE_DIR/langgraph"
 
 # AgentGPT configuration
-export AGENTGPT_CONFIG_DIR="$HOME/.config/agentgpt"
-export AGENTGPT_CONFIG_FILE="$AGENTGPT_CONFIG_DIR/config.json"
+export AGENTGPT_CONFIG_DIR="$AGENTIC_CONFIG_DIR/agentgpt"
+export AGENTGPT_WORKSPACE_DIR="$AGENTIC_WORKSPACE_DIR/agentgpt"
 
 # BabyAGI configuration
-export BABYAGI_CONFIG_DIR="$HOME/.config/babyagi"
-export BABYAGI_CONFIG_FILE="$BABYAGI_CONFIG_DIR/config.json"
+export BABYAGI_CONFIG_DIR="$AGENTIC_CONFIG_DIR/babyagi"
+export BABYAGI_WORKSPACE_DIR="$AGENTIC_WORKSPACE_DIR/babyagi"
 
 # AgentForge configuration
-export AGENTFORGE_CONFIG_DIR="$HOME/.config/agentforge"
-export AGENTFORGE_CONFIG_FILE="$AGENTFORGE_CONFIG_DIR/config.json"
+export AGENTFORGE_CONFIG_DIR="$AGENTIC_CONFIG_DIR/agentforge"
+export AGENTFORGE_WORKSPACE_DIR="$AGENTIC_WORKSPACE_DIR/agentforge"
 
 # Create framework-specific directories
-mkdir -p "$AUTOGEN_CONFIG_DIR"
-mkdir -p "$LANGGRAPH_CONFIG_DIR"
-mkdir -p "$AGENTGPT_CONFIG_DIR"
-mkdir -p "$BABYAGI_CONFIG_DIR"
-mkdir -p "$AGENTFORGE_CONFIG_DIR"
+mkdir -p "$AUTOGEN_CONFIG_DIR" "$AUTOGEN_WORKSPACE_DIR"
+mkdir -p "$LANGGRAPH_CONFIG_DIR" "$LANGGRAPH_WORKSPACE_DIR"
+mkdir -p "$AGENTGPT_CONFIG_DIR" "$AGENTGPT_WORKSPACE_DIR"
+mkdir -p "$BABYAGI_CONFIG_DIR" "$BABYAGI_WORKSPACE_DIR"
+mkdir -p "$AGENTFORGE_CONFIG_DIR" "$AGENTFORGE_WORKSPACE_DIR"
 
 # Agentic AI initialization functions
-agentic_ai_init() {
+agentic_init() {
     # Initialize agentic AI project
     local project_name="${1:-agentic-project}"
-    local project_dir="$AGENTIC_AI_WORKSPACE_DIR/$project_name"
+    local project_dir="$AGENTIC_WORKSPACE_DIR/$project_name"
     
     if [[ ! -d "$project_dir" ]]; then
         mkdir -p "$project_dir"
         cd "$project_dir"
         
         # Create basic agentic AI structure
-        cat > "agentic_config.json" << 'EOF'
-{
-    "framework": "autogen",
-    "model": "gpt-4",
-    "temperature": 0.7,
-    "max_tokens": 4096,
-    "max_iterations": 10,
-    "verbose": true,
-    "agents": {
-        "user_proxy": {
-            "name": "UserProxyAgent",
-            "role": "User Proxy",
-            "description": "Represents the user in conversations"
-        },
-        "assistant": {
-            "name": "AssistantAgent",
-            "role": "Assistant",
-            "description": "AI assistant agent"
-        }
-    }
-}
+        cat > "agentic_config.yaml" << 'EOF'
+# Agentic AI Configuration
+project:
+  name: agentic-project
+  version: 1.0.0
+  description: Multi-agent system project
+
+agents:
+  - name: researcher
+    role: Research Specialist
+    goal: Conduct thorough research
+    backstory: Expert researcher with web search capabilities
+    model: gpt-4
+    temperature: 0.7
+    
+  - name: writer
+    role: Content Writer
+    goal: Create compelling content
+    backstory: Professional content writer
+    model: gpt-4
+    temperature: 0.7
+
+workflow:
+  type: sequential
+  timeout: 300
+  retry_attempts: 3
+  verbose: true
+
+logging:
+  level: INFO
+  file: logs/agentic.log
+  console: true
 EOF
 
         cat > "requirements.txt" << 'EOF'
 pyautogen
 langgraph
+agentgpt
+babyagi
+agentforge
 langchain
 openai
 anthropic
 google-generativeai
+pyyaml
+pydantic
+python-dotenv
 EOF
 
+        # Create subdirectories
+        mkdir -p agents tasks workflows logs
+        
         echo "Agentic AI project '$project_name' initialized in $project_dir"
     else
         echo "Project '$project_name' already exists"
@@ -110,361 +134,345 @@ EOF
 }
 
 # AutoGen functions
-autogen_setup() {
-    # Setup AutoGen framework
-    if [[ -n "$AGENTIC_AI_OPENAI_API_KEY" ]]; then
-        cat > "$AUTOGEN_CONFIG_FILE" << EOF
-{
-    "openai_api_key": "$AGENTIC_AI_OPENAI_API_KEY",
-    "model": "$AGENTIC_AI_DEFAULT_MODEL",
-    "temperature": $AGENTIC_AI_DEFAULT_TEMPERATURE,
-    "max_tokens": $AGENTIC_AI_DEFAULT_MAX_TOKENS,
-    "max_iterations": $AGENTIC_AI_DEFAULT_MAX_ITERATIONS,
-    "verbose": $AGENTIC_AI_DEFAULT_VERBOSE
-}
-EOF
-        echo "AutoGen configured"
-    else
-        echo "AGENTIC_AI_OPENAI_API_KEY not set. Please set it first."
-        return 1
-    fi
-}
-
-autogen_create_agent() {
-    # Create AutoGen agent
-    local agent_name="${1:-}"
-    local role="${2:-Assistant}"
-    local description="${3:-AI assistant agent}"
+autogen_init() {
+    # Initialize AutoGen project
+    local project_name="${1:-autogen-project}"
+    local project_dir="$AUTOGEN_WORKSPACE_DIR/$project_name"
     
-    if [[ -n "$agent_name" ]]; then
-        local agent_file="$AGENTIC_AI_AGENTS_DIR/${agent_name}_agent.py"
+    if [[ ! -d "$project_dir" ]]; then
+        mkdir -p "$project_dir"
+        cd "$project_dir"
         
-        cat > "$agent_file" << EOF
+        cat > "autogen_config.py" << 'EOF'
 import autogen
+from autogen import ConversableAgent
 
-# Create ${agent_name} agent
-${agent_name}_agent = autogen.AssistantAgent(
-    name="${agent_name}",
-    system_message="You are a ${role}. ${description}",
+# Create agents
+researcher = ConversableAgent(
+    name="researcher",
+    system_message="You are a research specialist. Find and analyze information.",
     llm_config={
-        "model": "$AGENTIC_AI_DEFAULT_MODEL",
-        "temperature": $AGENTIC_AI_DEFAULT_TEMPERATURE,
-        "max_tokens": $AGENTIC_AI_DEFAULT_MAX_TOKENS,
+        "model": "gpt-4",
+        "temperature": 0.7,
+        "max_tokens": 2048,
     }
 )
 
-# Create user proxy agent
-user_proxy = autogen.UserProxyAgent(
-    name="user_proxy",
-    system_message="You are a user proxy agent.",
-    human_input_mode="NEVER",
-    max_consecutive_auto_reply=10,
-    is_termination_msg=lambda x: x.get("content", "").rstrip().endswith("TERMINATE"),
-    code_execution_config={"work_dir": "groupchat", "use_docker": False},
+writer = ConversableAgent(
+    name="writer",
+    system_message="You are a content writer. Create compelling content based on research.",
+    llm_config={
+        "model": "gpt-4",
+        "temperature": 0.7,
+        "max_tokens": 2048,
+    }
 )
-EOF
-        
-        echo "AutoGen agent '$agent_name' created in $agent_file"
-    else
-        echo "Usage: autogen_create_agent 'name' 'role' 'description'"
-        return 1
-    fi
-}
 
-autogen_run_conversation() {
-    # Run AutoGen conversation
-    local agent_file="${1:-}"
-    local message="${2:-Hello, how can you help me?}"
-    
-    if [[ -f "$agent_file" ]]; then
-        python3 -c "
-import sys
-sys.path.append('$AGENTIC_AI_AGENTS_DIR')
-exec(open('$agent_file').read())
+# Create group chat
+group_chat = autogen.GroupChat(
+    agents=[researcher, writer],
+    messages=[],
+    max_round=10,
+    speaker_selection_method="round_robin"
+)
+
+# Create manager
+manager = autogen.GroupChatManager(
+    groupchat=group_chat,
+    llm_config={
+        "model": "gpt-4",
+        "temperature": 0.7,
+        "max_tokens": 2048,
+    }
+)
 
 # Start conversation
-user_proxy.initiate_chat(${agent_file##*/}_agent, message='$message')
-"
+researcher.initiate_chat(manager, message="Research the topic: AI and Machine Learning trends")
+EOF
+        
+        echo "AutoGen project '$project_name' initialized in $project_dir"
     else
-        echo "Agent file '$agent_file' not found"
-        return 1
+        echo "AutoGen project '$project_name' already exists"
     fi
 }
 
 # LangGraph functions
-langgraph_setup() {
-    # Setup LangGraph framework
-    cat > "$LANGGRAPH_CONFIG_FILE" << EOF
-{
-    "model": "$AGENTIC_AI_DEFAULT_MODEL",
-    "temperature": $AGENTIC_AI_DEFAULT_TEMPERATURE,
-    "max_tokens": $AGENTIC_AI_DEFAULT_MAX_TOKENS,
-    "verbose": $AGENTIC_AI_DEFAULT_VERBOSE
-}
-EOF
-    echo "LangGraph configured"
-}
-
-langgraph_create_workflow() {
-    # Create LangGraph workflow
-    local workflow_name="${1:-}"
-    local description="${2:-AI workflow}"
+langgraph_init() {
+    # Initialize LangGraph project
+    local project_name="${1:-langgraph-project}"
+    local project_dir="$LANGGRAPH_WORKSPACE_DIR/$project_name"
     
-    if [[ -n "$workflow_name" ]]; then
-        local workflow_file="$AGENTIC_AI_WORKSPACE_DIR/${workflow_name}_workflow.py"
+    if [[ ! -d "$project_dir" ]]; then
+        mkdir -p "$project_dir"
+        cd "$project_dir"
         
-        cat > "$workflow_file" << 'EOF'
+        cat > "langgraph_workflow.py" << 'EOF'
 from langgraph import StateGraph, END
 from langchain_openai import ChatOpenAI
-from langchain_core.messages import HumanMessage, AIMessage
+from typing import TypedDict, Annotated
+from langchain_core.messages import BaseMessage
 
-# Define the state
-from typing import TypedDict
+class AgentState(TypedDict):
+    messages: Annotated[list[BaseMessage], "The messages in the conversation"]
 
-class WorkflowState(TypedDict):
-    messages: list
-    result: str
+# Create the model
+model = ChatOpenAI(model="gpt-4", temperature=0.7)
 
 # Define nodes
-def process_input(state: WorkflowState):
-    """Process the input message"""
+def research_node(state: AgentState):
+    """Research node"""
     messages = state["messages"]
-    last_message = messages[-1]
-    
-    # Process the message (example)
-    result = f"Processed: {last_message.content}"
-    
-    return {"messages": messages, "result": result}
+    response = model.invoke(messages)
+    return {"messages": [response]}
 
-def generate_response(state: WorkflowState):
-    """Generate AI response"""
-    llm = ChatOpenAI(model="gpt-4", temperature=0.7)
-    
+def write_node(state: AgentState):
+    """Write node"""
     messages = state["messages"]
-    response = llm.invoke(messages)
-    
-    return {"messages": messages + [response], "result": response.content}
+    response = model.invoke(messages)
+    return {"messages": [response]}
 
-# Create the workflow
-workflow = StateGraph(WorkflowState)
+# Create the graph
+workflow = StateGraph(AgentState)
 
 # Add nodes
-workflow.add_node("process", process_input)
-workflow.add_node("generate", generate_response)
+workflow.add_node("research", research_node)
+workflow.add_node("write", write_node)
 
 # Add edges
-workflow.add_edge("process", "generate")
-workflow.add_edge("generate", END)
+workflow.set_entry_point("research")
+workflow.add_edge("research", "write")
+workflow.add_edge("write", END)
 
-# Compile the workflow
+# Compile the graph
 app = workflow.compile()
 
-# Example usage
-if __name__ == "__main__":
-    initial_state = {
-        "messages": [HumanMessage(content="Hello, world!")],
-        "result": ""
-    }
-    
-    result = app.invoke(initial_state)
-    print(result["result"])
+# Run the workflow
+result = app.invoke({"messages": [{"role": "user", "content": "Research AI trends and write a summary"}]})
+print(result)
 EOF
         
-        echo "LangGraph workflow '$workflow_name' created in $workflow_file"
+        echo "LangGraph project '$project_name' initialized in $project_dir"
     else
-        echo "Usage: langgraph_create_workflow 'name' 'description'"
-        return 1
+        echo "LangGraph project '$project_name' already exists"
     fi
 }
 
 # AgentGPT functions
-agentgpt_setup() {
-    # Setup AgentGPT framework
-    cat > "$AGENTGPT_CONFIG_FILE" << EOF
-{
-    "model": "$AGENTIC_AI_DEFAULT_MODEL",
-    "temperature": $AGENTIC_AI_DEFAULT_TEMPERATURE,
-    "max_tokens": $AGENTIC_AI_DEFAULT_MAX_TOKENS,
-    "max_iterations": $AGENTIC_AI_DEFAULT_MAX_ITERATIONS,
-    "verbose": $AGENTIC_AI_DEFAULT_VERBOSE
-}
+agentgpt_init() {
+    # Initialize AgentGPT project
+    local project_name="${1:-agentgpt-project}"
+    local project_dir="$AGENTGPT_WORKSPACE_DIR/$project_name"
+    
+    if [[ ! -d "$project_dir" ]]; then
+        mkdir -p "$project_dir"
+        cd "$project_dir"
+        
+        cat > "agentgpt_config.yaml" << 'EOF'
+# AgentGPT Configuration
+agent:
+  name: "Research Agent"
+  role: "Research Specialist"
+  goal: "Conduct thorough research on given topics"
+  backstory: "You are an expert researcher with access to various tools"
+  
+  tools:
+    - web_search
+    - file_operations
+    - data_analysis
+  
+  model:
+    name: "gpt-4"
+    temperature: 0.7
+    max_tokens: 2048
+  
+  memory:
+    enabled: true
+    type: "vector"
+    max_size: 1000
+
+tasks:
+  - name: "research_task"
+    description: "Research the given topic thoroughly"
+    priority: "high"
+    
+  - name: "analysis_task"
+    description: "Analyze the research findings"
+    priority: "medium"
+    
+  - name: "report_task"
+    description: "Generate a comprehensive report"
+    priority: "low"
 EOF
-    echo "AgentGPT configured"
+        
+        echo "AgentGPT project '$project_name' initialized in $project_dir"
+    else
+        echo "AgentGPT project '$project_name' already exists"
+    fi
 }
 
 # BabyAGI functions
-babyagi_setup() {
-    # Setup BabyAGI framework
-    cat > "$BABYAGI_CONFIG_FILE" << EOF
-{
-    "model": "$AGENTIC_AI_DEFAULT_MODEL",
-    "temperature": $AGENTIC_AI_DEFAULT_TEMPERATURE,
-    "max_tokens": $AGENTIC_AI_DEFAULT_MAX_TOKENS,
-    "max_iterations": $AGENTIC_AI_DEFAULT_MAX_ITERATIONS,
-    "verbose": $AGENTIC_AI_DEFAULT_VERBOSE
-}
+babyagi_init() {
+    # Initialize BabyAGI project
+    local project_name="${1:-babyagi-project}"
+    local project_dir="$BABYAGI_WORKSPACE_DIR/$project_name"
+    
+    if [[ ! -d "$project_dir" ]]; then
+        mkdir -p "$project_dir"
+        cd "$project_dir"
+        
+        cat > "babyagi_config.py" << 'EOF'
+from babyagi import BabyAGI
+from langchain_openai import ChatOpenAI
+
+# Initialize BabyAGI
+baby_agi = BabyAGI(
+    objective="Research and analyze AI and Machine Learning trends",
+    initial_task="Start by researching the latest AI developments",
+    llm=ChatOpenAI(model="gpt-4", temperature=0.7)
+)
+
+# Run BabyAGI
+baby_agi.run()
 EOF
-    echo "BabyAGI configured"
+        
+        echo "BabyAGI project '$project_name' initialized in $project_dir"
+    else
+        echo "BabyAGI project '$project_name' already exists"
+    fi
 }
 
 # AgentForge functions
-agentforge_setup() {
-    # Setup AgentForge framework
-    cat > "$AGENTFORGE_CONFIG_FILE" << EOF
-{
-    "model": "$AGENTIC_AI_DEFAULT_MODEL",
-    "temperature": $AGENTIC_AI_DEFAULT_TEMPERATURE,
-    "max_tokens": $AGENTIC_AI_DEFAULT_MAX_TOKENS,
-    "max_iterations": $AGENTIC_AI_DEFAULT_MAX_ITERATIONS,
-    "verbose": $AGENTIC_AI_DEFAULT_VERBOSE
-}
+agentforge_init() {
+    # Initialize AgentForge project
+    local project_name="${1:-agentforge-project}"
+    local project_dir="$AGENTFORGE_WORKSPACE_DIR/$project_name"
+    
+    if [[ ! -d "$project_dir" ]]; then
+        mkdir -p "$project_dir"
+        cd "$project_dir"
+        
+        cat > "agentforge_config.yaml" << 'EOF'
+# AgentForge Configuration
+project:
+  name: "AgentForge Project"
+  description: "Multi-agent system using AgentForge framework"
+  
+agents:
+  - name: "researcher"
+    type: "research_agent"
+    config:
+      role: "Research Specialist"
+      capabilities: ["web_search", "data_analysis"]
+      model: "gpt-4"
+      
+  - name: "writer"
+    type: "content_agent"
+    config:
+      role: "Content Writer"
+      capabilities: ["content_generation", "editing"]
+      model: "gpt-4"
+
+workflows:
+  - name: "research_workflow"
+    agents: ["researcher", "writer"]
+    sequence:
+      - agent: "researcher"
+        task: "Research the topic"
+      - agent: "writer"
+        task: "Write content based on research"
+        
+  - name: "analysis_workflow"
+    agents: ["researcher"]
+    sequence:
+      - agent: "researcher"
+        task: "Analyze findings and provide insights"
+
+settings:
+  max_iterations: 10
+  timeout: 300
+  verbose: true
+  debug: false
 EOF
-    echo "AgentForge configured"
+        
+        echo "AgentForge project '$project_name' initialized in $project_dir"
+    else
+        echo "AgentForge project '$project_name' already exists"
+    fi
 }
 
 # Agentic AI utility functions
-agentic_ai_status() {
-    # Show Agentic AI configuration status
+agentic_status() {
+    # Show agentic AI configuration status
     echo "Agentic AI Configuration:"
-    echo "  Config Dir: $AGENTIC_AI_CONFIG_DIR"
-    echo "  Workspace Dir: $AGENTIC_AI_WORKSPACE_DIR"
-    echo "  Agents Dir: $AGENTIC_AI_AGENTS_DIR"
-    echo "  Logs Dir: $AGENTIC_AI_LOGS_DIR"
-    echo "  Default Model: $AGENTIC_AI_DEFAULT_MODEL"
-    echo "  Default Temperature: $AGENTIC_AI_DEFAULT_TEMPERATURE"
-    echo "  Default Max Tokens: $AGENTIC_AI_DEFAULT_MAX_TOKENS"
-    echo "  Default Max Iterations: $AGENTIC_AI_DEFAULT_MAX_ITERATIONS"
-    echo "  OpenAI API Key: ${AGENTIC_AI_OPENAI_API_KEY:+***set***}"
-    echo "  Anthropic API Key: ${AGENTIC_AI_ANTHROPIC_API_KEY:+***set***}"
-    echo "  Google API Key: ${AGENTIC_AI_GOOGLE_API_KEY:+***set***}"
+    echo "  Config Dir: $AGENTIC_CONFIG_DIR"
+    echo "  Logs Dir: $AGENTIC_LOGS_DIR"
+    echo "  Workspace Dir: $AGENTIC_WORKSPACE_DIR"
+    echo "  Models Dir: $AGENTIC_MODELS_DIR"
+    echo "  Agents Dir: $AGENTIC_AGENTS_DIR"
+    echo "  Default Model: $AGENTIC_DEFAULT_MODEL"
+    echo "  Default Temperature: $AGENTIC_DEFAULT_TEMPERATURE"
+    echo "  OpenAI API Key: ${AGENTIC_OPENAI_API_KEY:+***set***}"
+    echo "  Anthropic API Key: ${AGENTIC_ANTHROPIC_API_KEY:+***set***}"
+    echo "  Google API Key: ${AGENTIC_GOOGLE_API_KEY:+***set***}"
 }
 
-agentic_ai_list_agents() {
-    # List available agents
-    ls -la "$AGENTIC_AI_AGENTS_DIR" 2>/dev/null | grep -v "^total" | awk '{print $9}' | grep -v "^\.$\|^\.\.$"
+agentic_logs() {
+    # Show agentic AI logs
+    local log_file="${1:-latest}"
+    
+    if [[ "$log_file" == "latest" ]]; then
+        ls -t "$AGENTIC_LOGS_DIR"/*.log 2>/dev/null | head -1 | xargs cat
+    else
+        cat "$AGENTIC_LOGS_DIR/$log_file"
+    fi
 }
 
-agentic_ai_list_workflows() {
-    # List available workflows
-    ls -la "$AGENTIC_AI_WORKSPACE_DIR"/*_workflow.py 2>/dev/null | awk '{print $9}' | xargs basename -s _workflow.py
+agentic_clean() {
+    # Clean agentic AI logs and temporary files
+    rm -f "$AGENTIC_LOGS_DIR"/*.log
+    rm -rf "$AGENTIC_WORKSPACE_DIR"/**/__pycache__
+    rm -rf "$AGENTIC_WORKSPACE_DIR"/**/checkpoints
+    echo "Agentic AI logs and cache cleaned"
 }
 
 # Agentic AI aliases
-alias aai='agentic_ai_init'
-alias aagent='autogen_create_agent'
-alias aworkflow='langgraph_create_workflow'
-alias astatus='agentic_ai_status'
-alias alist='agentic_ai_list_agents'
-alias awlist='agentic_ai_list_workflows'
+alias ai-init='agentic_init'
+alias ai-status='agentic_status'
+alias ai-logs='agentic_logs'
+alias ai-clean='agentic_clean'
+alias ag-init='autogen_init'
+alias lg-init='langgraph_init'
+alias agpt-init='agentgpt_init'
+alias baby-init='babyagi_init'
+alias af-init='agentforge_init'
 
 # Agentic AI project management
-agentic_ai_list_projects() {
+agentic_list_projects() {
     # List agentic AI projects
-    ls -la "$AGENTIC_AI_WORKSPACE_DIR" 2>/dev/null | grep -v "^total" | awk '{print $9}' | grep -v "^\.$\|^\.\.$"
+    ls -la "$AGENTIC_WORKSPACE_DIR" 2>/dev/null | grep -v "^total" | awk '{print $9}' | grep -v "^\.$\|^\.\.$"
 }
 
-agentic_ai_activate_project() {
+agentic_activate_project() {
     # Activate agentic AI project
     local project_name="${1:-}"
     
     if [[ -n "$project_name" ]]; then
-        local project_dir="$AGENTIC_AI_WORKSPACE_DIR/$project_name"
+        local project_dir="$AGENTIC_WORKSPACE_DIR/$project_name"
         if [[ -d "$project_dir" ]]; then
             cd "$project_dir"
-            echo "Activated Agentic AI project: $project_name"
+            echo "Activated agentic AI project: $project_name"
         else
             echo "Project '$project_name' not found"
             return 1
         fi
     else
-        echo "Usage: agentic_ai_activate_project 'project_name'"
+        echo "Usage: agentic_activate_project 'project_name'"
         return 1
     fi
 }
 
-# Agentic AI templates
-agentic_ai_template_multi_agent() {
-    # Create multi-agent system template
-    agentic_ai_init "multi-agent-system"
-    cd "$AGENTIC_AI_WORKSPACE_DIR/multi-agent-system"
-    
-    cat > "multi_agent_system.py" << 'EOF'
-import autogen
-import os
-
-# Configure API key
-os.environ["OPENAI_API_KEY"] = os.getenv("AGENTIC_AI_OPENAI_API_KEY")
-
-# Create agents
-user_proxy = autogen.UserProxyAgent(
-    name="user_proxy",
-    system_message="You are a user proxy agent.",
-    human_input_mode="NEVER",
-    max_consecutive_auto_reply=10,
-    is_termination_msg=lambda x: x.get("content", "").rstrip().endswith("TERMINATE"),
-    code_execution_config={"work_dir": "groupchat", "use_docker": False},
-)
-
-researcher = autogen.AssistantAgent(
-    name="researcher",
-    system_message="You are a research specialist. You gather and analyze information.",
-    llm_config={
-        "model": "gpt-4",
-        "temperature": 0.7,
-        "max_tokens": 4096,
-    }
-)
-
-analyst = autogen.AssistantAgent(
-    name="analyst",
-    system_message="You are a data analyst. You analyze data and provide insights.",
-    llm_config={
-        "model": "gpt-4",
-        "temperature": 0.7,
-        "max_tokens": 4096,
-    }
-)
-
-writer = autogen.AssistantAgent(
-    name="writer",
-    system_message="You are a content writer. You create compelling content based on research and analysis.",
-    llm_config={
-        "model": "gpt-4",
-        "temperature": 0.7,
-        "max_tokens": 4096,
-    }
-)
-
-# Create group chat
-groupchat = autogen.GroupChat(
-    agents=[user_proxy, researcher, analyst, writer],
-    messages=[],
-    max_round=20,
-    speaker_selection_method="round_robin",
-)
-
-manager = autogen.GroupChatManager(
-    groupchat=groupchat,
-    llm_config={
-        "model": "gpt-4",
-        "temperature": 0.7,
-        "max_tokens": 4096,
-    }
-)
-
-# Start conversation
-if __name__ == "__main__":
-    user_proxy.initiate_chat(
-        manager,
-        message="Research and write a comprehensive report on AI trends in 2024."
-    )
-EOF
-    
-    echo "Multi-agent system template created"
-}
-
 # Agentic AI installation check
-agentic_ai_install_check() {
+agentic_install_check() {
     # Check if agentic AI tools are properly installed
     local missing=()
     
@@ -480,8 +488,16 @@ agentic_ai_install_check() {
         missing+=("langgraph")
     fi
     
+    if ! python3 -c "import agentgpt" 2>/dev/null; then
+        missing+=("agentgpt")
+    fi
+    
+    if ! python3 -c "import babyagi" 2>/dev/null; then
+        missing+=("babyagi")
+    fi
+    
     if [[ ${#missing[@]} -eq 0 ]]; then
-        echo "All Agentic AI dependencies are installed"
+        echo "All agentic AI dependencies are installed"
         return 0
     else
         echo "Missing dependencies: ${missing[*]}"
@@ -490,15 +506,15 @@ agentic_ai_install_check() {
 }
 
 # Agentic AI configuration validation
-if [[ -n "$AGENTIC_AI_OPENAI_API_KEY" ]] || [[ -n "$AGENTIC_AI_ANTHROPIC_API_KEY" ]] || [[ -n "$AGENTIC_AI_GOOGLE_API_KEY" ]]; then
-    export AGENTIC_AI_CONFIGURED=true
+if [[ -n "$AGENTIC_OPENAI_API_KEY" ]] || [[ -n "$AGENTIC_ANTHROPIC_API_KEY" ]] || [[ -n "$AGENTIC_GOOGLE_API_KEY" ]]; then
+    export AGENTIC_CONFIGURED=true
 else
-    export AGENTIC_AI_CONFIGURED=false
+    export AGENTIC_CONFIGURED=false
 fi
 
 # Agentic AI integration complete
-if [[ "$AGENTIC_AI_CONFIGURED" == "true" ]]; then
-    export AGENTIC_AI_INTEGRATION="active"
+if [[ "$AGENTIC_CONFIGURED" == "true" ]]; then
+    export AGENTIC_INTEGRATION="active"
 else
-    export AGENTIC_AI_INTEGRATION="limited"
+    export AGENTIC_INTEGRATION="limited"
 fi

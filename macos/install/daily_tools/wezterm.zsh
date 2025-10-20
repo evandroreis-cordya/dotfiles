@@ -403,7 +403,7 @@ config.colors.tab_bar = {
 -- Return the config
 return config
 EOF
-    
+
     print_success "Created WezTerm configuration file: $WEZTERM_CONFIG_FILE"
 else
     print_success "WezTerm configuration file already exists: $WEZTERM_CONFIG_FILE"
@@ -504,7 +504,7 @@ local wezterm = require 'wezterm'
 local fonts = {
     -- Primary font
     primary = wezterm.font('JetBrains Mono', { weight = 'Medium' }),
-    
+
     -- Alternative fonts
     alternatives = {
         wezterm.font('Fira Code', { weight = 'Medium' }),
@@ -513,9 +513,9 @@ local fonts = {
         wezterm.font('Menlo'),
         wezterm.font('Consolas'),
     },
-    
+
     -- Font with ligatures
-    with_ligatures = wezterm.font('JetBrains Mono', { 
+    with_ligatures = wezterm.font('JetBrains Mono', {
         weight = 'Medium',
         harfbuzz_features = { 'calt=1', 'clig=1', 'liga=1' }
     }),
@@ -657,7 +657,7 @@ local tab_config = {
     show_new_tab_button_in_tab_bar = true,
     tab_max_width = 32,
     hide_tab_bar_if_only_one_tab = false,
-    
+
     -- Tab colors
     colors = {
         tab_bar = {
@@ -710,15 +710,15 @@ local window_config = {
     },
     window_background_opacity = 0.95,
     macos_window_background_blur = 20,
-    
+
     -- Window behavior
     window_close_confirmation = 'AlwaysPrompt',
     confirm_before_quit = 'AlwaysPrompt',
-    
+
     -- Initial window size
     initial_cols = 120,
     initial_rows = 30,
-    
+
     -- Window title
     window_title = 'WezTerm',
     window_title_override = function(window, pane, title, max_width)

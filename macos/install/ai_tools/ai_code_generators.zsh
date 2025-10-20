@@ -278,7 +278,7 @@ if [[ ! -f "$AI_CODEGEN_CONFIG_FILE" ]]; then
     }
 }
 EOF
-    
+
     print_success "Created AI CodeGen configuration file: $AI_CODEGEN_CONFIG_FILE"
 else
     print_success "AI CodeGen configuration file already exists: $AI_CODEGEN_CONFIG_FILE"
@@ -332,7 +332,7 @@ def setup_openai():
     if not api_key:
         print("Error: OPENAI_API_KEY not set")
         return None
-    
+
     openai.api_key = api_key
     return openai
 
@@ -342,7 +342,7 @@ def setup_anthropic():
     if not api_key:
         print("Error: ANTHROPIC_API_KEY not set")
         return None
-    
+
     return anthropic.Anthropic(api_key=api_key)
 
 def setup_gemini():
@@ -351,7 +351,7 @@ def setup_gemini():
     if not api_key:
         print("Error: GEMINI_API_KEY or GOOGLE_API_KEY not set")
         return None
-    
+
     genai.configure(api_key=api_key)
     return genai
 
@@ -360,7 +360,7 @@ def generate_code_openai(prompt, language="python", model="gpt-4", temperature=0
     client = setup_openai()
     if not client:
         return None
-    
+
     response = client.chat.completions.create(
         model=model,
         messages=[
@@ -370,7 +370,7 @@ def generate_code_openai(prompt, language="python", model="gpt-4", temperature=0
         temperature=temperature,
         max_tokens=4096
     )
-    
+
     return response.choices[0].message.content
 
 def generate_code_anthropic(prompt, language="python", model="claude-3-sonnet-20240229", temperature=0.1):
@@ -378,7 +378,7 @@ def generate_code_anthropic(prompt, language="python", model="claude-3-sonnet-20
     client = setup_anthropic()
     if not client:
         return None
-    
+
     response = client.messages.create(
         model=model,
         max_tokens=4096,
@@ -387,7 +387,7 @@ def generate_code_anthropic(prompt, language="python", model="claude-3-sonnet-20
             {"role": "user", "content": f"Generate {language} code for: {prompt}"}
         ]
     )
-    
+
     return response.content[0].text
 
 def generate_code_gemini(prompt, language="python", model="gemini-pro", temperature=0.1):
@@ -395,7 +395,7 @@ def generate_code_gemini(prompt, language="python", model="gemini-pro", temperat
     genai_client = setup_gemini()
     if not genai_client:
         return None
-    
+
     model_instance = genai_client.GenerativeModel(model)
     response = model_instance.generate_content(
         f"Generate {language} code for: {prompt}",
@@ -404,13 +404,13 @@ def generate_code_gemini(prompt, language="python", model="gemini-pro", temperat
             max_output_tokens=4096,
         )
     )
-    
+
     return response.text
 
 def generate_tests(code, language="python", framework="pytest"):
     """Generate tests for code"""
     prompt = f"Generate comprehensive {framework} tests for this {language} code:\n\n{code}"
-    
+
     # Try different providers
     for provider, func in [
         ("OpenAI", lambda: generate_code_openai(prompt, language)),
@@ -424,13 +424,13 @@ def generate_tests(code, language="python", framework="pytest"):
         except Exception as e:
             print(f"Error with {provider}: {e}")
             continue
-    
+
     return "Error: Could not generate tests with any provider"
 
 def explain_code(code, language="python"):
     """Explain code"""
     prompt = f"Explain this {language} code in detail:\n\n{code}"
-    
+
     # Try different providers
     for provider, func in [
         ("OpenAI", lambda: generate_code_openai(prompt, language)),
@@ -444,13 +444,13 @@ def explain_code(code, language="python"):
         except Exception as e:
             print(f"Error with {provider}: {e}")
             continue
-    
+
     return "Error: Could not explain code with any provider"
 
 def refactor_code(code, language="python", improvement="optimize performance"):
     """Refactor code"""
     prompt = f"Refactor this {language} code to {improvement}:\n\n{code}"
-    
+
     # Try different providers
     for provider, func in [
         ("OpenAI", lambda: generate_code_openai(prompt, language)),
@@ -464,7 +464,7 @@ def refactor_code(code, language="python", improvement="optimize performance"):
         except Exception as e:
             print(f"Error with {provider}: {e}")
             continue
-    
+
     return "Error: Could not refactor code with any provider"
 
 def main():
@@ -477,11 +477,11 @@ def main():
     parser.add_argument('--framework', default='pytest', help='Testing framework for test generation')
     parser.add_argument('--improvement', default='optimize performance', help='Improvement type for refactoring')
     parser.add_argument('--output', help='Output file path')
-    
+
     args = parser.parse_args()
-    
+
     config = load_config()
-    
+
     if args.command == 'generate':
         result = generate_code_openai(args.input, args.language, args.model or config.get('models', {}).get('primary', 'gpt-4'), args.temperature)
     elif args.command == 'test':
@@ -490,7 +490,7 @@ def main():
         result = explain_code(args.input, args.language)
     elif args.command == 'refactor':
         result = refactor_code(args.input, args.language, args.improvement)
-    
+
     if result:
         if args.output:
             with open(args.output, 'w') as f:
@@ -543,39 +543,39 @@ class AICodeGenerator:
         """Initialize AI Code Generator"""
         self.config_file = config_file or Path.home() / ".config" / "ai-codegen" / "config.json"
         self.config = self.load_config()
-    
+
     def load_config(self):
         """Load configuration from file"""
         if self.config_file.exists():
             with open(self.config_file, 'r') as f:
                 return json.load(f)
         return {}
-    
+
     def generate_function(self, description, language="python"):
         """Generate a function from description"""
         prompt = f"Generate a {language} function for: {description}"
         return self._call_ai(prompt, language)
-    
+
     def generate_class(self, description, language="python"):
         """Generate a class from description"""
         prompt = f"Generate a {language} class for: {description}"
         return self._call_ai(prompt, language)
-    
+
     def generate_tests(self, code, framework="pytest"):
         """Generate tests for code"""
         prompt = f"Generate comprehensive {framework} tests for this code:\n\n{code}"
         return self._call_ai(prompt, "python")
-    
+
     def explain_code(self, code):
         """Explain code"""
         prompt = f"Explain this code in detail:\n\n{code}"
         return self._call_ai(prompt, "markdown")
-    
+
     def refactor_code(self, code, improvement="optimize performance"):
         """Refactor code"""
         prompt = f"Refactor this code to {improvement}:\n\n{code}"
         return self._call_ai(prompt, "python")
-    
+
     def _call_ai(self, prompt, language="python"):
         """Call AI service to generate content"""
         # Try OpenAI first
@@ -583,28 +583,28 @@ class AICodeGenerator:
             return self._call_openai(prompt, language)
         except Exception as e:
             print(f"OpenAI error: {e}")
-        
+
         # Try Anthropic
         try:
             return self._call_anthropic(prompt, language)
         except Exception as e:
             print(f"Anthropic error: {e}")
-        
+
         # Try Gemini
         try:
             return self._call_gemini(prompt, language)
         except Exception as e:
             print(f"Gemini error: {e}")
-        
+
         return "Error: Could not generate content with any AI service"
-    
+
     def _call_openai(self, prompt, language):
         """Call OpenAI API"""
         if not os.getenv('OPENAI_API_KEY'):
             raise Exception("OPENAI_API_KEY not set")
-        
+
         openai.api_key = os.getenv('OPENAI_API_KEY')
-        
+
         response = openai.chat.completions.create(
             model=self.config.get('models', {}).get('primary', 'gpt-4'),
             messages=[
@@ -614,16 +614,16 @@ class AICodeGenerator:
             temperature=self.config.get('settings', {}).get('temperature', 0.1),
             max_tokens=self.config.get('settings', {}).get('max_tokens', 4096)
         )
-        
+
         return response.choices[0].message.content
-    
+
     def _call_anthropic(self, prompt, language):
         """Call Anthropic API"""
         if not os.getenv('ANTHROPIC_API_KEY'):
             raise Exception("ANTHROPIC_API_KEY not set")
-        
+
         client = anthropic.Anthropic(api_key=os.getenv('ANTHROPIC_API_KEY'))
-        
+
         response = client.messages.create(
             model=self.config.get('models', {}).get('secondary', 'claude-3-sonnet-20240229'),
             max_tokens=self.config.get('settings', {}).get('max_tokens', 4096),
@@ -632,17 +632,17 @@ class AICodeGenerator:
                 {"role": "user", "content": prompt}
             ]
         )
-        
+
         return response.content[0].text
-    
+
     def _call_gemini(self, prompt, language):
         """Call Gemini API"""
         api_key = os.getenv('GEMINI_API_KEY') or os.getenv('GOOGLE_API_KEY')
         if not api_key:
             raise Exception("GEMINI_API_KEY or GOOGLE_API_KEY not set")
-        
+
         genai.configure(api_key=api_key)
-        
+
         model = genai.GenerativeModel('gemini-pro')
         response = model.generate_content(
             prompt,
@@ -651,23 +651,23 @@ class AICodeGenerator:
                 max_output_tokens=self.config.get('settings', {}).get('max_tokens', 4096),
             )
         )
-        
+
         return response.text
 
 # Example usage
 if __name__ == '__main__':
     generator = AICodeGenerator()
-    
+
     # Generate a function
     function_code = generator.generate_function("A function that calculates fibonacci numbers")
     print("Generated function:")
     print(function_code)
-    
+
     # Generate tests
     test_code = generator.generate_tests(function_code)
     print("\nGenerated tests:")
     print(test_code)
-    
+
     # Explain code
     explanation = generator.explain_code(function_code)
     print("\nCode explanation:")
@@ -692,7 +692,7 @@ class AICodeGenerator {
         this.configFile = configFile || path.join(require('os').homedir(), '.config', 'ai-codegen', 'config.json');
         this.config = this.loadConfig();
     }
-    
+
     loadConfig() {
         try {
             if (fs.existsSync(this.configFile)) {
@@ -703,32 +703,32 @@ class AICodeGenerator {
         }
         return {};
     }
-    
+
     async generateFunction(description, language = 'javascript') {
         const prompt = `Generate a ${language} function for: ${description}`;
         return await this.callAI(prompt, language);
     }
-    
+
     async generateClass(description, language = 'javascript') {
         const prompt = `Generate a ${language} class for: ${description}`;
         return await this.callAI(prompt, language);
     }
-    
+
     async generateTests(code, framework = 'jest') {
         const prompt = `Generate comprehensive ${framework} tests for this code:\n\n${code}`;
         return await this.callAI(prompt, 'javascript');
     }
-    
+
     async explainCode(code) {
         const prompt = `Explain this code in detail:\n\n${code}`;
         return await this.callAI(prompt, 'markdown');
     }
-    
+
     async refactorCode(code, improvement = 'optimize performance') {
         const prompt = `Refactor this code to ${improvement}:\n\n${code}`;
         return await this.callAI(prompt, 'javascript');
     }
-    
+
     async callAI(prompt, language = 'javascript') {
         // Try OpenAI first
         try {
@@ -736,30 +736,30 @@ class AICodeGenerator {
         } catch (error) {
             console.error('OpenAI error:', error.message);
         }
-        
+
         // Try Anthropic
         try {
             return await this.callAnthropic(prompt, language);
         } catch (error) {
             console.error('Anthropic error:', error.message);
         }
-        
+
         return 'Error: Could not generate content with any AI service';
     }
-    
+
     async callOpenAI(prompt, language) {
         const { Configuration, OpenAIApi } = require('openai');
-        
+
         if (!process.env.OPENAI_API_KEY) {
             throw new Error('OPENAI_API_KEY not set');
         }
-        
+
         const configuration = new Configuration({
             apiKey: process.env.OPENAI_API_KEY,
         });
-        
+
         const openai = new OpenAIApi(configuration);
-        
+
         const response = await openai.createChatCompletion({
             model: this.config.models?.primary || 'gpt-4',
             messages: [
@@ -769,21 +769,21 @@ class AICodeGenerator {
             temperature: this.config.settings?.temperature || 0.1,
             max_tokens: this.config.settings?.max_tokens || 4096,
         });
-        
+
         return response.data.choices[0].message.content;
     }
-    
+
     async callAnthropic(prompt, language) {
         const { Anthropic } = require('@anthropic-ai/sdk');
-        
+
         if (!process.env.ANTHROPIC_API_KEY) {
             throw new Error('ANTHROPIC_API_KEY not set');
         }
-        
+
         const anthropic = new Anthropic({
             apiKey: process.env.ANTHROPIC_API_KEY,
         });
-        
+
         const response = await anthropic.messages.create({
             model: this.config.models?.secondary || 'claude-3-sonnet-20240229',
             max_tokens: this.config.settings?.max_tokens || 4096,
@@ -792,7 +792,7 @@ class AICodeGenerator {
                 { role: 'user', content: prompt }
             ],
         });
-        
+
         return response.content[0].text;
     }
 }
@@ -800,18 +800,18 @@ class AICodeGenerator {
 // Example usage
 async function main() {
     const generator = new AICodeGenerator();
-    
+
     try {
         // Generate a function
         const functionCode = await generator.generateFunction('A function that calculates fibonacci numbers');
         console.log('Generated function:');
         console.log(functionCode);
-        
+
         // Generate tests
         const testCode = await generator.generateTests(functionCode);
         console.log('\nGenerated tests:');
         console.log(testCode);
-        
+
         // Explain code
         const explanation = await generator.explainCode(functionCode);
         console.log('\nCode explanation:');
