@@ -53,10 +53,10 @@
         "vs-kubernetes.minikube-path": "/Users/evandroreis/.vs-kubernetes/tools/minikube/darwin-amd64/minikube",
         "vs-kubernetes.draft-path": "/Users/evandroreis/.vs-kubernetes/tools/draft/darwin-amd64/draft",
         "vs-kubernetes.minikube-path.mac": "/Users/evandroreis/.vs-kubernetes/tools/minikube/darwin-amd64/minikube",
-        "vs-kubernetes.kubectl-path.windows": "C:\\Users Эvand\\.vs-kubernetes\\tools\\kubectl\\kubectl.exe",
-        "vs-kubernetes.minikube-path.windows": "C:\\Users Эvand\\.vs-kubernetes\\tools\\minikube\\windows-amd64\\minikube.exe",
-        "vs-kubernetes.helm-path.windows": "C:\\Users Эvand\\.vs-kubernetes\\tools\\helm\\windows-amd64\\helm.exe",
-        "vs-kubernetes.draft-path.windows": "C:\\Users Эvand\\.vs-kubernetes\\tools\\draft\\windows-amd64\\draft.exe",
+        "vs-kubernetes.kubectl-path.windows": "C:\\Users\\evandroreis\\.vs-kubernetes\\tools\\kubectl\\kubectl.exe",
+        "vs-kubernetes.minikube-path.windows": "C:\\Users\\evandroreis\\.vs-kubernetes\\tools\\minikube\\windows-amd64\\minikube.exe",
+        "vs-kubernetes.helm-path.windows": "C:\\Users\\evandroreis\\.vs-kubernetes\\tools\\helm\\windows-amd64\\helm.exe",
+        "vs-kubernetes.draft-path.windows": "C:\\Users\\evandroreis\\.vs-kubernetes\\tools\\draft\\windows-amd64\\draft.exe",
         "vscode-kubernetes.minikube-path.windows": "C:\\Users Эvand\\.vs-kubernetes\\tools\\minikube\\windows-amd64\\minikube.exe",
         "vscode-kubernetes.helm-path.windows": "C:\\Users Эvand\\.vs-kubernetes\\tools\\helm\\windows-amd64\\helm.exe",
         "vscode-kubernetes.kubectl-path.windows": "C:\\Users Эvand\\.vs-kubernetes\\tools\\kubectl\\kubectl.exe",
@@ -77,7 +77,7 @@
     "editor.minimap.enabled": false,
     "cmake.configureOnOpen": true,
     "projectManager.git.baseFolders": [
-        "W:\\Google\\code"
+        "/Users/evandroreis/Workspace"
     ],
     "go.toolsManagement.autoUpdate": true,
     "cSpell.enableFiletypes": [
@@ -88,7 +88,7 @@
         "**/.metals": true,
         "**/.ammonite": true
     },
-    "metals.javaHome": "C:\\Program Files\\AdoptOpenJDK\\jdk-11.0.11.9-hotspot\\",
+    "metals.javaHome": "/opt/homebrew/opt/openjdk@11",
     "aws.profile": "profile:default",
     "redhat.telemetry.enabled": true,
     "security.workspace.trust.untrustedFiles": "open",
@@ -137,10 +137,10 @@
     "vsicons.dontShowNewVersionMessage": true,
     "editor.fontSize": 16,
     "azureLogicAppsStandard.autoRuntimeDependenciesValidationAndInstallation": true,
-    "azureLogicAppsStandard.autoRuntimeDependenciesPath": "C:\\Users Эvand\\.azurelogicapps\\dependencies",
-    "azureLogicAppsStandard.nodeJsBinaryPath": "C:\\Users Эvand\\.azurelogicapps\\dependencies\\NodeJs\\node",
-    "azureLogicAppsStandard.funcCoreToolsBinaryPath": "C:\\Users Эvand\\.azurelogicapps\\dependencies\\FuncCoreTools\\func",
-    "azureLogicAppsStandard.dotnetBinaryPath": "C:\\Users Эvand\\.azurelogicapps\\dependencies\\DotNetSDK\\dotnet.exe",
+    "azureLogicAppsStandard.autoRuntimeDependenciesPath": "/Users/evandroreis/.azurelogicapps/dependencies",
+    "azureLogicAppsStandard.nodeJsBinaryPath": "/opt/homebrew/bin/node",
+    "azureLogicAppsStandard.funcCoreToolsBinaryPath": "/opt/homebrew/bin/func",
+    "azureLogicAppsStandard.dotnetBinaryPath": "/opt/homebrew/bin/dotnet",
     "codium.enable": true,
     "application.shellEnvironmentResolutionTimeout": 100,
     "aws.telemetry": false,
@@ -150,7 +150,7 @@
     "parallels-desktop.git.path": "/opt/homebrew/bin/git",
     "parallels-desktop.brew.path": "/opt/homebrew/bin/brew",
     "workbench.startupEditor": "none",
-    "terminal.integrated.inheritEnv": false,
+    "terminal.integrated.inheritEnv": true,
     "editor.accessibilitySupport": "off",
     "codeium.enableConfig": {
         "*": true,
@@ -160,7 +160,7 @@
     "pieces.cloudCapabilities": "Blended",
     "pieces.telemetry": true,
     "yaml.schemas": {
-        "c:\\Users Эvand\\.vscode\\extensions\\continue.continue-1.1.71-win32-x64\\config-yaml-schema.json": [
+        "/Users/evandroreis/.cursor/extensions/continue.continue-1.1.71/config-yaml-schema.json": [
             ".continue/**/*.yaml"
         ]
     },
@@ -192,5 +192,9 @@
     "[github-actions-workflow]": {
         "editor.defaultFormatter": "redhat.vscode-yaml"
     },
-    "makefile.configureOnOpen": true
+    "makefile.configureOnOpen": true,
+    "cursor.general.enableTelemetry": false,
+    "cursor.general.enableUpdateCheck": false,
+    "cursor.general.showWelcomeMessage": false,
+    "cursor.general.showReleaseNotes": false
 }

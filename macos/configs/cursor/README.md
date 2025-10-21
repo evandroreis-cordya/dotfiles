@@ -177,7 +177,28 @@ Add new keybindings in `keybindings.json`:
 Enable debug mode for MCP servers:
 
 ```bash
-cursor_debug_m34p
+cursor_debug_mcp
+```
+
+### Troubleshooting Script
+
+Use the built-in troubleshooting script to diagnose and fix issues:
+
+```bash
+# Show status report
+cursor_troubleshoot status
+
+# Fix common issues
+cursor_troubleshoot fix
+
+# Clean up old logs
+cursor_troubleshoot clean
+
+# Restart Cursor
+cursor_troubleshoot restart
+
+# Test MCP server installation
+cursor_troubleshoot test
 ```
 
 ### Logs

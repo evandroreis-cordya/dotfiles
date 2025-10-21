@@ -142,6 +142,17 @@ cursor_debug_mcp() {
     CURSOR_LOG_LEVEL=debug cursor "$@"
 }
 
+# Function to troubleshoot Cursor issues
+cursor_troubleshoot() {
+    if [[ -f "$HOME/dotfiles/macos/scripts/cursor_troubleshoot.zsh" ]]; then
+        source "$HOME/dotfiles/macos/scripts/cursor_troubleshoot.zsh"
+        cursor_troubleshoot_main "$@"
+    else
+        echo "Cursor troubleshooting script not found"
+        echo "Run: cursor_check_install to check basic installation"
+    fi
+}
+
 # Export functions for use in shell
 export -f cursor_open
 export -f cursor_workspace
@@ -152,6 +163,7 @@ export -f cursor_restore_settings
 export -f cursor_update_extensions
 export -f cursor_check_install
 export -f cursor_debug_mcp
+export -f cursor_troubleshoot
 
 # Add Cursor to PATH if not already there
 if [[ -d "/Applications/Cursor.app/Contents/MacOS" ]]; then
@@ -162,3 +174,7 @@ fi
 export CURSOR_LOG_LEVEL="info"
 export CURSOR_EXTENSIONS_GALLERY_SERVICE_URL="https://marketplace.visualstudio.com/_apis/public/gallery"
 export CURSOR_EXTENSIONS_GALLERY_CACHE_URL="https://vscode.blob.core.windows.net/gallery/index"
+
+# Prevent Cursor from showing startup messages
+export CURSOR_DISABLE_UPDATE_CHECK=true
+export CURSOR_DISABLE_TELEMETRY=true
