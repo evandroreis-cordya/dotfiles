@@ -1,1 +1,3 @@
-return {\n  keys = {},\n}\n
+return {
+  keys = {},
+}

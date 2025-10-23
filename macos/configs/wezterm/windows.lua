@@ -1,1 +1,2 @@
-return {\n}\n
+return {
+}
