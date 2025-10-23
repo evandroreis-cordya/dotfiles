@@ -2,7 +2,7 @@
 
 # Get the directory of the current script
 SCRIPT_DIR=${0:a:h}
-source "${SCRIPT_DIR}/utils.zsh"
+source "${SCRIPT_DIR}/../utils.zsh"
 
 print_in_purple "
    Anthropic Tools
@@ -116,22 +116,8 @@ execute "pip3 install anthropic-auth" \
 execute "pip3 install anthropic-vault" \
     "Installing Anthropic Vault"
 
-# Create configuration file for Anthropic
-mkdir -p "$HOME/dotfiles/macos/configs/shell/zsh_configs"
-cp "$SCRIPT_DIR/../../../../zsh_configs/anthropic.zsh" "$HOME/dotfiles/macos/configs/shell/zsh_configs/" 2>/dev/null || true
+# Note: Configuration is handled by the anthropic.zsh config file
 
-# Print setup instructions
-print_in_green "
-   Anthropic Tools Installation Complete!
-
-"
-print_in_yellow "   To configure your Anthropic API key, add the following to your environment:
-"
-print_in_yellow "   export ANTHROPIC_API_KEY='your-api-key'
-
-"
-print_in_yellow "   To start using MCP Server, run:
-"
-print_in_yellow "   mcp-start
+print_success "Anthropic Tools Installation Complete!"
 
 "

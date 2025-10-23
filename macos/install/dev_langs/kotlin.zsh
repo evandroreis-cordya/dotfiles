@@ -321,10 +321,6 @@ fi
 # Create modular configuration
 create_kotlin_config
 
-# Check if oh-my-zsh.zsh is already sourcing the modular configs
-if ! grep -q "source \"\$HOME/dotfiles/macos/configs/shell/zsh_configs/kotlin.zsh\"" "$HOME/.zshrc"; then
-    # Add a line to source the Kotlin config in .zshrc if oh-my-zsh.zsh isn't handling it
-    cat >> "$HOME/.zshrc" << 'EOL'
 # Load Kotlin configuration
 source "$HOME/dotfiles/macos/configs/shell/zsh_configs/kotlin.zsh"
 EOL

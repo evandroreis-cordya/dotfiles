@@ -2,7 +2,7 @@
 
 # Get the directory of the current script
 SCRIPT_DIR=${0:a:h}
-source "${SCRIPT_DIR}/../../utils.zsh"
+source "${SCRIPT_DIR}/../utils.zsh"
 
 print_in_purple "
    WezTerm Terminal Emulator
@@ -735,18 +735,7 @@ print_success "Created WezTerm window configuration"
 # Set environment variable for WezTerm config
 export WEZTERM_CONFIG_FILE="$WEZTERM_CONFIG_FILE"
 
-# Add to shell profile if not already present
-SHELL_PROFILE="$HOME/.zshrc"
-if [[ -f "$SHELL_PROFILE" ]]; then
-    if ! grep -q "WEZTERM_CONFIG_FILE" "$SHELL_PROFILE"; then
-        echo "" >> "$SHELL_PROFILE"
-        echo "# WezTerm configuration" >> "$SHELL_PROFILE"
-        echo "export WEZTERM_CONFIG_FILE=\"$WEZTERM_CONFIG_FILE\"" >> "$SHELL_PROFILE"
-        print_success "Added WezTerm environment variable to $SHELL_PROFILE"
-    else
-        print_success "WezTerm environment variable already present in $SHELL_PROFILE"
-    fi
-fi
+# Note: WezTerm configuration is handled by wezterm.zsh config file
 
 print_success "WezTerm installation and configuration completed!"
 print_in_green "

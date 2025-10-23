@@ -18,6 +18,22 @@ export GEMINI_MODEL="${GEMINI_MODEL:-gemini-pro}"
 export GEMINI_CLI_CONFIG_DIR="$HOME/.config/gemini"
 export GEMINI_CLI_CONFIG_FILE="$GEMINI_CLI_CONFIG_DIR/config.json"
 
+# Google AI Development Settings
+export GOOGLE_AI_TEMPERATURE="${GOOGLE_AI_TEMPERATURE:-0.7}"
+export GOOGLE_AI_MAX_TOKENS="${GOOGLE_AI_MAX_TOKENS:-2048}"
+export GOOGLE_AI_TOP_P="${GOOGLE_AI_TOP_P:-0.9}"
+export GOOGLE_AI_TOP_K="${GOOGLE_AI_TOP_K:-40}"
+
+# Google Cloud Configuration
+export GOOGLE_CLOUD_PROJECT="${GOOGLE_CLOUD_PROJECT:-}"
+export GOOGLE_APPLICATION_CREDENTIALS="${GOOGLE_APPLICATION_CREDENTIALS:-}"
+
+# Google AI CLI Directory
+export GOOGLE_AI_CLI_DIR="$HOME/.local/bin"
+export GOOGLE_AI_SCRIPTS_DIR="$HOME/.local/bin"
+export GOOGLE_AI_TEMPLATES_DIR="$HOME/.local/share/google-ai/templates"
+export GOOGLE_AI_ENV_FILE="$HOME/.config/gemini/env.sh"
+
 # Create Gemini config directory if it doesn't exist
 if [[ ! -d "$GEMINI_CLI_CONFIG_DIR" ]]; then
     mkdir -p "$GEMINI_CLI_CONFIG_DIR"
@@ -107,7 +123,7 @@ gemini_set_api_key() {
         export GEMINI_API_KEY="$api_key"
         export GOOGLE_API_KEY="$api_key"
         echo "Gemini API key set"
-        
+
         # Save to config file
         if [[ -f "$GEMINI_CLI_CONFIG_FILE" ]]; then
             # Update existing config
@@ -128,7 +144,7 @@ gemini_set_model() {
     export GEMINI_DEFAULT_MODEL="$model"
     export GEMINI_MODEL="$model"
     echo "Default Gemini model set to: $model"
-    
+
     # Update config file
     if [[ -f "$GEMINI_CLI_CONFIG_FILE" ]]; then
         jq --arg model "$model" '.model = $model' "$GEMINI_CLI_CONFIG_FILE" > "$GEMINI_CLI_CONFIG_FILE.tmp" && mv "$GEMINI_CLI_CONFIG_FILE.tmp" "$GEMINI_CLI_CONFIG_FILE"
@@ -140,7 +156,7 @@ gemini_set_temperature() {
     local temp="${1:-0.7}"
     export GEMINI_DEFAULT_TEMPERATURE="$temp"
     echo "Default temperature set to: $temp"
-    
+
     # Update config file
     if [[ -f "$GEMINI_CLI_CONFIG_FILE" ]]; then
         jq --argjson temp "$temp" '.temperature = $temp' "$GEMINI_CLI_CONFIG_FILE" > "$GEMINI_CLI_CONFIG_FILE.tmp" && mv "$GEMINI_CLI_CONFIG_FILE.tmp" "$GEMINI_CLI_CONFIG_FILE"
@@ -182,7 +198,7 @@ gemini_test() {
         echo "Error: GEMINI_API_KEY not set"
         return 1
     fi
-    
+
     echo "Testing Gemini API connection..."
     gemini_chat "Hello, this is a test message."
 }
@@ -190,15 +206,15 @@ gemini_test() {
 gemini_install_check() {
     # Check if Gemini tools are properly installed
     local missing=()
-    
+
     if ! command -v python3 &> /dev/null; then
         missing+=("python3")
     fi
-    
+
     if ! python3 -c "import google.generativeai" 2>/dev/null; then
         missing+=("google-generativeai")
     fi
-    
+
     if [[ ${#missing[@]} -eq 0 ]]; then
         echo "All Gemini dependencies are installed"
         return 0
@@ -213,7 +229,7 @@ gemini_from_file() {
     # Process file content with Gemini
     local file="${1:-}"
     local prompt="${2:-Explain this content:}"
-    
+
     if [[ -f "$file" ]]; then
         local content=$(cat "$file")
         gemini_chat "$prompt $content"
@@ -227,7 +243,7 @@ gemini_to_file() {
     # Generate content and save to file
     local prompt="${1:-}"
     local filename="${2:-output.txt}"
-    
+
     if [[ -n "$prompt" ]]; then
         gemini_chat "$prompt" > "$filename"
         echo "Output saved to: $filename"

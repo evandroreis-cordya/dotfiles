@@ -209,10 +209,6 @@ main() {
     # Create modular configuration
     create_homebrew_config
 
-    # Check if oh-my-zsh.zsh is already sourcing the modular configs
-    if ! grep -q "source \"\$HOME/dotfiles/macos/configs/shell/zsh_configs/homebrew.zsh\"" "$HOME/.zshrc"; then
-        # Add a line to source the Homebrew config in .zshrc if oh-my-zsh.zsh isn't handling it
-        cat >> "$HOME/.zshrc" << 'EOL'
 # Load Homebrew configuration
 source "$HOME/dotfiles/macos/configs/shell/zsh_configs/homebrew.zsh"
 EOL

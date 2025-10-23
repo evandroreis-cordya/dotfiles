@@ -306,10 +306,6 @@ EOL
 
 create_php_config
 
-# Check if oh-my-zsh.zsh is already sourcing the modular configs
-if ! grep -q "source \"\$HOME/dotfiles/macos/configs/shell/zsh_configs/php.zsh\"" "$HOME/.zshrc"; then
-    # Add a line to source the PHP config in .zshrc if oh-my-zsh.zsh isn't handling it
-    cat >> "$HOME/.zshrc" << 'EOL'
 # Load PHP configuration
 source "$HOME/dotfiles/macos/configs/shell/zsh_configs/php.zsh"
 EOL

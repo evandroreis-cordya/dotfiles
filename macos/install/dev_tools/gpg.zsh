@@ -2,8 +2,8 @@
 
 # Get the directory of the current script
 SCRIPT_DIR=${0:a:h}
-source "${SCRIPT_DIR}/../../utils.zsh"
-source "${SCRIPT_DIR}/utils.zsh"
+source "${SCRIPT_DIR}/../utils.zsh"
+source "${SCRIPT_DIR}/../utils.zsh"
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 print_in_purple "
@@ -199,10 +199,6 @@ create_gpg_config
 # Configure GPG
 configure_gpg
 
-# Check if oh-my-zsh.zsh is already sourcing the modular configs
-if ! grep -q "source \"\$HOME/dotfiles/macos/configs/shell/zsh_configs/gpg.zsh\"" "$HOME/.zshrc"; then
-    # Add a line to source the GPG config in .zshrc if oh-my-zsh.zsh isn't handling it
-    cat >> "$HOME/.zshrc" << 'EOL'
 # Load GPG configuration
 source "$HOME/dotfiles/macos/configs/shell/zsh_configs/gpg.zsh"
 EOL

@@ -71,6 +71,9 @@ ZSH_CONFIG_LOAD_ORDER=(
     "xcode.zsh"          # Xcode development tools
     "docker.zsh"         # Docker and Docker Compose
     "cursor.zsh"         # Cursor IDE configuration
+    "vscode.zsh"         # VS Code configuration
+    "jetbrains.zsh"      # JetBrains IDEs configuration
+    "neovim.zsh"         # Neovim configuration
     "gpg.zsh"            # GPG encryption
     "anthropic.zsh"      # Anthropic MCP server
     "ipfs.zsh"           # IPFS
@@ -78,6 +81,17 @@ ZSH_CONFIG_LOAD_ORDER=(
     # AI and Terminal configurations (in dependency order)
     "wezterm.zsh"        # WezTerm terminal configuration (loads early for terminal setup)
     "gemini.zsh"         # Google Gemini AI tools (core AI foundation)
+    "openai.zsh"         # OpenAI tools
+    "azure_ai.zsh"       # Azure AI tools
+    "deepseek.zsh"       # DeepSeek AI tools
+    "cerebras.zsh"       # Cerebras AI tools
+    "grok.zsh"           # Grok AI tools
+    "oracle_ai.zsh"      # Oracle AI tools
+    "meta_ai.zsh"        # Meta AI tools
+    "aws.zsh"            # AWS cloud tools
+    "azure.zsh"          # Azure cloud tools
+    "vercel.zsh"         # Vercel tools
+    "nvidia_cloud.zsh"   # NVIDIA cloud tools
     "ai_codegen.zsh"     # AI code generation tools (depends on core AI tools)
     "crewai.zsh"         # CrewAI autonomous agents (depends on AI code generation)
     "agentic_ai.zsh"     # Agentic AI frameworks (depends on autonomous agents)

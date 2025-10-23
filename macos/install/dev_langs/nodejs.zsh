@@ -594,10 +594,6 @@ main() {
     # Create modular configuration
     create_nodejs_config
 
-    # Check if .zshrc is already sourcing the modular configs
-    if ! grep -q "source \"\$HOME/dotfiles/macos/configs/shell/zsh_configs/nodejs.zsh\"" "$HOME/.zshrc"; then
-        # Add a line to source the Node.js config in .zshrc
-        cat >> "$HOME/.zshrc" << 'EOL'
 # Load Node.js configuration
 source "$HOME/dotfiles/macos/configs/shell/zsh_configs/nodejs.zsh"
 EOL

@@ -684,14 +684,7 @@ rustup_install() {
         print_success "Rustup (already installed)"
     fi
 
-    # Add Rust to PATH if not already added
-    if ! grep -q '$HOME/.cargo/bin' "$HOME/.zshrc"; then
-        cat >> "$HOME/.zshrc" << 'EOL'
-
-# Rust configuration
-export PATH="$HOME/.cargo/bin:$PATH"
-EOL
-    fi
+    # Note: Rust PATH configuration is handled by rust.zsh config file
 
     # Load NVM for the current session
     export NVM_DIR="$HOME/.nvm"
@@ -834,16 +827,7 @@ nvm_install() {
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/$NVM_VERSION/install.sh | bash &> /dev/null
     print_result $? "NVM"
 
-    # Add NVM to shell configuration if not already there
-    if ! grep -q 'export NVM_DIR="$HOME/.nvm"' "$HOME/.zshrc"; then
-        cat >> "$HOME/.zshrc" << 'EOL'
-
-# NVM Configuration
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-EOL
-    fi
+    # Note: NVM configuration is handled by node.zsh config file
 
     # Load NVM for the current session
     export NVM_DIR="$HOME/.nvm"

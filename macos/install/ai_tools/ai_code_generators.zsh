@@ -2,7 +2,7 @@
 
 # Get the directory of the current script
 SCRIPT_DIR=${0:a:h}
-source "${SCRIPT_DIR}/../../utils.zsh"
+source "${SCRIPT_DIR}/../utils.zsh"
 
 print_in_purple "
    AI Code Generation Tools and SDKs
@@ -830,28 +830,7 @@ EOF
 
 print_success "Created JavaScript AI CodeGen project template"
 
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# Set environment variables
-export AI_CODEGEN_CONFIG_DIR="$AI_CODEGEN_CONFIG_DIR"
-export AI_CODEGEN_CONFIG_FILE="$AI_CODEGEN_CONFIG_FILE"
-export AI_CODEGEN_CLI_DIR="$AI_CODEGEN_CLI_DIR"
-export AI_CODEGEN_TEMPLATES_DIR="$AI_CODEGEN_TEMPLATES_DIR"
-
-# Add environment variables to shell profile
-SHELL_PROFILE="$HOME/.zshrc"
-if [[ -f "$SHELL_PROFILE" ]]; then
-    if ! grep -q "AI_CODEGEN_CONFIG_DIR" "$SHELL_PROFILE"; then
-        echo "" >> "$SHELL_PROFILE"
-        echo "# AI Code Generation configuration" >> "$SHELL_PROFILE"
-        echo "export AI_CODEGEN_CONFIG_DIR=\"$AI_CODEGEN_CONFIG_DIR\"" >> "$SHELL_PROFILE"
-        echo "export AI_CODEGEN_CONFIG_FILE=\"$AI_CODEGEN_CONFIG_FILE\"" >> "$SHELL_PROFILE"
-        echo "export AI_CODEGEN_CLI_DIR=\"$AI_CODEGEN_CLI_DIR\"" >> "$SHELL_PROFILE"
-        echo "export AI_CODEGEN_TEMPLATES_DIR=\"$AI_CODEGEN_TEMPLATES_DIR\"" >> "$SHELL_PROFILE"
-        print_success "Added AI CodeGen environment variables to $SHELL_PROFILE"
-    else
-        print_success "AI CodeGen environment variables already present in $SHELL_PROFILE"
-    fi
-fi
+# Note: Environment variables are now handled by the ai_codegen.zsh config file
 
 print_success "AI Code Generation tools and SDKs installation completed!"
 print_in_green "

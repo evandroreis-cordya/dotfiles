@@ -11,6 +11,8 @@
 # AI Code Generation configuration
 export AI_CODEGEN_CONFIG_DIR="$HOME/.config/ai-codegen"
 export AI_CODEGEN_CONFIG_FILE="$AI_CODEGEN_CONFIG_DIR/config.json"
+export AI_CODEGEN_CLI_DIR="$HOME/.local/bin"
+export AI_CODEGEN_TEMPLATES_DIR="$HOME/.local/share/ai-codegen/templates"
 export AI_CODEGEN_WORKSPACE_DIR="$HOME/.ai-codegen/workspace"
 export AI_CODEGEN_MODELS_DIR="$HOME/.ai-codegen/models"
 
