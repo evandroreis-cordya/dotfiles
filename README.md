@@ -1,4 +1,4 @@
- 
+``` 
    .oooooo.                            .o8                        o8o          
  d8P'  `Y8b                          "888                        `YP          
 888           .ooooo.  oooo d8b  .oooo888  oooo    ooo  .oooo.    '   .oooo.o 
@@ -17,7 +17,7 @@
       888   888  888   888   888    888     888   888  888ooo888 `"Y88b.  
       888   888  888   888   888 .  888     888   888  888    .o o.  )88b 
       `Y8bod88P" `Y8bod8P'   "888" o888o   o888o o888o `Y8bod8P' 8""888P'                                                                  
- 
+ ```
 
 Welcome to Cordya's dots 2026 Edition, the complete multi-platform tools and apps installer for AI Engineers and Developers
 Copyright (C) 2026 Cordya AI. Developed in Brazil by Evandro Reis. All rights reserved.
