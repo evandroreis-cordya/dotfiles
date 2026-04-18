@@ -29,7 +29,7 @@ First and foremost, I want to express my gratitude to [Victor Cavalcante](https:
 **WARNING:** If you want to use this dots and configuration scripts, first fork this repository. **DO NOT** use them without understanding what they do.
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/dots.git ~/dots
+git clone https://github.com/evandroreis-cordya/dots.git ~/dots
 ```
 **WARNING:** If you don't fork this repository, you will not be able to make changes to the configuration files. It must be downloaded from your forked repository. You must clone it in the `~/dots` directory otherwise the script will not work.
 
